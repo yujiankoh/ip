@@ -98,13 +98,14 @@ bye
 
 ---
 
-### TC-3 - Add tasks and list them
+### TC-3 - Reject an unknown command and an empty todo description
 
-**Aim:** Check that entered text is stored, confirmed with `added:`, and listed back in entry order, numbered from 1 and shown as not done.
+**Aim:** Check the two errors from the Level-5 examples are reported with the OOPS!!! prefix, and that rejecting an input leaves the already stored tasks untouched.
 
 ```input
-read book
-return book
+todo borrow book
+todo
+blah
 list
 bye
 ```
@@ -121,17 +122,22 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     added: read book
+     Got it. I've added this task:
+       [T][ ] borrow book
+     Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     added: return book
+     OOPS!!! The description of a todo cannot be empty.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OOPS!!! I'm sorry, but I don't know what that means :-(
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Here are the tasks in your list:
-     1.[ ] read book
-     2.[ ] return book
+     1.[T][ ] borrow book
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -146,8 +152,8 @@ bye
 **Aim:** Check that `mark 2` reports the task it changed and that only that task shows `[X]` in a later `list`, confirming the 1-based number maps to the right task.
 
 ```input
-read book
-return book
+todo read book
+todo return book
 mark 2
 list
 bye
@@ -165,22 +171,26 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     added: read book
+     Got it. I've added this task:
+       [T][ ] read book
+     Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     added: return book
+     Got it. I've added this task:
+       [T][ ] return book
+     Now you have 2 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Nice! I've marked this task as done:
-       [X] return book
+       [T][X] return book
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Here are the tasks in your list:
-     1.[ ] read book
-     2.[X] return book
+     1.[T][ ] read book
+     2.[T][X] return book
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -195,7 +205,7 @@ bye
 **Aim:** Check that `unmark` reverses a previous `mark`, returning the task to `[ ]` rather than leaving it done or removing it.
 
 ```input
-read book
+todo read book
 mark 1
 unmark 1
 list
@@ -214,22 +224,24 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     added: read book
+     Got it. I've added this task:
+       [T][ ] read book
+     Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Nice! I've marked this task as done:
-       [X] read book
+       [T][X] read book
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      OK, I've marked this task as not done yet:
-       [ ] read book
+       [T][ ] read book
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Here are the tasks in your list:
-     1.[ ] read book
+     1.[T][ ] read book
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -399,6 +411,112 @@ bye
      1.[T][ ] borrow book
      2.[D][ ] return book (by: Sunday)
      3.[E][X] project meeting (from: Mon 2pm to: 4pm)
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     The cold never bother me anyways!
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+```
+
+---
+
+### TC-9 - Reject empty deadline and event descriptions between valid adds
+
+**Aim:** Check that each kind of task names itself in the error, with the correct article, and that a rejected add does not consume a slot or shift the numbering of the tasks after it.
+
+```input
+deadline
+deadline return book /by Sunday
+event
+event project meeting /from Mon 2pm /to 4pm
+list
+bye
+```
+
+```expected
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+      _____ _
+     |  ___| |___  __ _
+     | |__ | / __|/ _` |
+     |  __|| \__ \ (_| |
+     |_____|_|___/\__,_|
+     Hello! I'm Elsa.
+     Do you want to build a snowman?
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OOPS!!! The description of a deadline cannot be empty.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [D][ ] return book (by: Sunday)
+     Now you have 1 task in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OOPS!!! The description of an event cannot be empty.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [E][ ] project meeting (from: Mon 2pm to: 4pm)
+     Now you have 2 tasks in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Here are the tasks in your list:
+     1.[D][ ] return book (by: Sunday)
+     2.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     The cold never bother me anyways!
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+```
+
+---
+
+### TC-10 - Handle a blank line, surrounding spaces, and the wrong letter case
+
+**Aim:** Check that an empty line is reported rather than silently ignored, that spaces around a command and its description are trimmed away, and that commands are case sensitive so `BYE` does not end the session.
+
+```input
+
+   todo   read book   
+BYE
+list
+bye
+```
+
+```expected
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+      _____ _
+     |  ___| |___  __ _
+     | |__ | / __|/ _` |
+     |  __|| \__ \ (_| |
+     |_____|_|___/\__,_|
+     Hello! I'm Elsa.
+     Do you want to build a snowman?
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OOPS!!! You did not type anything. Try "todo <description>", or "list" to see what you have.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [T][ ] read book
+     Now you have 1 task in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OOPS!!! I'm sorry, but I don't know what that means :-(
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Here are the tasks in your list:
+     1.[T][ ] read book
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
