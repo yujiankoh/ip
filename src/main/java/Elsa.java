@@ -3,7 +3,7 @@ import java.util.Scanner;
 /**
  * Entry point of the Elsa chatbot.
  * Greets the user, stores whatever text the user enters, lists it back on request,
- * marks tasks as done, and exits when the user types "bye".
+ * marks tasks as done or not done, and exits when the user types "bye".
  */
 public class Elsa {
     /**
@@ -24,6 +24,9 @@ public class Elsa {
 
     /** Command that marks a task as done; followed by the task's list number. */
     private static final String MARK_COMMAND = "mark";
+
+    /** Command that marks a task as not done again; followed by the task's list number. */
+    private static final String UNMARK_COMMAND = "unmark";
 
     /** Largest number of items that can be stored, per the Level-2 assumption. */
     private static final int MAX_TASKS = 100;
@@ -62,10 +65,14 @@ public class Elsa {
             } else if (command.equals(LIST_COMMAND)) {
                 printBlock(formatTasks(tasks, isDone, taskCount));
             } else if (command.startsWith(MARK_COMMAND + " ")) {
-                // The user counts from 1, so subtract 1 to get the array index.
-                int index = Integer.parseInt(command.substring(MARK_COMMAND.length() + 1).trim()) - 1;
+                int index = parseTaskIndex(command, MARK_COMMAND);
                 isDone[index] = true;
                 printBlock("Nice! I've marked this task as done:\n"
+                        + "  " + formatTask(tasks[index], isDone[index]));
+            } else if (command.startsWith(UNMARK_COMMAND + " ")) {
+                int index = parseTaskIndex(command, UNMARK_COMMAND);
+                isDone[index] = false;
+                printBlock("OK, I've marked this task as not done yet:\n"
                         + "  " + formatTask(tasks[index], isDone[index]));
             } else {
                 tasks[taskCount] = command;
@@ -73,6 +80,19 @@ public class Elsa {
                 printBlock("added: " + command);
             }
         }
+    }
+
+    /**
+     * Reads the task number that follows a command keyword and converts it to an array index.
+     *
+     * @param command the full line typed by the user, for example "unmark 2"
+     * @param keyword the command keyword at the start of that line, for example "unmark"
+     * @return the corresponding 0-based index into the task arrays
+     */
+    private static int parseTaskIndex(String command, String keyword) {
+        String argument = command.substring(keyword.length() + 1).trim();
+        // The user counts from 1, so subtract 1 to get the array index.
+        return Integer.parseInt(argument) - 1;
     }
 
     /**
