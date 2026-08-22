@@ -4,7 +4,7 @@ import java.util.Scanner;
 /**
  * Entry point of the Elsa chatbot.
  * Greets the user, stores todos, deadlines and events, lists them back on request,
- * marks them as done or not done, reports what it cannot understand,
+ * marks them as done or not done, deletes them, reports what it cannot understand,
  * and exits when the user types "bye".
  */
 public class Elsa {
@@ -21,43 +21,14 @@ public class Elsa {
     /** Prefix added to every error message shown to the user. */
     private static final String ERROR_PREFIX = "OLAF!!! ";
 
-    /** Command that ends the conversation. */
-    private static final String EXIT_COMMAND = "bye";
-
-    /** Command that displays everything stored so far. */
-    private static final String LIST_COMMAND = "list";
-
-    /** Command that marks a task as done; followed by the task's list number. */
-    private static final String MARK_COMMAND = "mark";
-
-    /** Command that marks a task as not done again; followed by the task's list number. */
-    private static final String UNMARK_COMMAND = "unmark";
-
-    /** Command that removes a task from the list; followed by the task's list number. */
-    private static final String DELETE_COMMAND = "delete";
-
-    /** Command that adds a todo; followed by the task's description. */
-    private static final String TODO_COMMAND = "todo";
-
-    /** Command that adds a deadline; followed by a description and "/by <when>". */
-    private static final String DEADLINE_COMMAND = "deadline";
-
     /** Separates a deadline's description from the time it is due. */
     private static final String BY_SEPARATOR = "/by";
-
-    /** Command that adds an event; followed by a description, "/from <start>" and "/to <end>". */
-    private static final String EVENT_COMMAND = "event";
 
     /** Separates an event's description from its start time. */
     private static final String FROM_SEPARATOR = "/from";
 
     /** Separates an event's start time from its end time. */
     private static final String TO_SEPARATOR = "/to";
-
-    /** Shown to the user as the correct way to type each command. */
-    private static final String TODO_USAGE = "todo <description>";
-    private static final String DEADLINE_USAGE = "deadline <description> /by <when>";
-    private static final String EVENT_USAGE = "event <description> /from <start> /to <end>";
 
     // Each "\\" in the source produces a single backslash in the ASCII-art banner.
     private static final String BANNER = " _____ _           \n"
@@ -79,74 +50,81 @@ public class Elsa {
         ArrayList<Task> tasks = new ArrayList<>();
 
         Scanner scanner = new Scanner(System.in);
-        // hasNextLine() guards against the input stream ending without a "bye",
-        // which would otherwise make nextLine() throw.
-        while (scanner.hasNextLine()) {
-            String command = scanner.nextLine().trim();
+        // The flag ends the loop from inside the switch, where a plain break would only
+        // leave the switch. hasNextLine() guards against input ending without a "bye".
+        boolean isRunning = true;
+        while (isRunning && scanner.hasNextLine()) {
+            String line = scanner.nextLine().trim();
 
             // Every line is one keyword plus whatever follows it. Splitting here means
             // "todo" with nothing after it is recognised as a todo missing its description,
             // rather than being mistaken for an unknown command.
-            String[] words = command.split(" ", 2);
-            String keyword = words[0];
+            String[] words = line.split(" ", 2);
+            Command command = Command.fromKeyword(words[0]);
             String arguments = (words.length > 1) ? words[1].trim() : "";
 
             try {
-                if (keyword.equals(EXIT_COMMAND)) {
+                switch (command) {
+                case BYE -> {
                     printBlock(FAREWELL);
-                    break;
-                } else if (keyword.equals(LIST_COMMAND)) {
-                    printBlock(formatTasks(tasks));
-                } else if (keyword.equals(MARK_COMMAND)) {
-                    int index = parseTaskIndex(arguments, tasks.size(), MARK_COMMAND);
+                    isRunning = false;
+                }
+                case LIST -> printBlock(formatTasks(tasks));
+                case MARK -> {
+                    int index = parseTaskIndex(arguments, tasks.size(), command);
                     tasks.get(index).markAsDone();
                     printBlock("Nice! I've marked this task as done:\n"
                             + "  " + tasks.get(index));
-                } else if (keyword.equals(UNMARK_COMMAND)) {
-                    int index = parseTaskIndex(arguments, tasks.size(), UNMARK_COMMAND);
+                }
+                case UNMARK -> {
+                    int index = parseTaskIndex(arguments, tasks.size(), command);
                     tasks.get(index).markAsNotDone();
                     printBlock("OK, I've marked this task as not done yet:\n"
                             + "  " + tasks.get(index));
-                } else if (keyword.equals(DELETE_COMMAND)) {
-                    int index = parseTaskIndex(arguments, tasks.size(), DELETE_COMMAND);
+                }
+                case DELETE -> {
+                    int index = parseTaskIndex(arguments, tasks.size(), command);
                     // remove() returns the task it took out, so it can be shown to the user.
                     Task removed = tasks.remove(index);
                     printBlock(removedMessage(removed, tasks.size()));
-                } else if (keyword.equals(TODO_COMMAND)) {
-                    requireDescription(arguments, TODO_COMMAND, TODO_USAGE);
+                }
+                case TODO -> {
+                    requireDescription(arguments, command);
                     Task added = new Todo(arguments);
                     tasks.add(added);
                     printBlock(addedMessage(added, tasks.size()));
-                } else if (keyword.equals(DEADLINE_COMMAND)) {
-                    requireDescription(arguments, DEADLINE_COMMAND, DEADLINE_USAGE);
+                }
+                case DEADLINE -> {
+                    requireDescription(arguments, command);
                     // Limit of 2 keeps any later "/by" as part of the due time itself.
-                    String[] parts = requireSeparator(arguments, BY_SEPARATOR, DEADLINE_USAGE);
+                    String[] parts = requireSeparator(arguments, BY_SEPARATOR, command);
                     String description = requireNonEmpty(parts[0],
-                            "description of a deadline", DEADLINE_USAGE);
+                            "description of a deadline", command);
                     String by = requireNonEmpty(parts[1],
-                            "due time after " + BY_SEPARATOR, DEADLINE_USAGE);
+                            "due time after " + BY_SEPARATOR, command);
                     Task added = new Deadline(description, by);
                     tasks.add(added);
                     printBlock(addedMessage(added, tasks.size()));
-                } else if (keyword.equals(EVENT_COMMAND)) {
-                    requireDescription(arguments, EVENT_COMMAND, EVENT_USAGE);
+                }
+                case EVENT -> {
+                    requireDescription(arguments, command);
                     // Split off the description first, then split what remains into the two times.
-                    String[] parts = requireSeparator(arguments, FROM_SEPARATOR, EVENT_USAGE);
+                    String[] parts = requireSeparator(arguments, FROM_SEPARATOR, command);
                     String description = requireNonEmpty(parts[0],
-                            "description of an event", EVENT_USAGE);
-                    String[] times = requireSeparator(parts[1], TO_SEPARATOR, EVENT_USAGE);
+                            "description of an event", command);
+                    String[] times = requireSeparator(parts[1], TO_SEPARATOR, command);
                     String from = requireNonEmpty(times[0],
-                            "start time after " + FROM_SEPARATOR, EVENT_USAGE);
+                            "start time after " + FROM_SEPARATOR, command);
                     String to = requireNonEmpty(times[1],
-                            "end time after " + TO_SEPARATOR, EVENT_USAGE);
+                            "end time after " + TO_SEPARATOR, command);
                     Task added = new Event(description, from, to);
                     tasks.add(added);
                     printBlock(addedMessage(added, tasks.size()));
-                } else if (keyword.isEmpty()) {
-                    throw new ElsaException("You did not type anything. Try \"todo <description>\", "
-                            + "or \"list\" to see what you have.");
-                } else {
-                    throw new ElsaException("I'm sorry, but I don't know what that means :-(");
+                }
+                case NOTHING -> throw new ElsaException("You did not type anything. Try \""
+                        + Command.TODO.getUsage() + "\", or \"list\" to see what you have.");
+                case UNKNOWN -> throw new ElsaException(
+                        "I'm sorry, but I don't know what that means :-(");
                 }
             } catch (ElsaException e) {
                 // One place to report anything the chatbot could not carry out.
@@ -159,35 +137,36 @@ public class Elsa {
      * Checks that a command that adds a task was given something to add.
      *
      * @param arguments everything the user typed after the command keyword
-     * @param keyword   the command keyword, used to name the kind of task in the message
+     * @param command   the command being run, which supplies its own name and usage
      * @throws ElsaException if nothing was typed after the keyword
      */
-    private static void requireDescription(String arguments, String keyword, String usage)
+    private static void requireDescription(String arguments, Command command)
             throws ElsaException {
         if (arguments.isEmpty()) {
+            String keyword = command.getKeyword();
             // "an event" but "a todo": pick the article that reads correctly.
             String article = ("aeiou".indexOf(keyword.charAt(0)) >= 0) ? "an" : "a";
             throw new ElsaException("The description of " + article + " " + keyword
-                    + " cannot be empty. Use: " + usage);
+                    + " cannot be empty. Use: " + command.getUsage());
         }
     }
-
 
     /**
      * Splits text on a separator the command requires, reporting its absence to the user.
      *
      * @param text      the text to split
      * @param separator the separator the command cannot do without, such as "/by"
-     * @param usage     how the command should be typed, shown if the separator is missing
+     * @param command   the command being run, which supplies the usage to show
      * @return the two pieces on either side of the first occurrence of the separator
      * @throws ElsaException if the separator does not appear in the text
      */
-    private static String[] requireSeparator(String text, String separator, String usage)
+    private static String[] requireSeparator(String text, String separator, Command command)
             throws ElsaException {
         // Limit of 2 keeps any later occurrence as part of the second piece.
         String[] parts = text.split(separator, 2);
         if (parts.length < 2) {
-            throw new ElsaException("I could not find \"" + separator + "\" in that. Use: " + usage);
+            throw new ElsaException("I could not find \"" + separator + "\" in that. Use: "
+                    + command.getUsage());
         }
         return parts;
     }
@@ -195,17 +174,18 @@ public class Elsa {
     /**
      * Checks that a piece of a command was actually filled in.
      *
-     * @param value the piece to check, before trimming
-     * @param what  what the piece is, named for the error message
-     * @param usage how the command should be typed, shown if the piece is missing
+     * @param value   the piece to check, before trimming
+     * @param what    what the piece is, named for the error message
+     * @param command the command being run, which supplies the usage to show
      * @return the value with surrounding spaces removed
      * @throws ElsaException if the piece is empty once trimmed
      */
-    private static String requireNonEmpty(String value, String what, String usage)
+    private static String requireNonEmpty(String value, String what, Command command)
             throws ElsaException {
         String trimmed = value.trim();
         if (trimmed.isEmpty()) {
-            throw new ElsaException("The " + what + " cannot be empty. Use: " + usage);
+            throw new ElsaException("The " + what + " cannot be empty. Use: "
+                    + command.getUsage());
         }
         return trimmed;
     }
@@ -248,18 +228,19 @@ public class Elsa {
     }
 
     /**
-     * Converts the task number typed by the user into an array index,
+     * Converts the task number typed by the user into a list index,
      * checking that it is a whole number and that a task with that number exists.
      *
      * @param arguments everything the user typed after the command keyword
      * @param taskCount how many tasks are stored, so the number can be range checked
-     * @param keyword   the command keyword, used to word the error messages
+     * @param command   the command being run, used to word the error messages
      * @return the corresponding 0-based index into the task list
      * @throws ElsaException if no number was given, it is not a whole number,
      *                       or no task has that number
      */
-    private static int parseTaskIndex(String arguments, int taskCount, String keyword)
+    private static int parseTaskIndex(String arguments, int taskCount, Command command)
             throws ElsaException {
+        String keyword = command.getKeyword();
         if (arguments.isEmpty()) {
             throw new ElsaException("Which task? Use: " + keyword
                     + " <task number>, for example: " + keyword + " 2.");
@@ -276,7 +257,7 @@ public class Elsa {
 
         if (taskCount == 0) {
             throw new ElsaException("There are no tasks yet, so there is nothing to "
-                    + keyword + ". Add one with \"" + TODO_USAGE + "\" first.");
+                    + keyword + ". Add one with \"" + Command.TODO.getUsage() + "\" first.");
         }
         if (number < 1 || number > taskCount) {
             String plural = (taskCount == 1) ? "task" : "tasks";
@@ -284,7 +265,7 @@ public class Elsa {
                     + taskCount + " " + plural + ", so use a number from 1 to " + taskCount + ".");
         }
 
-        // The user counts from 1, so subtract 1 to get the array index.
+        // The user counts from 1, so subtract 1 to get the list index.
         return number - 1;
     }
 
@@ -300,7 +281,7 @@ public class Elsa {
         }
         StringBuilder list = new StringBuilder("Here are the tasks in your list:");
         for (int i = 0; i < tasks.size(); i++) {
-            // Array indices start at 0, but the display numbering starts at 1.
+            // List indices start at 0, but the display numbering starts at 1.
             // Appending the Task calls its toString() to render "[D][X] return book (by: Sunday)".
             list.append("\n").append(i + 1).append(".").append(tasks.get(i));
         }
