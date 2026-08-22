@@ -33,6 +33,9 @@ public class Elsa {
     /** Command that marks a task as not done again; followed by the task's list number. */
     private static final String UNMARK_COMMAND = "unmark";
 
+    /** Command that removes a task from the list; followed by the task's list number. */
+    private static final String DELETE_COMMAND = "delete";
+
     /** Command that adds a todo; followed by the task's description. */
     private static final String TODO_COMMAND = "todo";
 
@@ -104,6 +107,11 @@ public class Elsa {
                     tasks.get(index).markAsNotDone();
                     printBlock("OK, I've marked this task as not done yet:\n"
                             + "  " + tasks.get(index));
+                } else if (keyword.equals(DELETE_COMMAND)) {
+                    int index = parseTaskIndex(arguments, tasks.size(), DELETE_COMMAND);
+                    // remove() returns the task it took out, so it can be shown to the user.
+                    Task removed = tasks.remove(index);
+                    printBlock(removedMessage(removed, tasks.size()));
                 } else if (keyword.equals(TODO_COMMAND)) {
                     requireDescription(arguments, TODO_COMMAND, TODO_USAGE);
                     Task added = new Todo(arguments);
@@ -203,6 +211,21 @@ public class Elsa {
     }
 
     /**
+     * Builds the confirmation shown after the list has gained or lost a task.
+     *
+     * @param lead      the opening line saying what happened
+     * @param task      the task that was added or removed
+     * @param taskCount how many tasks are in the list now
+     * @return the confirmation text, spanning three lines
+     */
+    private static String taskCountMessage(String lead, Task task, int taskCount) {
+        String plural = (taskCount == 1) ? "task" : "tasks";
+        return lead + "\n"
+                + "  " + task + "\n"
+                + "Now you have " + taskCount + " " + plural + " in the list.";
+    }
+
+    /**
      * Builds the confirmation shown after a task has been added.
      *
      * @param task      the task that was just added
@@ -210,10 +233,18 @@ public class Elsa {
      * @return the confirmation text, spanning three lines
      */
     private static String addedMessage(Task task, int taskCount) {
-        String plural = (taskCount == 1) ? "task" : "tasks";
-        return "Got it. I've added this task:\n"
-                + "  " + task + "\n"
-                + "Now you have " + taskCount + " " + plural + " in the list.";
+        return taskCountMessage("Got it. I've added this task:", task, taskCount);
+    }
+
+    /**
+     * Builds the confirmation shown after a task has been removed.
+     *
+     * @param task      the task that was just removed
+     * @param taskCount how many tasks are left in the list
+     * @return the confirmation text, spanning three lines
+     */
+    private static String removedMessage(Task task, int taskCount) {
+        return taskCountMessage("Noted. I've removed this task:", task, taskCount);
     }
 
     /**
