@@ -16,6 +16,12 @@ public class Task {
     protected String typeIcon;
 
     /**
+     * Extra information shown after the description, for example "(by: Sunday)".
+     * Empty for a task that carries no date or time.
+     */
+    protected String detail;
+
+    /**
      * Creates a task of no particular kind that is not done yet.
      *
      * @param description the text describing what is to be done
@@ -26,14 +32,27 @@ public class Task {
     }
 
     /**
-     * Creates a task of the given kind that is not done yet.
+     * Creates a task of the given kind, with no extra detail, that is not done yet.
      *
      * @param description the text describing what is to be done
      * @param typeIcon    marker for the kind of task, for example "[T]"
      */
     public Task(String description, String typeIcon) {
+        this(description, typeIcon, "");
+    }
+
+    /**
+     * Creates a task of the given kind that is not done yet.
+     *
+     * @param description the text describing what is to be done
+     * @param typeIcon    marker for the kind of task, for example "[D]"
+     * @param detail      extra information to show after the description,
+     *                    for example "(by: Sunday)"
+     */
+    public Task(String description, String typeIcon, String detail) {
         this.description = description;
         this.typeIcon = typeIcon;
+        this.detail = detail;
         this.isDone = false;
     }
 
@@ -58,12 +77,14 @@ public class Task {
 
     /**
      * Returns the task as it should appear to the user,
-     * for example "[T][X] read book".
+     * for example "[D][ ] return book (by: Sunday)".
      *
-     * @return the type marker, the status icon in brackets, then the description
+     * @return the type marker, the status icon in brackets, the description,
+     *         and any extra detail
      */
     @Override
     public String toString() {
-        return typeIcon + "[" + getStatusIcon() + "] " + description;
+        String suffix = detail.isEmpty() ? "" : " " + detail;
+        return typeIcon + "[" + getStatusIcon() + "] " + description + suffix;
     }
 }

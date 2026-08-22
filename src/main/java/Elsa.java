@@ -34,6 +34,15 @@ public class Elsa {
     /** Marker shown in front of a todo when it is displayed. */
     private static final String TODO_ICON = "[T]";
 
+    /** Command that adds a deadline; followed by a description and "/by <when>". */
+    private static final String DEADLINE_COMMAND = "deadline";
+
+    /** Marker shown in front of a deadline when it is displayed. */
+    private static final String DEADLINE_ICON = "[D]";
+
+    /** Separates a deadline's description from the time it is due. */
+    private static final String BY_SEPARATOR = "/by";
+
     /** Largest number of items that can be stored, per the Level-2 assumption. */
     private static final int MAX_TASKS = 100;
 
@@ -80,6 +89,15 @@ public class Elsa {
             } else if (command.startsWith(TODO_COMMAND + " ")) {
                 String description = command.substring(TODO_COMMAND.length() + 1).trim();
                 tasks[taskCount] = new Task(description, TODO_ICON);
+                taskCount++;
+                printBlock(addedMessage(tasks[taskCount - 1], taskCount));
+            } else if (command.startsWith(DEADLINE_COMMAND + " ")) {
+                String arguments = command.substring(DEADLINE_COMMAND.length() + 1);
+                // Limit of 2 keeps any later "/by" as part of the due time itself.
+                String[] parts = arguments.split(BY_SEPARATOR, 2);
+                String description = parts[0].trim();
+                String by = parts[1].trim();
+                tasks[taskCount] = new Task(description, DEADLINE_ICON, "(by: " + by + ")");
                 taskCount++;
                 printBlock(addedMessage(tasks[taskCount - 1], taskCount));
             } else {
