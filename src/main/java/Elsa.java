@@ -5,9 +5,12 @@ import java.util.Scanner;
  * Greets the user, echoes every command entered, and exits when the user types "bye".
  */
 public class Elsa {
-    /** Horizontal line that separates one message block from the next. */
-    private static final String BORDER =
-            "    ____________________________________________________________";
+    /**
+     * Horizontal line that separates one message block from the next.
+     * Drawn as a row of ASCII "snowflakes" to suit the chatbot's name.
+     * String.repeat builds the row so the width is stated once, as a number.
+     */
+    private static final String BORDER = "   " + " *".repeat(30);
 
     /** Indentation applied to every line of message text inside a block. */
     private static final String INDENT = "     ";
