@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -55,9 +56,6 @@ public class Elsa {
     private static final String DEADLINE_USAGE = "deadline <description> /by <when>";
     private static final String EVENT_USAGE = "event <description> /from <start> /to <end>";
 
-    /** Largest number of items that can be stored, per the Level-2 assumption. */
-    private static final int MAX_TASKS = 100;
-
     // Each "\\" in the source produces a single backslash in the ASCII-art banner.
     private static final String BANNER = " _____ _           \n"
             + "|  ___| |___  __ _ \n"
@@ -73,10 +71,9 @@ public class Elsa {
     public static void main(String[] args) {
         printBlock(BANNER + "\n" + GREETING);
 
-        // The array is fixed at MAX_TASKS slots, but only the first taskCount of them
-        // hold real values, so taskCount is tracked separately from tasks.length.
-        Task[] tasks = new Task[MAX_TASKS];
-        int taskCount = 0;
+        // An ArrayList grows as tasks are added, so there is no fixed capacity to track
+        // separately: size() is always exactly how many tasks there are.
+        ArrayList<Task> tasks = new ArrayList<>();
 
         Scanner scanner = new Scanner(System.in);
         // hasNextLine() guards against the input stream ending without a "bye",
@@ -96,38 +93,35 @@ public class Elsa {
                     printBlock(FAREWELL);
                     break;
                 } else if (keyword.equals(LIST_COMMAND)) {
-                    printBlock(formatTasks(tasks, taskCount));
+                    printBlock(formatTasks(tasks));
                 } else if (keyword.equals(MARK_COMMAND)) {
-                    int index = parseTaskIndex(arguments, taskCount, MARK_COMMAND);
-                    tasks[index].markAsDone();
+                    int index = parseTaskIndex(arguments, tasks.size(), MARK_COMMAND);
+                    tasks.get(index).markAsDone();
                     printBlock("Nice! I've marked this task as done:\n"
-                            + "  " + tasks[index]);
+                            + "  " + tasks.get(index));
                 } else if (keyword.equals(UNMARK_COMMAND)) {
-                    int index = parseTaskIndex(arguments, taskCount, UNMARK_COMMAND);
-                    tasks[index].markAsNotDone();
+                    int index = parseTaskIndex(arguments, tasks.size(), UNMARK_COMMAND);
+                    tasks.get(index).markAsNotDone();
                     printBlock("OK, I've marked this task as not done yet:\n"
-                            + "  " + tasks[index]);
+                            + "  " + tasks.get(index));
                 } else if (keyword.equals(TODO_COMMAND)) {
                     requireDescription(arguments, TODO_COMMAND, TODO_USAGE);
-                    requireRoom(taskCount);
-                    tasks[taskCount] = new Todo(arguments);
-                    taskCount++;
-                    printBlock(addedMessage(tasks[taskCount - 1], taskCount));
+                    Task added = new Todo(arguments);
+                    tasks.add(added);
+                    printBlock(addedMessage(added, tasks.size()));
                 } else if (keyword.equals(DEADLINE_COMMAND)) {
                     requireDescription(arguments, DEADLINE_COMMAND, DEADLINE_USAGE);
-                    requireRoom(taskCount);
                     // Limit of 2 keeps any later "/by" as part of the due time itself.
                     String[] parts = requireSeparator(arguments, BY_SEPARATOR, DEADLINE_USAGE);
                     String description = requireNonEmpty(parts[0],
                             "description of a deadline", DEADLINE_USAGE);
                     String by = requireNonEmpty(parts[1],
                             "due time after " + BY_SEPARATOR, DEADLINE_USAGE);
-                    tasks[taskCount] = new Deadline(description, by);
-                    taskCount++;
-                    printBlock(addedMessage(tasks[taskCount - 1], taskCount));
+                    Task added = new Deadline(description, by);
+                    tasks.add(added);
+                    printBlock(addedMessage(added, tasks.size()));
                 } else if (keyword.equals(EVENT_COMMAND)) {
                     requireDescription(arguments, EVENT_COMMAND, EVENT_USAGE);
-                    requireRoom(taskCount);
                     // Split off the description first, then split what remains into the two times.
                     String[] parts = requireSeparator(arguments, FROM_SEPARATOR, EVENT_USAGE);
                     String description = requireNonEmpty(parts[0],
@@ -137,9 +131,9 @@ public class Elsa {
                             "start time after " + FROM_SEPARATOR, EVENT_USAGE);
                     String to = requireNonEmpty(times[1],
                             "end time after " + TO_SEPARATOR, EVENT_USAGE);
-                    tasks[taskCount] = new Event(description, from, to);
-                    taskCount++;
-                    printBlock(addedMessage(tasks[taskCount - 1], taskCount));
+                    Task added = new Event(description, from, to);
+                    tasks.add(added);
+                    printBlock(addedMessage(added, tasks.size()));
                 } else if (keyword.isEmpty()) {
                     throw new ElsaException("You did not type anything. Try \"todo <description>\", "
                             + "or \"list\" to see what you have.");
@@ -170,18 +164,6 @@ public class Elsa {
         }
     }
 
-    /**
-     * Checks that there is still a free slot before adding another task.
-     *
-     * @param taskCount how many tasks are stored already
-     * @throws ElsaException if the list is already full
-     */
-    private static void requireRoom(int taskCount) throws ElsaException {
-        if (taskCount >= MAX_TASKS) {
-            throw new ElsaException("Your list is full at " + MAX_TASKS
-                    + " tasks, so I cannot add another. Mark something done or start a new list.");
-        }
-    }
 
     /**
      * Splits text on a separator the command requires, reporting its absence to the user.
@@ -241,7 +223,7 @@ public class Elsa {
      * @param arguments everything the user typed after the command keyword
      * @param taskCount how many tasks are stored, so the number can be range checked
      * @param keyword   the command keyword, used to word the error messages
-     * @return the corresponding 0-based index into the task array
+     * @return the corresponding 0-based index into the task list
      * @throws ElsaException if no number was given, it is not a whole number,
      *                       or no task has that number
      */
@@ -278,19 +260,18 @@ public class Elsa {
     /**
      * Builds the numbered list of stored tasks as a single multi-line string.
      *
-     * @param tasks     array holding the stored tasks
-     * @param taskCount number of slots at the front of the array that are in use
+     * @param tasks the stored tasks, in the order they were added
      * @return a heading followed by one line per task, numbered from 1
      */
-    private static String formatTasks(Task[] tasks, int taskCount) {
-        if (taskCount == 0) {
+    private static String formatTasks(ArrayList<Task> tasks) {
+        if (tasks.isEmpty()) {
             return "Into the Unknown.";
         }
         StringBuilder list = new StringBuilder("Here are the tasks in your list:");
-        for (int i = 0; i < taskCount; i++) {
+        for (int i = 0; i < tasks.size(); i++) {
             // Array indices start at 0, but the display numbering starts at 1.
             // Appending the Task calls its toString() to render "[D][X] return book (by: Sunday)".
-            list.append("\n").append(i + 1).append(".").append(tasks[i]);
+            list.append("\n").append(i + 1).append(".").append(tasks.get(i));
         }
         return list.toString();
     }

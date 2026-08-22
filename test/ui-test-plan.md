@@ -39,13 +39,6 @@ Add a `###` heading, an `**Aim:**` line, an ` ```input ` block, and an
 ` ```expected ` block. Cases run top to bottom and the session stops at the
 first failure.
 
-## Known gaps
-
-These behaviours are implemented but deliberately not covered by a test case:
-
-- **The 100 task limit.** Reaching it needs 101 `todo` lines of input and a 100 line
-  expected list, which would swamp this file. The check lives in `requireRoom`.
-
 ---
 
 ### TC-1 - Greet and exit immediately
