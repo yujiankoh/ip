@@ -31,23 +31,14 @@ public class Elsa {
     /** Command that adds a todo; followed by the task's description. */
     private static final String TODO_COMMAND = "todo";
 
-    /** Marker shown in front of a todo when it is displayed. */
-    private static final String TODO_ICON = "[T]";
-
     /** Command that adds a deadline; followed by a description and "/by <when>". */
     private static final String DEADLINE_COMMAND = "deadline";
-
-    /** Marker shown in front of a deadline when it is displayed. */
-    private static final String DEADLINE_ICON = "[D]";
 
     /** Separates a deadline's description from the time it is due. */
     private static final String BY_SEPARATOR = "/by";
 
     /** Command that adds an event; followed by a description, "/from <start>" and "/to <end>". */
     private static final String EVENT_COMMAND = "event";
-
-    /** Marker shown in front of an event when it is displayed. */
-    private static final String EVENT_ICON = "[E]";
 
     /** Separates an event's description from its start time. */
     private static final String FROM_SEPARATOR = "/from";
@@ -100,7 +91,7 @@ public class Elsa {
                         + "  " + tasks[index]);
             } else if (command.startsWith(TODO_COMMAND + " ")) {
                 String description = command.substring(TODO_COMMAND.length() + 1).trim();
-                tasks[taskCount] = new Task(description, TODO_ICON);
+                tasks[taskCount] = new Todo(description);
                 taskCount++;
                 printBlock(addedMessage(tasks[taskCount - 1], taskCount));
             } else if (command.startsWith(DEADLINE_COMMAND + " ")) {
@@ -109,7 +100,7 @@ public class Elsa {
                 String[] parts = arguments.split(BY_SEPARATOR, 2);
                 String description = parts[0].trim();
                 String by = parts[1].trim();
-                tasks[taskCount] = new Task(description, DEADLINE_ICON, "(by: " + by + ")");
+                tasks[taskCount] = new Deadline(description, by);
                 taskCount++;
                 printBlock(addedMessage(tasks[taskCount - 1], taskCount));
             } else if (command.startsWith(EVENT_COMMAND + " ")) {
@@ -120,8 +111,7 @@ public class Elsa {
                 String[] times = parts[1].split(TO_SEPARATOR, 2);
                 String from = times[0].trim();
                 String to = times[1].trim();
-                tasks[taskCount] = new Task(description, EVENT_ICON,
-                        "(from: " + from + " to: " + to + ")");
+                tasks[taskCount] = new Event(description, from, to);
                 taskCount++;
                 printBlock(addedMessage(tasks[taskCount - 1], taskCount));
             } else {
