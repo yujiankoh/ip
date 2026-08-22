@@ -48,10 +48,7 @@ public class Elsa {
 
         // The array is fixed at MAX_TASKS slots, but only the first taskCount of them
         // hold real values, so taskCount is tracked separately from tasks.length.
-        String[] tasks = new String[MAX_TASKS];
-        // Runs in parallel with tasks: isDone[i] is the done flag for tasks[i].
-        // Two arrays rather than one Task class, since this increment forbids new classes.
-        boolean[] isDone = new boolean[MAX_TASKS];
+        Task[] tasks = new Task[MAX_TASKS];
         int taskCount = 0;
 
         Scanner scanner = new Scanner(System.in);
@@ -63,19 +60,19 @@ public class Elsa {
                 printBlock(FAREWELL);
                 break;
             } else if (command.equals(LIST_COMMAND)) {
-                printBlock(formatTasks(tasks, isDone, taskCount));
+                printBlock(formatTasks(tasks, taskCount));
             } else if (command.startsWith(MARK_COMMAND + " ")) {
                 int index = parseTaskIndex(command, MARK_COMMAND);
-                isDone[index] = true;
+                tasks[index].markAsDone();
                 printBlock("Nice! I've marked this task as done:\n"
-                        + "  " + formatTask(tasks[index], isDone[index]));
+                        + "  " + tasks[index]);
             } else if (command.startsWith(UNMARK_COMMAND + " ")) {
                 int index = parseTaskIndex(command, UNMARK_COMMAND);
-                isDone[index] = false;
+                tasks[index].markAsNotDone();
                 printBlock("OK, I've marked this task as not done yet:\n"
-                        + "  " + formatTask(tasks[index], isDone[index]));
+                        + "  " + tasks[index]);
             } else {
-                tasks[taskCount] = command;
+                tasks[taskCount] = new Task(command);
                 taskCount++;
                 printBlock("added: " + command);
             }
@@ -96,35 +93,21 @@ public class Elsa {
     }
 
     /**
-     * Formats one task as its status icon followed by its description,
-     * for example "[X] read book".
-     *
-     * @param description the task's text
-     * @param done        whether the task has been marked as done
-     * @return the task rendered as a single line, without any list number
-     */
-    private static String formatTask(String description, boolean done) {
-        // A conditional expression: picks the first value when done is true, else the second.
-        String statusIcon = done ? "[X]" : "[ ]";
-        return statusIcon + " " + description;
-    }
-
-    /**
      * Builds the numbered list of stored tasks as a single multi-line string.
      *
      * @param tasks     array holding the stored tasks
-     * @param isDone    array holding the done flag for each stored task
-     * @param taskCount number of slots at the front of the arrays that are in use
+     * @param taskCount number of slots at the front of the array that are in use
      * @return a heading followed by one line per task, numbered from 1
      */
-    private static String formatTasks(String[] tasks, boolean[] isDone, int taskCount) {
+    private static String formatTasks(Task[] tasks, int taskCount) {
         if (taskCount == 0) {
             return "Into the Unknown.";
         }
         StringBuilder list = new StringBuilder("Here are the tasks in your list:");
         for (int i = 0; i < taskCount; i++) {
             // Array indices start at 0, but the display numbering starts at 1.
-            list.append("\n").append(i + 1).append(".").append(formatTask(tasks[i], isDone[i]));
+            // Appending the Task calls its toString() to render "[X] read book".
+            list.append("\n").append(i + 1).append(".").append(tasks[i]);
         }
         return list.toString();
     }
