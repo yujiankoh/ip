@@ -100,7 +100,7 @@ bye
 
 ### TC-3 - Reject an unknown command and an empty todo description
 
-**Aim:** Check the two errors from the Level-5 examples are reported with the OOPS!!! prefix, and that rejecting an input leaves the already stored tasks untouched.
+**Aim:** Check the two errors from the Level-5 examples are reported with the OOPS!!! prefix and say how to correct the input, and that rejecting an input leaves stored tasks untouched.
 
 ```input
 todo borrow book
@@ -128,7 +128,7 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OOPS!!! The description of a todo cannot be empty.
+     OOPS!!! The description of a todo cannot be empty. Use: todo <description>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -445,7 +445,7 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OOPS!!! The description of a deadline cannot be empty.
+     OOPS!!! The description of a deadline cannot be empty. Use: deadline <description> /by <when>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -455,7 +455,7 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OOPS!!! The description of an event cannot be empty.
+     OOPS!!! The description of an event cannot be empty. Use: event <description> /from <start> /to <end>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -517,6 +517,143 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Here are the tasks in your list:
      1.[T][ ] read book
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     The cold never bother me anyways!
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+```
+
+---
+
+### TC-11 - Reject task numbers that are missing, not numbers, or out of range
+
+**Aim:** Check that each way of getting a task number wrong is reported differently rather than ending the session, and that a valid mark still works afterwards, showing the rejected commands changed nothing.
+
+```input
+mark 1
+todo read book
+mark abc
+mark 99
+mark 0
+unmark
+mark 1
+list
+bye
+```
+
+```expected
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+      _____ _
+     |  ___| |___  __ _
+     | |__ | / __|/ _` |
+     |  __|| \__ \ (_| |
+     |_____|_|___/\__,_|
+     Hello! I'm Elsa.
+     Do you want to build a snowman?
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OOPS!!! There are no tasks yet, so there is nothing to mark. Add one with "todo <description>" first.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [T][ ] read book
+     Now you have 1 task in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OOPS!!! "abc" is not a task number. Use a whole number, for example: mark 2.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OOPS!!! There is no task 99. You have 1 task, so use a number from 1 to 1.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OOPS!!! There is no task 0. You have 1 task, so use a number from 1 to 1.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OOPS!!! Which task? Use: unmark <task number>, for example: unmark 2.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Nice! I've marked this task as done:
+       [T][X] read book
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Here are the tasks in your list:
+     1.[T][X] read book
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     The cold never bother me anyways!
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+```
+
+---
+
+### TC-12 - Reject deadlines and events with missing or empty parts
+
+**Aim:** Check that a missing separator, an empty description and an empty time are each reported differently with the correct usage, and that valid adds in between still number correctly.
+
+```input
+deadline x
+deadline /by Sunday
+deadline homework /by
+deadline submit report /by Sunday
+event meeting /from Mon
+event project meeting /from Mon 2pm /to 4pm
+list
+bye
+```
+
+```expected
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+      _____ _
+     |  ___| |___  __ _
+     | |__ | / __|/ _` |
+     |  __|| \__ \ (_| |
+     |_____|_|___/\__,_|
+     Hello! I'm Elsa.
+     Do you want to build a snowman?
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OOPS!!! I could not find "/by" in that. Use: deadline <description> /by <when>
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OOPS!!! The description of a deadline cannot be empty. Use: deadline <description> /by <when>
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OOPS!!! The due time after /by cannot be empty. Use: deadline <description> /by <when>
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [D][ ] submit report (by: Sunday)
+     Now you have 1 task in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OOPS!!! I could not find "/to" in that. Use: event <description> /from <start> /to <end>
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [E][ ] project meeting (from: Mon 2pm to: 4pm)
+     Now you have 2 tasks in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Here are the tasks in your list:
+     1.[D][ ] submit report (by: Sunday)
+     2.[E][ ] project meeting (from: Mon 2pm to: 4pm)
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
