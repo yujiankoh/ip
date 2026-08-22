@@ -39,6 +39,13 @@ Add a `###` heading, an `**Aim:**` line, an ` ```input ` block, and an
 ` ```expected ` block. Cases run top to bottom and the session stops at the
 first failure.
 
+## Known gaps
+
+These behaviours are implemented but deliberately not covered by a test case:
+
+- **The 100 task limit.** Reaching it needs 101 `todo` lines of input and a 100 line
+  expected list, which would swamp this file. The check lives in `requireRoom`.
+
 ---
 
 ### TC-1 - Greet and exit immediately
@@ -100,7 +107,7 @@ bye
 
 ### TC-3 - Reject an unknown command and an empty todo description
 
-**Aim:** Check the two errors from the Level-5 examples are reported with the OOPS!!! prefix and say how to correct the input, and that rejecting an input leaves stored tasks untouched.
+**Aim:** Check the two errors from the Level-5 examples are reported with the OLAF!!! prefix and say how to correct the input, and that rejecting an input leaves stored tasks untouched.
 
 ```input
 todo borrow book
@@ -128,11 +135,11 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OOPS!!! The description of a todo cannot be empty. Use: todo <description>
+     OLAF!!! The description of a todo cannot be empty. Use: todo <description>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OOPS!!! I'm sorry, but I don't know what that means :-(
+     OLAF!!! I'm sorry, but I don't know what that means :-(
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -445,7 +452,7 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OOPS!!! The description of a deadline cannot be empty. Use: deadline <description> /by <when>
+     OLAF!!! The description of a deadline cannot be empty. Use: deadline <description> /by <when>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -455,7 +462,7 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OOPS!!! The description of an event cannot be empty. Use: event <description> /from <start> /to <end>
+     OLAF!!! The description of an event cannot be empty. Use: event <description> /from <start> /to <end>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -501,7 +508,7 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OOPS!!! You did not type anything. Try "todo <description>", or "list" to see what you have.
+     OLAF!!! You did not type anything. Try "todo <description>", or "list" to see what you have.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -511,7 +518,7 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OOPS!!! I'm sorry, but I don't know what that means :-(
+     OLAF!!! I'm sorry, but I don't know what that means :-(
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -554,7 +561,7 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OOPS!!! There are no tasks yet, so there is nothing to mark. Add one with "todo <description>" first.
+     OLAF!!! There are no tasks yet, so there is nothing to mark. Add one with "todo <description>" first.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -564,19 +571,19 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OOPS!!! "abc" is not a task number. Use a whole number, for example: mark 2.
+     OLAF!!! "abc" is not a task number. Use a whole number, for example: mark 2.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OOPS!!! There is no task 99. You have 1 task, so use a number from 1 to 1.
+     OLAF!!! There is no task 99. You have 1 task, so use a number from 1 to 1.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OOPS!!! There is no task 0. You have 1 task, so use a number from 1 to 1.
+     OLAF!!! There is no task 0. You have 1 task, so use a number from 1 to 1.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OOPS!!! Which task? Use: unmark <task number>, for example: unmark 2.
+     OLAF!!! Which task? Use: unmark <task number>, for example: unmark 2.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -623,15 +630,15 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OOPS!!! I could not find "/by" in that. Use: deadline <description> /by <when>
+     OLAF!!! I could not find "/by" in that. Use: deadline <description> /by <when>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OOPS!!! The description of a deadline cannot be empty. Use: deadline <description> /by <when>
+     OLAF!!! The description of a deadline cannot be empty. Use: deadline <description> /by <when>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OOPS!!! The due time after /by cannot be empty. Use: deadline <description> /by <when>
+     OLAF!!! The due time after /by cannot be empty. Use: deadline <description> /by <when>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -641,7 +648,7 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OOPS!!! I could not find "/to" in that. Use: event <description> /from <start> /to <end>
+     OLAF!!! I could not find "/to" in that. Use: event <description> /from <start> /to <end>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -654,6 +661,65 @@ bye
      Here are the tasks in your list:
      1.[D][ ] submit report (by: Sunday)
      2.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     The cold never bother me anyways!
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+```
+
+---
+
+### TC-13 - Reject events with a missing separator or an empty part
+
+**Aim:** Check all four ways an event's arguments can be wrong are reported separately, mirroring the deadline coverage in TC-12, since event parsing splits twice and a fault in either split would otherwise go unnoticed. The valid add at the end confirms the four rejections left the list empty rather than half filled.
+
+```input
+event meeting /to 4pm
+event /from Mon /to 4pm
+event meeting /from /to 4pm
+event meeting /from Mon /to
+event standup /from Mon /to Tue
+list
+bye
+```
+
+```expected
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+      _____ _
+     |  ___| |___  __ _
+     | |__ | / __|/ _` |
+     |  __|| \__ \ (_| |
+     |_____|_|___/\__,_|
+     Hello! I'm Elsa.
+     Do you want to build a snowman?
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OLAF!!! I could not find "/from" in that. Use: event <description> /from <start> /to <end>
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OLAF!!! The description of an event cannot be empty. Use: event <description> /from <start> /to <end>
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OLAF!!! The start time after /from cannot be empty. Use: event <description> /from <start> /to <end>
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OLAF!!! The end time after /to cannot be empty. Use: event <description> /from <start> /to <end>
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [E][ ] standup (from: Mon to: Tue)
+     Now you have 1 task in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Here are the tasks in your list:
+     1.[E][ ] standup (from: Mon to: Tue)
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
