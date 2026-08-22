@@ -43,6 +43,18 @@ public class Elsa {
     /** Separates a deadline's description from the time it is due. */
     private static final String BY_SEPARATOR = "/by";
 
+    /** Command that adds an event; followed by a description, "/from <start>" and "/to <end>". */
+    private static final String EVENT_COMMAND = "event";
+
+    /** Marker shown in front of an event when it is displayed. */
+    private static final String EVENT_ICON = "[E]";
+
+    /** Separates an event's description from its start time. */
+    private static final String FROM_SEPARATOR = "/from";
+
+    /** Separates an event's start time from its end time. */
+    private static final String TO_SEPARATOR = "/to";
+
     /** Largest number of items that can be stored, per the Level-2 assumption. */
     private static final int MAX_TASKS = 100;
 
@@ -98,6 +110,18 @@ public class Elsa {
                 String description = parts[0].trim();
                 String by = parts[1].trim();
                 tasks[taskCount] = new Task(description, DEADLINE_ICON, "(by: " + by + ")");
+                taskCount++;
+                printBlock(addedMessage(tasks[taskCount - 1], taskCount));
+            } else if (command.startsWith(EVENT_COMMAND + " ")) {
+                String arguments = command.substring(EVENT_COMMAND.length() + 1);
+                // Split off the description first, then split what remains into the two times.
+                String[] parts = arguments.split(FROM_SEPARATOR, 2);
+                String description = parts[0].trim();
+                String[] times = parts[1].split(TO_SEPARATOR, 2);
+                String from = times[0].trim();
+                String to = times[1].trim();
+                tasks[taskCount] = new Task(description, EVENT_ICON,
+                        "(from: " + from + " to: " + to + ")");
                 taskCount++;
                 printBlock(addedMessage(tasks[taskCount - 1], taskCount));
             } else {
