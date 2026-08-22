@@ -10,12 +10,30 @@ public class Task {
     protected boolean isDone;
 
     /**
-     * Creates a task that is not done yet.
+     * Marker shown before the status icon to say what kind of task this is,
+     * for example "[T]" for a todo. Empty for a task of no particular kind.
+     */
+    protected String typeIcon;
+
+    /**
+     * Creates a task of no particular kind that is not done yet.
      *
      * @param description the text describing what is to be done
      */
     public Task(String description) {
+        // Delegates to the constructor below rather than repeating its work.
+        this(description, "");
+    }
+
+    /**
+     * Creates a task of the given kind that is not done yet.
+     *
+     * @param description the text describing what is to be done
+     * @param typeIcon    marker for the kind of task, for example "[T]"
+     */
+    public Task(String description, String typeIcon) {
         this.description = description;
+        this.typeIcon = typeIcon;
         this.isDone = false;
     }
 
@@ -39,12 +57,13 @@ public class Task {
     }
 
     /**
-     * Returns the task as it should appear to the user, for example "[X] read book".
+     * Returns the task as it should appear to the user,
+     * for example "[T][X] read book".
      *
-     * @return the status icon in brackets, followed by the description
+     * @return the type marker, the status icon in brackets, then the description
      */
     @Override
     public String toString() {
-        return "[" + getStatusIcon() + "] " + description;
+        return typeIcon + "[" + getStatusIcon() + "] " + description;
     }
 }

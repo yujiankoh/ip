@@ -28,6 +28,12 @@ public class Elsa {
     /** Command that marks a task as not done again; followed by the task's list number. */
     private static final String UNMARK_COMMAND = "unmark";
 
+    /** Command that adds a todo; followed by the task's description. */
+    private static final String TODO_COMMAND = "todo";
+
+    /** Marker shown in front of a todo when it is displayed. */
+    private static final String TODO_ICON = "[T]";
+
     /** Largest number of items that can be stored, per the Level-2 assumption. */
     private static final int MAX_TASKS = 100;
 
@@ -71,12 +77,33 @@ public class Elsa {
                 tasks[index].markAsNotDone();
                 printBlock("OK, I've marked this task as not done yet:\n"
                         + "  " + tasks[index]);
+            } else if (command.startsWith(TODO_COMMAND + " ")) {
+                String description = command.substring(TODO_COMMAND.length() + 1).trim();
+                tasks[taskCount] = new Task(description, TODO_ICON);
+                taskCount++;
+                printBlock(addedMessage(tasks[taskCount - 1], taskCount));
             } else {
+                // Plain text with no command keyword still adds a task, as in Level-2.
+                // This fallback goes away once unknown input becomes an error.
                 tasks[taskCount] = new Task(command);
                 taskCount++;
                 printBlock("added: " + command);
             }
         }
+    }
+
+    /**
+     * Builds the confirmation shown after a task has been added.
+     *
+     * @param task      the task that was just added
+     * @param taskCount how many tasks are in the list now
+     * @return the confirmation text, spanning three lines
+     */
+    private static String addedMessage(Task task, int taskCount) {
+        String plural = (taskCount == 1) ? "task" : "tasks";
+        return "Got it. I've added this task:\n"
+                + "  " + task + "\n"
+                + "Now you have " + taskCount + " " + plural + " in the list.";
     }
 
     /**
