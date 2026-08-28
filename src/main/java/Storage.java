@@ -33,12 +33,20 @@ public class Storage {
     /** The marker written for a task that has not been completed. */
     private static final String NOT_DONE = "0";
 
+    /** The folder the data file is kept in, named on its own so that it can also
+     * be shown to the user without an operating system's separator in it. */
+    private static final String FOLDER = "data";
+
+    /** The name of the data file inside that folder. */
+    private static final String FILE_NAME = "elsa.txt";
+
     /**
-     * Where the task list is kept, relative to the folder the program is run from
-     * (the project root). Path.of joins the parts with the separator the current
+     * Where the task list is kept. The path is relative, so it is resolved against
+     * the folder the program is run from (the project root) rather than naming one
+     * computer's drive, and Path.of joins the parts with the separator the current
      * operating system uses, so the same code works on Windows and on macOS.
      */
-    private static final Path FILE_PATH = Path.of("data", "elsa.txt");
+    private static final Path FILE_PATH = Path.of(FOLDER, FILE_NAME);
 
     /**
      * What a load produced: the tasks that could be read, and one message for
@@ -59,10 +67,16 @@ public class Storage {
      * Returns the name of the data file, so that messages to the user can say
      * where the tasks are kept without other classes knowing the path itself.
      *
-     * @return the path of the data file as text
+     * <p>The parts are joined with a forward slash rather than with
+     * FILE_PATH.toString(), which would use the separator of whichever operating
+     * system happens to be running and so word the same message differently on
+     * Windows and on macOS. A forward slash is understood everywhere, and it
+     * keeps the recorded output of the tests the same on every computer.
+     *
+     * @return the path of the data file as text, such as "data/elsa.txt"
      */
     public static String getFileName() {
-        return FILE_PATH.toString();
+        return FOLDER + "/" + FILE_NAME;
     }
 
     /**
@@ -90,7 +104,7 @@ public class Storage {
             // as any other problem, instead of a stack trace ending the session.
             // The reason is included because a full disk, a folder that is really
             // a file, and a read-only file all arrive here and need telling apart.
-            throw new ElsaException("I could not save your tasks to " + FILE_PATH
+            throw new ElsaException("I could not save your tasks to " + getFileName()
                     + ". The reason given was: " + e);
         }
     }
@@ -121,7 +135,7 @@ public class Storage {
             // Unreadable, a folder rather than a file, or not text at all:
             // nothing can be salvaged, so this is reported as a failure.
             throw new ElsaException("I could not read your saved tasks from "
-                    + FILE_PATH + ". The reason given was: " + e);
+                    + getFileName() + ". The reason given was: " + e);
         }
 
         for (int i = 0; i < lines.size(); i++) {

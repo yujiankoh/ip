@@ -1041,7 +1041,7 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OLAF!!! I could not understand 3 lines of data\elsa.txt, so I have left them out:
+     OLAF!!! I could not understand 3 lines of data/elsa.txt, so I have left them out:
        Line 2: "7" is not a done marker; it should be 1 or 0
        Line 3: a D task needs 4 fields, but this line has 3
        Line 5: "X" is not a task type; it should be T, D or E
@@ -1093,19 +1093,19 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OLAF!!! The description of a todo cannot contain "|" with a space on each side, because that is how data\elsa.txt separates the parts of a task. Use: todo <description>
+     OLAF!!! The description of a todo cannot contain "|" with a space on each side, because that is how data/elsa.txt separates the parts of a task. Use: todo <description>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OLAF!!! The description of a deadline cannot contain "|" with a space on each side, because that is how data\elsa.txt separates the parts of a task. Use: deadline <description> /by <when>
+     OLAF!!! The description of a deadline cannot contain "|" with a space on each side, because that is how data/elsa.txt separates the parts of a task. Use: deadline <description> /by <when>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OLAF!!! The due time after /by cannot contain "|" with a space on each side, because that is how data\elsa.txt separates the parts of a task. Use: deadline <description> /by <when>
+     OLAF!!! The due time after /by cannot contain "|" with a space on each side, because that is how data/elsa.txt separates the parts of a task. Use: deadline <description> /by <when>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OLAF!!! The start time after /from cannot contain "|" with a space on each side, because that is how data\elsa.txt separates the parts of a task. Use: event <description> /from <start> /to <end>
+     OLAF!!! The start time after /from cannot contain "|" with a space on each side, because that is how data/elsa.txt separates the parts of a task. Use: event <description> /from <start> /to <end>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
