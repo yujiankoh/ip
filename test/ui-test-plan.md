@@ -21,10 +21,16 @@ java src/main/java/Elsa.java
 Java 25's source launcher compiles `Task.java` alongside `Elsa.java`, so no
 separate build step is needed.
 
-Running a case has one side effect: the chatbot saves its task list to
-`./data/elsa.txt` under the repository root. That file is not compared by these
-tests, because saving prints nothing to the console. Each case overwrites it, so
-the file left behind after a run reflects only the last case that ran.
+The chatbot saves its tasks to `./data/elsa.txt` under the repository root and
+reads them back at startup, so the runner puts that file into a known state
+before every case:
+
+- a case with a ```` ```data ```` block starts with exactly those lines saved;
+- a case without one starts with no data file at all, as on a first ever run.
+
+Cases are therefore independent of each other and of anything left behind by an
+earlier run. Saving itself is still not checked directly, because it prints
+nothing to the console; loading is, because what was loaded shows up in `list`.
 
 ## How outputs are compared
 
@@ -43,6 +49,10 @@ a line-by-line difference on failure, which shows exactly what to change.
 Add a `###` heading, an `**Aim:**` line, an ` ```input ` block, and an
 ` ```expected ` block. Cases run top to bottom and the session stops at the
 first failure.
+
+A case may also carry an ` ```data ` block, placed before the input block. Its
+lines are written to `./data/elsa.txt` before the program starts, which is how a
+case sets up tasks that an earlier run is meant to have saved.
 
 ---
 
@@ -931,6 +941,113 @@ bye
      Here are the tasks in your list:
      1.[T][ ] read book
      2.[E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     The cold never bother me anyways!
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+```
+
+---
+
+### TC-17 - Start with tasks saved by an earlier run
+
+**Aim:** Level-7 requires the tasks to be read back from the hard disk at startup. This case starts with a data file holding one of each kind of task, so `list` must show all three with the descriptions, times and done markers they were saved with, rather than the empty-list message. The `delete 2` and `unmark 1` afterwards check that loaded tasks are ordinary members of the list: they can be numbered, changed and removed exactly like tasks typed in this session.
+
+```data
+T | 1 | read book
+D | 0 | return book | June 6th
+E | 0 | project meeting | Aug 6th 2pm | 4pm
+```
+
+```input
+list
+delete 2
+unmark 1
+list
+bye
+```
+
+```expected
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+      _____ _
+     |  ___| |___  __ _
+     | |__ | / __|/ _` |
+     |  __|| \__ \ (_| |
+     |_____|_|___/\__,_|
+     Hello! I'm Elsa.
+     Do you want to build a snowman?
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Here are the tasks in your list:
+     1.[T][X] read book
+     2.[D][ ] return book (by: June 6th)
+     3.[E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Noted. I've removed this task:
+       [D][ ] return book (by: June 6th)
+     Now you have 2 tasks in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OK, I've marked this task as not done yet:
+       [T][ ] read book
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Here are the tasks in your list:
+     1.[T][ ] read book
+     2.[E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     The cold never bother me anyways!
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+```
+
+---
+
+### TC-18 - Report a data file line that cannot be understood
+
+**Aim:** A deadline needs a due time, so a `D` line carrying only a description is incomplete and cannot be turned back into a task. The chatbot must say so and still start, rather than crashing before the user can type anything. The `list` then shows the session begins empty, and the `todo` shows it is fully usable afterwards. Note what this costs the user: the first save overwrites the file, so the tasks that were in it are lost.
+
+```data
+T | 1 | read book
+D | 0 | return book
+```
+
+```input
+list
+todo read book
+bye
+```
+
+```expected
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+      _____ _
+     |  ___| |___  __ _
+     | |__ | / __|/ _` |
+     |  __|| \__ \ (_| |
+     |_____|_|___/\__,_|
+     Hello! I'm Elsa.
+     Do you want to build a snowman?
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OLAF!!! This line of data\elsa.txt is missing fields: D | 0 | return book
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Into the Unknown.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [T][ ] read book
+     Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

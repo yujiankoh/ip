@@ -61,6 +61,19 @@ and an ` ```expected ` block of console output:
 Cases run top to bottom. Every case needs a `bye` at the end unless it is
 deliberately testing what happens when input ends without one.
 
+A case may also carry a ` ```data ` block before its input block:
+
+    ```data
+    T | 1 | read book
+    D | 0 | return book | June 6th
+    ```
+
+Those lines are written to `data/elsa.txt` before the program starts, so the
+case begins with tasks an earlier run is meant to have saved. A case without a
+` ```data ` block starts with no data file at all. The runner sets this up for
+every case, so cases never inherit tasks from each other or from an earlier
+run.
+
 The command used to start the program is the ` ```run ` block near the top of
 the plan, so a change to how the program is launched is made there, not here.
 

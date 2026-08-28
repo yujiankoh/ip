@@ -6,7 +6,8 @@ import java.util.Scanner;
  * Greets the user, stores todos, deadlines and events, lists them back on request,
  * marks them as done or not done, deletes them, reports what it cannot understand,
  * and exits when the user types "bye".
- * The task list is saved to the hard disk every time it changes; see {@link Storage}.
+ * The task list is saved to the hard disk every time it changes and is read back
+ * at startup; see {@link Storage}.
  */
 public class Elsa {
     /**
@@ -48,7 +49,18 @@ public class Elsa {
 
         // An ArrayList grows as tasks are added, so there is no fixed capacity to track
         // separately: size() is always exactly how many tasks there are.
-        ArrayList<Task> tasks = new ArrayList<>();
+        // Tasks saved by an earlier run are read back here, so the list picks up where
+        // the user left off. On the very first run there is no file yet, and load()
+        // returns an empty list rather than treating that as a problem.
+        ArrayList<Task> tasks;
+        try {
+            tasks = Storage.load();
+        } catch (ElsaException e) {
+            // A file that cannot be understood is reported once, and the session goes
+            // on with an empty list rather than refusing to start.
+            printBlock(ERROR_PREFIX + e.getMessage());
+            tasks = new ArrayList<>();
+        }
 
         Scanner scanner = new Scanner(System.in);
         // The flag ends the loop from inside the switch, where a plain break would only
