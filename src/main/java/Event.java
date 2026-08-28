@@ -32,4 +32,17 @@ public class Event extends Task {
     public String toString() {
         return "[E]" + super.toString() + " (from: " + from + " to: " + to + ")";
     }
+
+    /**
+     * Returns the event as one line of the data file,
+     * for example "E | 0 | project meeting | Mon 2pm | 4pm".
+     * The two times are kept in separate fields rather than as one piece of text,
+     * so that reading the file back later does not have to split them apart again.
+     *
+     * @return the event's type letter, the inherited fields, and both times
+     */
+    @Override
+    public String toSaveFormat() {
+        return "E | " + super.toSaveFormat() + " | " + from + " | " + to;
+    }
 }

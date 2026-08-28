@@ -31,6 +31,11 @@ The plan is read as Markdown with this structure:
     ...the exact console output...
     ```
 
+The chatbot saves its tasks to a data file and reads them back at startup, so
+the runner controls that file before each case: a case with a ```data``` block
+starts with those lines in the file, and a case without one starts with no file
+at all. Cases are therefore independent of each other and of any earlier run.
+
 Comparison ignores trailing whitespace on each line and any blank lines at the
 very end, so an editor that trims trailing spaces cannot cause a false failure.
 Everything else, including leading indentation, must match exactly.
@@ -50,6 +55,8 @@ AIM_RE = re.compile(r"^\*\*Aim:\*\*\s*(.+?)\s*$")
 FENCE_RE = re.compile(r"^```(\w*)\s*$")
 
 DEFAULT_PLAN = Path("test/ui-test-plan.md")
+# Where the chatbot keeps its saved tasks, relative to the repository root.
+DATA_FILE = Path("data") / "elsa.txt"
 DEFAULT_COMMAND = "java src/main/java/Elsa.java"
 RULE = "-" * 70
 
@@ -75,7 +82,7 @@ def parse_plan(text: str) -> tuple[str, list[dict]]:
                 block = "\n".join(buffer)
                 if fence == "run":
                     command = block.strip()
-                elif fence in ("input", "expected"):
+                elif fence in ("input", "expected", "data"):
                     if current is None:
                         raise PlanError(f"line {number}: '{fence}' block before any '### ' heading")
                     current[fence] = block
@@ -92,7 +99,8 @@ def parse_plan(text: str) -> tuple[str, list[dict]]:
 
         heading = HEADING_RE.match(line)
         if heading:
-            current = {"name": heading.group(1), "aim": "", "input": None, "expected": None}
+            current = {"name": heading.group(1), "aim": "", "input": None,
+                       "expected": None, "data": None}
             cases.append(current)
             continue
 
@@ -113,6 +121,24 @@ def normalise(text: str) -> list[str]:
     while lines and not lines[-1]:
         lines.pop()
     return lines
+
+
+def prepare_data_file(repo: Path, case: dict) -> None:
+    """Puts the chatbot's data file into the state this case expects.
+
+    A case with a ```data``` block starts with exactly those lines saved; a case
+    without one starts with no data file, as on a first ever run. Either way the
+    case cannot be affected by what an earlier case or an earlier run left behind.
+    """
+    path = repo / DATA_FILE
+    if case["data"] is None:
+        path.unlink(missing_ok=True)
+        return
+    path.parent.mkdir(parents=True, exist_ok=True)
+    text = case["data"]
+    if text and not text.endswith("\n"):
+        text += "\n"
+    path.write_text(text, encoding="utf-8")
 
 
 def run_case(command: str, repo: Path, case: dict) -> tuple[list[str], str, int]:
@@ -138,6 +164,12 @@ def show_transcript(case: dict, actual: list[str], stderr: str, exit_code: int) 
     if case["aim"]:
         print(f"Aim: {case['aim']}")
     print(RULE)
+    if case["data"] is None:
+        print(f"Saved tasks before the run: none ({DATA_FILE.as_posix()} absent)")
+    else:
+        print(f"Saved tasks before the run ({DATA_FILE.as_posix()}):")
+        for line in case["data"].splitlines() or ["(empty file)"]:
+            print(f"  # {line}")
     print("Input typed by the user:")
     for line in case["input"].splitlines():
         print(f"  > {line}")
@@ -208,6 +240,7 @@ def main(argv: list[str]) -> int:
 
     for position, case in enumerate(cases, start=1):
         try:
+            prepare_data_file(repo, case)
             actual, stderr, exit_code = run_case(command, repo, case)
         except FileNotFoundError:
             print(f"error: cannot run '{command}' from {repo}", file=sys.stderr)

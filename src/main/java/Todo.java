@@ -22,4 +22,15 @@ public class Todo extends Task {
     public String toString() {
         return "[T]" + super.toString();
     }
+
+    /**
+     * Returns the todo as one line of the data file,
+     * for example "T | 1 | borrow book".
+     *
+     * @return the todo's type letter followed by the inherited fields
+     */
+    @Override
+    public String toSaveFormat() {
+        return "T | " + super.toSaveFormat();
+    }
 }
