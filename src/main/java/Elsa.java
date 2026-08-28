@@ -1,3 +1,4 @@
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -123,8 +124,8 @@ public class Elsa {
                     String[] parts = requireSeparator(arguments, BY_SEPARATOR, command);
                     String description = requireNonEmpty(parts[0],
                             "description of a deadline", command);
-                    String by = requireNonEmpty(parts[1],
-                            "due time after " + BY_SEPARATOR, command);
+                    LocalDate by = requireDate(requireNonEmpty(parts[1],
+                            "due date after " + BY_SEPARATOR, command), command);
                     addTask(tasks, new Deadline(description, by));
                 }
                 case EVENT -> {
@@ -134,10 +135,10 @@ public class Elsa {
                     String description = requireNonEmpty(parts[0],
                             "description of an event", command);
                     String[] times = requireSeparator(parts[1], TO_SEPARATOR, command);
-                    String from = requireNonEmpty(times[0],
-                            "start time after " + FROM_SEPARATOR, command);
-                    String to = requireNonEmpty(times[1],
-                            "end time after " + TO_SEPARATOR, command);
+                    LocalDate from = requireDate(requireNonEmpty(times[0],
+                            "start date after " + FROM_SEPARATOR, command), command);
+                    LocalDate to = requireDate(requireNonEmpty(times[1],
+                            "end date after " + TO_SEPARATOR, command), command);
                     addTask(tasks, new Event(description, from, to));
                 }
                 case NOTHING -> throw new ElsaException("You did not type anything. Try \""
@@ -205,6 +206,25 @@ public class Elsa {
                     + command.getUsage());
         }
         return parts;
+    }
+
+    /**
+     * Reads a piece of a command as a date, saying how to write one if it is not.
+     * The date itself is understood by {@link Dates}; this method only adds the
+     * usage of the command being run, so the user can see the whole line again.
+     *
+     * @param value   the text the user gave as a date
+     * @param command the command being run, which supplies the usage to show
+     * @return the date that text describes
+     * @throws ElsaException if the text is not a date
+     */
+    private static LocalDate requireDate(String value, Command command)
+            throws ElsaException {
+        try {
+            return Dates.parse(value);
+        } catch (ElsaException e) {
+            throw new ElsaException(e.getMessage() + ". Use: " + command.getUsage());
+        }
     }
 
     /**

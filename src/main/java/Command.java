@@ -9,8 +9,8 @@ public enum Command {
     UNMARK("unmark", "unmark <task number>"),
     DELETE("delete", "delete <task number>"),
     TODO("todo", "todo <description>"),
-    DEADLINE("deadline", "deadline <description> /by <when>"),
-    EVENT("event", "event <description> /from <start> /to <end>"),
+    DEADLINE("deadline", "deadline <description> /by <date>"),
+    EVENT("event", "event <description> /from <date> /to <date>"),
 
     /** The user pressed enter without typing anything, so the keyword is the empty string. */
     NOTHING("", ""),

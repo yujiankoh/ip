@@ -319,14 +319,14 @@ bye
 
 ---
 
-### TC-7 - Add deadlines
+### TC-7 - Add a deadline with a date
 
-**Aim:** Check that `deadline` splits the description from the time given after `/by`, displays the task as `[D]` with the time in brackets, and treats the time as free text rather than a real date.
+**Aim:** Level-8 requires the text after `/by` to be understood as a date rather than kept as text, so this case checks both halves of that. A date typed as `2019-10-20` must be accepted and then shown in the reading format, `Oct 20 2019`, which is only possible if it was understood rather than copied. Text that is not a date must be refused with the form to use, where before Level-8 it would have been stored as it stood. The closing `list` shows the rejected line added nothing.
 
 ```input
 todo borrow book
-deadline return book /by Sunday
-deadline do homework /by no idea :-p
+deadline return book /by 2019-10-20
+deadline do homework /by no idea
 list
 bye
 ```
@@ -350,21 +350,18 @@ bye
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Got it. I've added this task:
-       [D][ ] return book (by: Sunday)
+       [D][ ] return book (by: Oct 20 2019)
      Now you have 2 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
-       [D][ ] do homework (by: no idea :-p)
-     Now you have 3 tasks in the list.
+     OLAF!!! "no idea" is not a date. Write it as 2019-10-15, 15/10/2019 (day/month/year) or Oct 15 2019. Use: deadline <description> /by <date>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Here are the tasks in your list:
      1.[T][ ] borrow book
-     2.[D][ ] return book (by: Sunday)
-     3.[D][ ] do homework (by: no idea :-p)
+     2.[D][ ] return book (by: Oct 20 2019)
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -376,12 +373,12 @@ bye
 
 ### TC-8 - Add events and list all three task types together
 
-**Aim:** Check that `event` splits the description, start time, and end time apart on `/from` and `/to`, displays the task as `[E]`, and that todos, deadlines, and events coexist in one list and can each be marked done.
+**Aim:** Check that `event` splits the description, start date, and end date apart on `/from` and `/to`, displays the task as `[E]`, and that todos, deadlines, and events coexist in one list and can each be marked done.
 
 ```input
 todo borrow book
-deadline return book /by Sunday
-event project meeting /from Mon 2pm /to 4pm
+deadline return book /by 2019-10-20
+event project meeting /from 2019-10-21 /to 2019-10-22
 mark 3
 list
 bye
@@ -406,26 +403,26 @@ bye
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Got it. I've added this task:
-       [D][ ] return book (by: Sunday)
+       [D][ ] return book (by: Oct 20 2019)
      Now you have 2 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Got it. I've added this task:
-       [E][ ] project meeting (from: Mon 2pm to: 4pm)
+       [E][ ] project meeting (from: Oct 21 2019 to: Oct 22 2019)
      Now you have 3 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Nice! I've marked this task as done:
-       [E][X] project meeting (from: Mon 2pm to: 4pm)
+       [E][X] project meeting (from: Oct 21 2019 to: Oct 22 2019)
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Here are the tasks in your list:
      1.[T][ ] borrow book
-     2.[D][ ] return book (by: Sunday)
-     3.[E][X] project meeting (from: Mon 2pm to: 4pm)
+     2.[D][ ] return book (by: Oct 20 2019)
+     3.[E][X] project meeting (from: Oct 21 2019 to: Oct 22 2019)
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -441,9 +438,9 @@ bye
 
 ```input
 deadline
-deadline return book /by Sunday
+deadline return book /by 2019-10-20
 event
-event project meeting /from Mon 2pm /to 4pm
+event project meeting /from 2019-10-21 /to 2019-10-22
 list
 bye
 ```
@@ -460,29 +457,29 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OLAF!!! The description of a deadline cannot be empty. Use: deadline <description> /by <when>
+     OLAF!!! The description of a deadline cannot be empty. Use: deadline <description> /by <date>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Got it. I've added this task:
-       [D][ ] return book (by: Sunday)
+       [D][ ] return book (by: Oct 20 2019)
      Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OLAF!!! The description of an event cannot be empty. Use: event <description> /from <start> /to <end>
+     OLAF!!! The description of an event cannot be empty. Use: event <description> /from <date> /to <date>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Got it. I've added this task:
-       [E][ ] project meeting (from: Mon 2pm to: 4pm)
+       [E][ ] project meeting (from: Oct 21 2019 to: Oct 22 2019)
      Now you have 2 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Here are the tasks in your list:
-     1.[D][ ] return book (by: Sunday)
-     2.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+     1.[D][ ] return book (by: Oct 20 2019)
+     2.[E][ ] project meeting (from: Oct 21 2019 to: Oct 22 2019)
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -617,11 +614,11 @@ bye
 
 ```input
 deadline x
-deadline /by Sunday
+deadline /by 2019-10-20
 deadline homework /by
-deadline submit report /by Sunday
+deadline submit report /by 2019-10-20
 event meeting /from Mon
-event project meeting /from Mon 2pm /to 4pm
+event project meeting /from 2019-10-21 /to 2019-10-22
 list
 bye
 ```
@@ -638,37 +635,37 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OLAF!!! I could not find "/by" in that. Use: deadline <description> /by <when>
+     OLAF!!! I could not find "/by" in that. Use: deadline <description> /by <date>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OLAF!!! The description of a deadline cannot be empty. Use: deadline <description> /by <when>
+     OLAF!!! The description of a deadline cannot be empty. Use: deadline <description> /by <date>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OLAF!!! The due time after /by cannot be empty. Use: deadline <description> /by <when>
+     OLAF!!! The due date after /by cannot be empty. Use: deadline <description> /by <date>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Got it. I've added this task:
-       [D][ ] submit report (by: Sunday)
+       [D][ ] submit report (by: Oct 20 2019)
      Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OLAF!!! I could not find "/to" in that. Use: event <description> /from <start> /to <end>
+     OLAF!!! I could not find "/to" in that. Use: event <description> /from <date> /to <date>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Got it. I've added this task:
-       [E][ ] project meeting (from: Mon 2pm to: 4pm)
+       [E][ ] project meeting (from: Oct 21 2019 to: Oct 22 2019)
      Now you have 2 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Here are the tasks in your list:
-     1.[D][ ] submit report (by: Sunday)
-     2.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+     1.[D][ ] submit report (by: Oct 20 2019)
+     2.[E][ ] project meeting (from: Oct 21 2019 to: Oct 22 2019)
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -686,8 +683,8 @@ bye
 event meeting /to 4pm
 event /from Mon /to 4pm
 event meeting /from /to 4pm
-event meeting /from Mon /to
-event standup /from Mon /to Tue
+event meeting /from 2019-10-21 /to
+event standup /from 2019-10-21 /to 2019-10-22
 list
 bye
 ```
@@ -704,30 +701,30 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OLAF!!! I could not find "/from" in that. Use: event <description> /from <start> /to <end>
+     OLAF!!! I could not find "/from" in that. Use: event <description> /from <date> /to <date>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OLAF!!! The description of an event cannot be empty. Use: event <description> /from <start> /to <end>
+     OLAF!!! The description of an event cannot be empty. Use: event <description> /from <date> /to <date>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OLAF!!! The start time after /from cannot be empty. Use: event <description> /from <start> /to <end>
+     OLAF!!! The start date after /from cannot be empty. Use: event <description> /from <date> /to <date>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OLAF!!! The end time after /to cannot be empty. Use: event <description> /from <start> /to <end>
+     OLAF!!! The end date after /to cannot be empty. Use: event <description> /from <date> /to <date>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Got it. I've added this task:
-       [E][ ] standup (from: Mon to: Tue)
+       [E][ ] standup (from: Oct 21 2019 to: Oct 22 2019)
      Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Here are the tasks in your list:
-     1.[E][ ] standup (from: Mon to: Tue)
+     1.[E][ ] standup (from: Oct 21 2019 to: Oct 22 2019)
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -743,8 +740,8 @@ bye
 
 ```input
 todo read book
-deadline return book /by June 6th
-event project meeting /from Aug 6th 2pm /to 4pm
+deadline return book /by 2019-06-06
+event project meeting /from 2019-08-06 /to 2019-08-07
 todo join sports club
 delete 3
 mark 3
@@ -771,13 +768,13 @@ bye
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Got it. I've added this task:
-       [D][ ] return book (by: June 6th)
+       [D][ ] return book (by: Jun 06 2019)
      Now you have 2 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Got it. I've added this task:
-       [E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+       [E][ ] project meeting (from: Aug 06 2019 to: Aug 07 2019)
      Now you have 3 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
@@ -789,7 +786,7 @@ bye
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Noted. I've removed this task:
-       [E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+       [E][ ] project meeting (from: Aug 06 2019 to: Aug 07 2019)
      Now you have 3 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
@@ -801,7 +798,7 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Here are the tasks in your list:
      1.[T][ ] read book
-     2.[D][ ] return book (by: June 6th)
+     2.[D][ ] return book (by: Jun 06 2019)
      3.[T][X] join sports club
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
@@ -883,8 +880,8 @@ bye
 
 ```input
 todo read book
-deadline return book /by June 6th
-event project meeting /from Aug 6th 2pm /to 4pm
+deadline return book /by 2019-06-06
+event project meeting /from 2019-08-06 /to 2019-08-07
 mark 1
 unmark 1
 delete 2
@@ -911,13 +908,13 @@ bye
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Got it. I've added this task:
-       [D][ ] return book (by: June 6th)
+       [D][ ] return book (by: Jun 06 2019)
      Now you have 2 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Got it. I've added this task:
-       [E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+       [E][ ] project meeting (from: Aug 06 2019 to: Aug 07 2019)
      Now you have 3 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
@@ -933,14 +930,14 @@ bye
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Noted. I've removed this task:
-       [D][ ] return book (by: June 6th)
+       [D][ ] return book (by: Jun 06 2019)
      Now you have 2 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Here are the tasks in your list:
      1.[T][ ] read book
-     2.[E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+     2.[E][ ] project meeting (from: Aug 06 2019 to: Aug 07 2019)
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -952,12 +949,12 @@ bye
 
 ### TC-17 - Start with tasks saved by an earlier run
 
-**Aim:** Level-7 requires the tasks to be read back from the hard disk at startup. This case starts with a data file holding one of each kind of task, so `list` must show all three with the descriptions, times and done markers they were saved with, rather than the empty-list message. The `delete 2` and `unmark 1` afterwards check that loaded tasks are ordinary members of the list: they can be numbered, changed and removed exactly like tasks typed in this session.
+**Aim:** Level-7 requires the tasks to be read back from the hard disk at startup. This case starts with a data file holding one of each kind of task, so `list` must show all three with the descriptions, dates and done markers they were saved with, rather than the empty-list message. The `delete 2` and `unmark 1` afterwards check that loaded tasks are ordinary members of the list: they can be numbered, changed and removed exactly like tasks typed in this session.
 
 ```data
 T | 1 | read book
-D | 0 | return book | June 6th
-E | 0 | project meeting | Aug 6th 2pm | 4pm
+D | 0 | return book | 2019-06-06
+E | 0 | project meeting | 2019-08-06 | 2019-08-07
 ```
 
 ```input
@@ -982,13 +979,13 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Here are the tasks in your list:
      1.[T][X] read book
-     2.[D][ ] return book (by: June 6th)
-     3.[E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+     2.[D][ ] return book (by: Jun 06 2019)
+     3.[E][ ] project meeting (from: Aug 06 2019 to: Aug 07 2019)
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Noted. I've removed this task:
-       [D][ ] return book (by: June 6th)
+       [D][ ] return book (by: Jun 06 2019)
      Now you have 2 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
@@ -1000,7 +997,7 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Here are the tasks in your list:
      1.[T][ ] read book
-     2.[E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+     2.[E][ ] project meeting (from: Aug 06 2019 to: Aug 07 2019)
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -1073,7 +1070,7 @@ bye
 
 ```input
 todo a | b
-deadline a | b /by Sunday
+deadline a | b /by 2019-10-20
 deadline return book /by Sun | day
 event project meeting /from 2pm | 3pm /to 4pm
 todo read book
@@ -1097,15 +1094,15 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OLAF!!! The description of a deadline cannot contain "|" with a space on each side, because that is how data/elsa.txt separates the parts of a task. Use: deadline <description> /by <when>
+     OLAF!!! The description of a deadline cannot contain "|" with a space on each side, because that is how data/elsa.txt separates the parts of a task. Use: deadline <description> /by <date>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OLAF!!! The due time after /by cannot contain "|" with a space on each side, because that is how data/elsa.txt separates the parts of a task. Use: deadline <description> /by <when>
+     OLAF!!! The due date after /by cannot contain "|" with a space on each side, because that is how data/elsa.txt separates the parts of a task. Use: deadline <description> /by <date>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OLAF!!! The start time after /from cannot contain "|" with a space on each side, because that is how data/elsa.txt separates the parts of a task. Use: event <description> /from <start> /to <end>
+     OLAF!!! The start date after /from cannot contain "|" with a space on each side, because that is how data/elsa.txt separates the parts of a task. Use: event <description> /from <date> /to <date>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -1162,6 +1159,121 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Here are the tasks in your list:
      1.[T][X] read book
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     The cold never bother me anyways!
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+```
+
+---
+
+### TC-21 - Reject dates in the data file that are not dates
+
+**Aim:** The data file stores dates in the same form the user types them, so a file written before Level-8, or edited by hand, can hold text where a date belongs. Line 2 holds the free text a pre-Level-8 file would contain, and line 3 holds a date that is written correctly but does not exist, since February has no 30th. Both must be reported with the same wording the chatbot uses when the text is typed, and the sound lines above and below them must still load, so that one outdated line does not cost the user the rest of the file.
+
+```data
+D | 1 | return book | 2019-06-06
+D | 0 | old style | June 6th
+D | 0 | impossible | 2019-02-30
+E | 0 | project meeting | 2019-08-06 | 2019-08-07
+```
+
+```input
+list
+bye
+```
+
+```expected
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+      _____ _
+     |  ___| |___  __ _
+     | |__ | / __|/ _` |
+     |  __|| \__ \ (_| |
+     |_____|_|___/\__,_|
+     Hello! I'm Elsa.
+     Do you want to build a snowman?
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OLAF!!! I could not understand 2 lines of data/elsa.txt, so I have left them out:
+       Line 2: "June 6th" is not a date. Write it as 2019-10-15, 15/10/2019 (day/month/year) or Oct 15 2019
+       Line 3: "2019-02-30" is not a date. Write it as 2019-10-15, 15/10/2019 (day/month/year) or Oct 15 2019
+     Your other tasks loaded normally. Saving will rewrite the file without the lines above, so edit the file now if you want to keep them.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Here are the tasks in your list:
+     1.[D][X] return book (by: Jun 06 2019)
+     2.[E][ ] project meeting (from: Aug 06 2019 to: Aug 07 2019)
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     The cold never bother me anyways!
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+```
+
+---
+
+### TC-22 - Accept a date written in any of the accepted forms
+
+**Aim:** A date may be typed in several forms, and all of them have to mean the same day once read. The first three lines write 15 October 2019 three different ways, including one in lower case, and each must come back as the single reading form `Oct 15 2019`, which can only happen if each was understood rather than copied. The fourth line is the example from the Level-8 statement: `2/12/2019` must be 2 December, not 12 February, so the day is read before the month. The last line asks for a day February does not have; it must be refused rather than quietly moved to the 28th, since a date silently changed is worse than one rejected. The closing `list` shows the four accepted dates side by side and the rejected one absent.
+
+```input
+deadline year first /by 2019-10-15
+deadline slashes /by 15/10/2019
+deadline month name /by oct 15 2019
+deadline day before month /by 2/12/2019
+deadline no such day /by 31/2/2019
+list
+bye
+```
+
+```expected
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+      _____ _
+     |  ___| |___  __ _
+     | |__ | / __|/ _` |
+     |  __|| \__ \ (_| |
+     |_____|_|___/\__,_|
+     Hello! I'm Elsa.
+     Do you want to build a snowman?
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [D][ ] year first (by: Oct 15 2019)
+     Now you have 1 task in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [D][ ] slashes (by: Oct 15 2019)
+     Now you have 2 tasks in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [D][ ] month name (by: Oct 15 2019)
+     Now you have 3 tasks in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [D][ ] day before month (by: Dec 02 2019)
+     Now you have 4 tasks in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OLAF!!! "31/2/2019" is not a date. Write it as 2019-10-15, 15/10/2019 (day/month/year) or Oct 15 2019. Use: deadline <description> /by <date>
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Here are the tasks in your list:
+     1.[D][ ] year first (by: Oct 15 2019)
+     2.[D][ ] slashes (by: Oct 15 2019)
+     3.[D][ ] month name (by: Oct 15 2019)
+     4.[D][ ] day before month (by: Dec 02 2019)
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
