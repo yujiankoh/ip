@@ -49,4 +49,16 @@ public class Task {
     public String toString() {
         return "[" + getStatusIcon() + "] " + description;
     }
+
+    /**
+     * Returns the task as one line of the data file, for example "1 | read book".
+     * Only the parts every task has are written here; each kind of task adds its
+     * own type letter and extra fields around this, the same way toString() does.
+     *
+     * @return whether the task is done, as 1 or 0, followed by its description
+     */
+    public String toSaveFormat() {
+        // 1 and 0 are used rather than true and false to keep the line short.
+        return (isDone ? "1" : "0") + " | " + description;
+    }
 }

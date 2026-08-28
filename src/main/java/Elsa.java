@@ -6,6 +6,7 @@ import java.util.Scanner;
  * Greets the user, stores todos, deadlines and events, lists them back on request,
  * marks them as done or not done, deletes them, reports what it cannot understand,
  * and exits when the user types "bye".
+ * The task list is saved to the hard disk every time it changes; see {@link Storage}.
  */
 public class Elsa {
     /**
@@ -73,12 +74,14 @@ public class Elsa {
                 case MARK -> {
                     int index = parseTaskIndex(arguments, tasks.size(), command);
                     tasks.get(index).markAsDone();
+                    Storage.save(tasks);
                     printBlock("Nice! I've marked this task as done:\n"
                             + "  " + tasks.get(index));
                 }
                 case UNMARK -> {
                     int index = parseTaskIndex(arguments, tasks.size(), command);
                     tasks.get(index).markAsNotDone();
+                    Storage.save(tasks);
                     printBlock("OK, I've marked this task as not done yet:\n"
                             + "  " + tasks.get(index));
                 }
@@ -86,13 +89,12 @@ public class Elsa {
                     int index = parseTaskIndex(arguments, tasks.size(), command);
                     // remove() returns the task it took out, so it can be shown to the user.
                     Task removed = tasks.remove(index);
+                    Storage.save(tasks);
                     printBlock(removedMessage(removed, tasks.size()));
                 }
                 case TODO -> {
                     requireDescription(arguments, command);
-                    Task added = new Todo(arguments);
-                    tasks.add(added);
-                    printBlock(addedMessage(added, tasks.size()));
+                    addTask(tasks, new Todo(arguments));
                 }
                 case DEADLINE -> {
                     requireDescription(arguments, command);
@@ -102,9 +104,7 @@ public class Elsa {
                             "description of a deadline", command);
                     String by = requireNonEmpty(parts[1],
                             "due time after " + BY_SEPARATOR, command);
-                    Task added = new Deadline(description, by);
-                    tasks.add(added);
-                    printBlock(addedMessage(added, tasks.size()));
+                    addTask(tasks, new Deadline(description, by));
                 }
                 case EVENT -> {
                     requireDescription(arguments, command);
@@ -117,9 +117,7 @@ public class Elsa {
                             "start time after " + FROM_SEPARATOR, command);
                     String to = requireNonEmpty(times[1],
                             "end time after " + TO_SEPARATOR, command);
-                    Task added = new Event(description, from, to);
-                    tasks.add(added);
-                    printBlock(addedMessage(added, tasks.size()));
+                    addTask(tasks, new Event(description, from, to));
                 }
                 case NOTHING -> throw new ElsaException("You did not type anything. Try \""
                         + Command.TODO.getUsage() + "\", or \"list\" to see what you have.");
@@ -131,6 +129,23 @@ public class Elsa {
                 printBlock(ERROR_PREFIX + e.getMessage());
             }
         }
+    }
+
+    /**
+     * Adds a task to the list, saves the updated list to the hard disk, and
+     * confirms the addition to the user. The three commands that add a task all
+     * do these same three things, so they share this method.
+     *
+     * @param tasks the task list to add to
+     * @param task  the task the user asked to add
+     * @throws ElsaException if the updated list could not be saved
+     */
+    private static void addTask(ArrayList<Task> tasks, Task task) throws ElsaException {
+        tasks.add(task);
+        // Saved before the confirmation is printed, so the chatbot never claims to
+        // have stored a task that did not reach the disk.
+        Storage.save(tasks);
+        printBlock(addedMessage(task, tasks.size()));
     }
 
     /**

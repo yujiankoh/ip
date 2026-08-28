@@ -21,6 +21,11 @@ java src/main/java/Elsa.java
 Java 25's source launcher compiles `Task.java` alongside `Elsa.java`, so no
 separate build step is needed.
 
+Running a case has one side effect: the chatbot saves its task list to
+`./data/elsa.txt` under the repository root. That file is not compared by these
+tests, because saving prints nothing to the console. Each case overwrites it, so
+the file left behind after a run reflects only the last case that ran.
+
 ## How outputs are compared
 
 - The **whole** console output is compared, including the banner and greeting.
@@ -853,6 +858,79 @@ bye
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Into the Unknown.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     The cold never bother me anyways!
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+```
+
+---
+
+### TC-16 - Change the list in every way that triggers a save
+
+**Aim:** Saving to `./data/elsa.txt` happens whenever the task list changes, and it must be invisible from the console: it may not print anything of its own, and it may not stop a command from finishing. This case runs every command that changes the list -- the three adds, `mark`, `unmark` and `delete` -- so a save that printed a stray line, or failed and turned a confirmation into an `OLAF!!!` error, would show up as a difference here. The closing `list` confirms the six changes left the task list in the state the saved file should mirror.
+
+```input
+todo read book
+deadline return book /by June 6th
+event project meeting /from Aug 6th 2pm /to 4pm
+mark 1
+unmark 1
+delete 2
+list
+bye
+```
+
+```expected
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+      _____ _
+     |  ___| |___  __ _
+     | |__ | / __|/ _` |
+     |  __|| \__ \ (_| |
+     |_____|_|___/\__,_|
+     Hello! I'm Elsa.
+     Do you want to build a snowman?
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [T][ ] read book
+     Now you have 1 task in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [D][ ] return book (by: June 6th)
+     Now you have 2 tasks in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+     Now you have 3 tasks in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Nice! I've marked this task as done:
+       [T][X] read book
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OK, I've marked this task as not done yet:
+       [T][ ] read book
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Noted. I've removed this task:
+       [D][ ] return book (by: June 6th)
+     Now you have 2 tasks in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Here are the tasks in your list:
+     1.[T][ ] read book
+     2.[E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

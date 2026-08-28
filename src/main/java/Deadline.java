@@ -27,4 +27,15 @@ public class Deadline extends Task {
     public String toString() {
         return "[D]" + super.toString() + " (by: " + by + ")";
     }
+
+    /**
+     * Returns the deadline as one line of the data file,
+     * for example "D | 0 | return book | Sunday".
+     *
+     * @return the deadline's type letter, the inherited fields, and the due time
+     */
+    @Override
+    public String toSaveFormat() {
+        return "D | " + super.toSaveFormat() + " | " + by;
+    }
 }
