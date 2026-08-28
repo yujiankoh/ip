@@ -20,11 +20,50 @@ import java.util.List;
  */
 public class Storage {
     /**
+     * What separates one field from the next on a line of the data file.
+     * It is public because a description containing it would split into extra
+     * fields and be read back wrongly, so the chatbot checks what the user
+     * types against it before storing a task.
+     */
+    public static final String SEPARATOR = " | ";
+
+    /** The marker written for a task that has been completed. */
+    private static final String DONE = "1";
+
+    /** The marker written for a task that has not been completed. */
+    private static final String NOT_DONE = "0";
+
+    /**
      * Where the task list is kept, relative to the folder the program is run from
      * (the project root). Path.of joins the parts with the separator the current
      * operating system uses, so the same code works on Windows and on macOS.
      */
     private static final Path FILE_PATH = Path.of("data", "elsa.txt");
+
+    /**
+     * What a load produced: the tasks that could be read, and one message for
+     * each line that could not be. Both are needed, because a file with a bad
+     * line in it still has good lines worth keeping.
+     *
+     * <p>This is a record: a class whose only job is to hold a few values
+     * together. Java writes the constructor and the tasks() and problems()
+     * accessor methods from this one declaration.
+     *
+     * @param tasks    the tasks read from the file, in the order they appear
+     * @param problems one message per line that could not be understood
+     */
+    public record LoadResult(ArrayList<Task> tasks, ArrayList<String> problems) {
+    }
+
+    /**
+     * Returns the name of the data file, so that messages to the user can say
+     * where the tasks are kept without other classes knowing the path itself.
+     *
+     * @return the path of the data file as text
+     */
+    public static String getFileName() {
+        return FILE_PATH.toString();
+    }
 
     /**
      * Writes the whole task list to the data file, one task per line.
@@ -48,41 +87,57 @@ public class Storage {
             Files.write(FILE_PATH, lines);
         } catch (IOException e) {
             // Rethrown as an ElsaException so the chatbot reports it the same way
-            // as any other problem, instead of the stack trace ending the session.
-            throw new ElsaException("I could not save your tasks to " + FILE_PATH + ".");
+            // as any other problem, instead of a stack trace ending the session.
+            // The reason is included because a full disk, a folder that is really
+            // a file, and a read-only file all arrive here and need telling apart.
+            throw new ElsaException("I could not save your tasks to " + FILE_PATH
+                    + ". The reason given was: " + e);
         }
     }
 
     /**
      * Reads back the tasks saved by an earlier run.
      * A missing file is not an error: it simply means this is the first run,
-     * so an empty list is returned and the file is created by the first save.
+     * so an empty result is returned and the file is made by the first save.
      *
-     * @return the saved tasks, in the order they were written
-     * @throws ElsaException if the file exists but could not be read or understood
+     * <p>A line that cannot be understood is left out and described in the
+     * result, rather than the whole file being abandoned, so that one damaged
+     * line cannot cost the user every other task they had saved.
+     *
+     * @return the tasks that could be read, and a message per line that could not
+     * @throws ElsaException if the file exists but could not be read at all
      */
-    public static ArrayList<Task> load() throws ElsaException {
+    public static LoadResult load() throws ElsaException {
         ArrayList<Task> tasks = new ArrayList<>();
+        ArrayList<String> problems = new ArrayList<>();
         if (!Files.exists(FILE_PATH)) {
-            return tasks;
+            return new LoadResult(tasks, problems);
         }
 
         List<String> lines;
         try {
             lines = Files.readAllLines(FILE_PATH);
         } catch (IOException e) {
+            // Unreadable, a folder rather than a file, or not text at all:
+            // nothing can be salvaged, so this is reported as a failure.
             throw new ElsaException("I could not read your saved tasks from "
-                    + FILE_PATH + ".");
+                    + FILE_PATH + ". The reason given was: " + e);
         }
 
-        for (String line : lines) {
-            // A blank line carries no task, so skip it rather than reject the file.
+        for (int i = 0; i < lines.size(); i++) {
+            String line = lines.get(i);
+            // A blank line carries no task, so skip it rather than complain.
             if (line.isBlank()) {
                 continue;
             }
-            tasks.add(parseTask(line));
+            try {
+                tasks.add(parseTask(line));
+            } catch (ElsaException e) {
+                // Line numbers start at 1 for the user, as they do in an editor.
+                problems.add("Line " + (i + 1) + ": " + e.getMessage());
+            }
         }
-        return tasks;
+        return new LoadResult(tasks, problems);
     }
 
     /**
@@ -100,30 +155,40 @@ public class Storage {
         String[] fields = line.split(" \\| ");
         // Every task has at least a type letter, a done marker and a description.
         if (fields.length < 3) {
-            throw new ElsaException(corruptedMessage(line));
+            throw new ElsaException("it has only " + fields.length
+                    + " field(s), and every task needs at least 3");
         }
 
         String description = fields[2];
+        if (description.isBlank()) {
+            throw new ElsaException("its description is blank");
+        }
+
         Task task;
         // Each kind of task needs a different number of fields, so each branch
         // checks it has them before reading the ones beyond the description.
         switch (fields[0]) {
         case "T" -> task = new Todo(description);
         case "D" -> {
-            requireFields(fields, 4, line);
+            requireFields(fields, 4);
             task = new Deadline(description, fields[3]);
         }
         case "E" -> {
-            requireFields(fields, 5, line);
+            requireFields(fields, 5);
             task = new Event(description, fields[3], fields[4]);
         }
-        default -> throw new ElsaException("This line of " + FILE_PATH
-                + " starts with an unknown task type: " + line);
+        default -> throw new ElsaException("\"" + fields[0]
+                + "\" is not a task type; it should be T, D or E");
         }
 
         // The second field records whether the task was done when it was saved.
-        if (fields[1].equals("1")) {
-            task.markAsDone();
+        // Anything other than the two markers means the line cannot be trusted,
+        // so it is reported rather than quietly assumed to be not done.
+        switch (fields[1]) {
+        case DONE -> task.markAsDone();
+        case NOT_DONE -> task.markAsNotDone();
+        default -> throw new ElsaException("\"" + fields[1]
+                + "\" is not a done marker; it should be " + DONE + " or " + NOT_DONE);
         }
         return task;
     }
@@ -133,23 +198,12 @@ public class Storage {
      *
      * @param fields   the fields the line was split into
      * @param expected how many fields this kind of task needs
-     * @param line     the whole line, quoted back in the error message
      * @throws ElsaException if the line has fewer fields than expected
      */
-    private static void requireFields(String[] fields, int expected, String line)
-            throws ElsaException {
+    private static void requireFields(String[] fields, int expected) throws ElsaException {
         if (fields.length < expected) {
-            throw new ElsaException(corruptedMessage(line));
+            throw new ElsaException("a " + fields[0] + " task needs " + expected
+                    + " fields, but this line has " + fields.length);
         }
-    }
-
-    /**
-     * Builds the message shown when a line of the data file cannot be understood.
-     *
-     * @param line the line at fault, quoted back so the user can go and fix it
-     * @return the explanation to show the user
-     */
-    private static String corruptedMessage(String line) {
-        return "This line of " + FILE_PATH + " is missing fields: " + line;
     }
 }

@@ -54,7 +54,13 @@ public class Elsa {
         // returns an empty list rather than treating that as a problem.
         ArrayList<Task> tasks;
         try {
-            tasks = Storage.load();
+            Storage.LoadResult loaded = Storage.load();
+            tasks = loaded.tasks();
+            if (!loaded.problems().isEmpty()) {
+                // The tasks that did load are kept, so the user is told what was
+                // lost rather than the whole file being thrown away.
+                printBlock(ERROR_PREFIX + skippedLinesMessage(loaded.problems()));
+            }
         } catch (ElsaException e) {
             // A file that cannot be understood is reported once, and the session goes
             // on with an empty list rather than refusing to start.
@@ -69,10 +75,12 @@ public class Elsa {
         while (isRunning && scanner.hasNextLine()) {
             String line = scanner.nextLine().trim();
 
-            // Every line is one keyword plus whatever follows it. Splitting here means
+            // Every line is one keyword plus whatever follows it. The split is on a run
+            // of whitespace so that a tab, or several spaces, separates them just as one
+            // space does. Splitting here means
             // "todo" with nothing after it is recognised as a todo missing its description,
             // rather than being mistaken for an unknown command.
-            String[] words = line.split(" ", 2);
+            String[] words = line.split("\\s+", 2);
             Command command = Command.fromKeyword(words[0]);
             String arguments = (words.length > 1) ? words[1].trim() : "";
 
@@ -106,6 +114,7 @@ public class Elsa {
                 }
                 case TODO -> {
                     requireDescription(arguments, command);
+                    requireNoSeparator(arguments, "description of a todo", command);
                     addTask(tasks, new Todo(arguments));
                 }
                 case DEADLINE -> {
@@ -199,6 +208,50 @@ public class Elsa {
     }
 
     /**
+     * Checks that a piece of a command does not contain the text that separates
+     * one field from the next in the data file. A description holding that text
+     * would be split into extra fields when the file is read back, so the task
+     * would return changed, or not at all. Refusing it now is clearer to the
+     * user than losing part of their task later.
+     *
+     * @param value   the piece to check
+     * @param what    what the piece is, named for the error message
+     * @param command the command being run, which supplies the usage to show
+     * @throws ElsaException if the piece contains the separator
+     */
+    private static void requireNoSeparator(String value, String what, Command command)
+            throws ElsaException {
+        if (value.contains(Storage.SEPARATOR)) {
+            throw new ElsaException("The " + what + " cannot contain \""
+                    + Storage.SEPARATOR.trim() + "\" with a space on each side, because"
+                    + " that is how " + Storage.getFileName() + " separates the parts of a"
+                    + " task. Use: " + command.getUsage());
+        }
+    }
+
+    /**
+     * Builds the warning shown when some lines of the data file could not be read.
+     *
+     * @param problems one message per line that could not be understood
+     * @return the warning text, listing each line and what will happen to it
+     */
+    private static String skippedLinesMessage(ArrayList<String> problems) {
+        String plural = (problems.size() == 1) ? "line" : "lines";
+        StringBuilder message = new StringBuilder("I could not understand "
+                + problems.size() + " " + plural + " of " + Storage.getFileName()
+                + ", so I have left " + ((problems.size() == 1) ? "it" : "them")
+                + " out:");
+        for (String problem : problems) {
+            message.append("\n  ").append(problem);
+        }
+        // Said plainly, because the next change to the list rewrites the file.
+        message.append("\nYour other tasks loaded normally. Saving will rewrite the"
+                + " file without the " + plural + " above, so edit the file now if you"
+                + " want to keep " + ((problems.size() == 1) ? "it" : "them") + ".");
+        return message.toString();
+    }
+
+    /**
      * Checks that a piece of a command was actually filled in.
      *
      * @param value   the piece to check, before trimming
@@ -214,6 +267,7 @@ public class Elsa {
             throw new ElsaException("The " + what + " cannot be empty. Use: "
                     + command.getUsage());
         }
+        requireNoSeparator(trimmed, what, command);
         return trimmed;
     }
 

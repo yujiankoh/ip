@@ -1010,18 +1010,22 @@ bye
 
 ---
 
-### TC-18 - Report a data file line that cannot be understood
+### TC-18 - Keep the good tasks when some lines cannot be understood
 
-**Aim:** A deadline needs a due time, so a `D` line carrying only a description is incomplete and cannot be turned back into a task. The chatbot must say so and still start, rather than crashing before the user can type anything. The `list` then shows the session begins empty, and the `todo` shows it is fully usable afterwards. Note what this costs the user: the first save overwrites the file, so the tasks that were in it are lost.
+**Aim:** A hand-edited data file can go wrong in several ways at once, and one bad line must not cost the user the tasks on every other line. This file has a done marker that is neither 1 nor 0, a deadline with no due time, an unknown type letter, and a blank line. The three faulty lines must each be reported with their line number and what is wrong, the blank line must pass without comment, and the two sound tasks must load and be usable. The warning has to say that saving rewrites the file, because the `todo` at the end does exactly that and the skipped lines are then gone.
 
 ```data
 T | 1 | read book
+T | 7 | bad marker
 D | 0 | return book
+
+X | 0 | mystery
+T | 0 | buy milk
 ```
 
 ```input
 list
-todo read book
+todo water plants
 bye
 ```
 
@@ -1037,17 +1041,127 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OLAF!!! This line of data\elsa.txt is missing fields: D | 0 | return book
+     OLAF!!! I could not understand 3 lines of data\elsa.txt, so I have left them out:
+       Line 2: "7" is not a done marker; it should be 1 or 0
+       Line 3: a D task needs 4 fields, but this line has 3
+       Line 5: "X" is not a task type; it should be T, D or E
+     Your other tasks loaded normally. Saving will rewrite the file without the lines above, so edit the file now if you want to keep them.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Into the Unknown.
+     Here are the tasks in your list:
+     1.[T][X] read book
+     2.[T][ ] buy milk
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [T][ ] water plants
+     Now you have 3 tasks in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     The cold never bother me anyways!
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+```
+
+---
+
+### TC-19 - Refuse text that would break the saved file apart
+
+**Aim:** Tasks are stored with their fields separated by a bar with a space on each side, so a description or a time containing that text would be read back as extra fields and the task would return changed or not at all. The chatbot must refuse it when it is typed, where the user can still fix it, rather than accepting it and losing part of the task at the next startup. Every part the user supplies is checked, not only descriptions, so a time is tried here too. The valid `todo` at the end shows the four rejections changed nothing.
+
+```input
+todo a | b
+deadline a | b /by Sunday
+deadline return book /by Sun | day
+event project meeting /from 2pm | 3pm /to 4pm
+todo read book
+list
+bye
+```
+
+```expected
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+      _____ _
+     |  ___| |___  __ _
+     | |__ | / __|/ _` |
+     |  __|| \__ \ (_| |
+     |_____|_|___/\__,_|
+     Hello! I'm Elsa.
+     Do you want to build a snowman?
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OLAF!!! The description of a todo cannot contain "|" with a space on each side, because that is how data\elsa.txt separates the parts of a task. Use: todo <description>
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OLAF!!! The description of a deadline cannot contain "|" with a space on each side, because that is how data\elsa.txt separates the parts of a task. Use: deadline <description> /by <when>
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OLAF!!! The due time after /by cannot contain "|" with a space on each side, because that is how data\elsa.txt separates the parts of a task. Use: deadline <description> /by <when>
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OLAF!!! The start time after /from cannot contain "|" with a space on each side, because that is how data\elsa.txt separates the parts of a task. Use: event <description> /from <start> /to <end>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Got it. I've added this task:
        [T][ ] read book
      Now you have 1 task in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Here are the tasks in your list:
+     1.[T][ ] read book
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     The cold never bother me anyways!
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+```
+
+---
+
+### TC-20 - Separate a command from its argument with a tab
+
+**Aim:** A user who types or pastes a tab instead of a space has still named a command and given it an argument, so the chatbot should read it the same way rather than rejecting the whole line as an unknown command. Note for anyone editing this file: the two input lines below contain real tab characters, and replacing them with spaces would leave the case passing without testing anything.
+
+```input
+todo	read book
+mark	1
+list
+bye
+```
+
+```expected
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+      _____ _
+     |  ___| |___  __ _
+     | |__ | / __|/ _` |
+     |  __|| \__ \ (_| |
+     |_____|_|___/\__,_|
+     Hello! I'm Elsa.
+     Do you want to build a snowman?
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [T][ ] read book
+     Now you have 1 task in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Nice! I've marked this task as done:
+       [T][X] read book
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Here are the tasks in your list:
+     1.[T][X] read book
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
