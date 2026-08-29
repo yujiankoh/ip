@@ -77,6 +77,12 @@ run.
 The command used to start the program is the ` ```run ` block near the top of
 the plan, so a change to how the program is launched is made there, not here.
 
+The ` ```build ` block beside it is run once before the first case. It builds
+the jar the cases then run, so that no case can pass against a stale build. The
+runner writes the wrapper as `gradlew.bat` on Windows and `./gradlew` elsewhere,
+so the block itself stays the same on every platform. If the build fails, its
+output is shown and no case is run.
+
 ## Writing expected output
 
 Derive expected output from the increment's requirements, not by copying
