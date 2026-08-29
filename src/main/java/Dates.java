@@ -102,6 +102,20 @@ public class Dates {
     }
 
     /**
+     * Returns today's date.
+     *
+     * <p>Kept here rather than calling LocalDate.now() wherever it is needed, so
+     * that there is one place to look when working out which behaviour depends on
+     * what day it is. That dependency is why the tests use dates far in the past
+     * or far in the future: those stay past and future whenever the tests are run.
+     *
+     * @return the date on the computer running the chatbot
+     */
+    public static LocalDate today() {
+        return LocalDate.now();
+    }
+
+    /**
      * Returns the date as it should appear to the user, for example "Oct 15 2019".
      *
      * @param date the date to show

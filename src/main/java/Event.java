@@ -25,6 +25,21 @@ public class Event extends Task {
     }
 
     /**
+     * Returns whether this event falls on the given date, which it does on its
+     * first and last days and on every day between them.
+     *
+     * @param date the date being asked about
+     * @return true if the event is running on that date
+     */
+    @Override
+    public boolean occursOn(LocalDate date) {
+        // Written as "not before the start and not after the end" so that the
+        // first and last days count as part of the event, which isBefore and
+        // isAfter on their own would leave out.
+        return !date.isBefore(from) && !date.isAfter(to);
+    }
+
+    /**
      * Returns the event as it should appear to the user,
      * for example "[E][ ] project meeting (from: Oct 15 2019 to: Oct 16 2019)".
      *

@@ -5,6 +5,7 @@
 public enum Command {
     BYE("bye", "bye"),
     LIST("list", "list"),
+    ON("on", "on <date>"),
     MARK("mark", "mark <task number>"),
     UNMARK("unmark", "unmark <task number>"),
     DELETE("delete", "delete <task number>"),

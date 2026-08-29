@@ -350,7 +350,7 @@ bye
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Got it. I've added this task:
-       [D][ ] return book (by: Oct 20 2019)
+       [D][ ] return book (by: Oct 20 2019) -- overdue
      Now you have 2 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
@@ -361,7 +361,7 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Here are the tasks in your list:
      1.[T][ ] borrow book
-     2.[D][ ] return book (by: Oct 20 2019)
+     2.[D][ ] return book (by: Oct 20 2019) -- overdue
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -403,7 +403,7 @@ bye
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Got it. I've added this task:
-       [D][ ] return book (by: Oct 20 2019)
+       [D][ ] return book (by: Oct 20 2019) -- overdue
      Now you have 2 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
@@ -421,7 +421,7 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Here are the tasks in your list:
      1.[T][ ] borrow book
-     2.[D][ ] return book (by: Oct 20 2019)
+     2.[D][ ] return book (by: Oct 20 2019) -- overdue
      3.[E][X] project meeting (from: Oct 21 2019 to: Oct 22 2019)
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
@@ -462,7 +462,7 @@ bye
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Got it. I've added this task:
-       [D][ ] return book (by: Oct 20 2019)
+       [D][ ] return book (by: Oct 20 2019) -- overdue
      Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
@@ -478,7 +478,7 @@ bye
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Here are the tasks in your list:
-     1.[D][ ] return book (by: Oct 20 2019)
+     1.[D][ ] return book (by: Oct 20 2019) -- overdue
      2.[E][ ] project meeting (from: Oct 21 2019 to: Oct 22 2019)
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
@@ -648,7 +648,7 @@ bye
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Got it. I've added this task:
-       [D][ ] submit report (by: Oct 20 2019)
+       [D][ ] submit report (by: Oct 20 2019) -- overdue
      Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
@@ -664,7 +664,7 @@ bye
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Here are the tasks in your list:
-     1.[D][ ] submit report (by: Oct 20 2019)
+     1.[D][ ] submit report (by: Oct 20 2019) -- overdue
      2.[E][ ] project meeting (from: Oct 21 2019 to: Oct 22 2019)
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
@@ -768,7 +768,7 @@ bye
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Got it. I've added this task:
-       [D][ ] return book (by: Jun 06 2019)
+       [D][ ] return book (by: Jun 06 2019) -- overdue
      Now you have 2 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
@@ -798,7 +798,7 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Here are the tasks in your list:
      1.[T][ ] read book
-     2.[D][ ] return book (by: Jun 06 2019)
+     2.[D][ ] return book (by: Jun 06 2019) -- overdue
      3.[T][X] join sports club
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
@@ -908,7 +908,7 @@ bye
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Got it. I've added this task:
-       [D][ ] return book (by: Jun 06 2019)
+       [D][ ] return book (by: Jun 06 2019) -- overdue
      Now you have 2 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
@@ -930,7 +930,7 @@ bye
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Noted. I've removed this task:
-       [D][ ] return book (by: Jun 06 2019)
+       [D][ ] return book (by: Jun 06 2019) -- overdue
      Now you have 2 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
@@ -979,13 +979,13 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Here are the tasks in your list:
      1.[T][X] read book
-     2.[D][ ] return book (by: Jun 06 2019)
+     2.[D][ ] return book (by: Jun 06 2019) -- overdue
      3.[E][ ] project meeting (from: Aug 06 2019 to: Aug 07 2019)
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Noted. I've removed this task:
-       [D][ ] return book (by: Jun 06 2019)
+       [D][ ] return book (by: Jun 06 2019) -- overdue
      Now you have 2 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
@@ -1242,25 +1242,25 @@ bye
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Got it. I've added this task:
-       [D][ ] year first (by: Oct 15 2019)
+       [D][ ] year first (by: Oct 15 2019) -- overdue
      Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Got it. I've added this task:
-       [D][ ] slashes (by: Oct 15 2019)
+       [D][ ] slashes (by: Oct 15 2019) -- overdue
      Now you have 2 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Got it. I've added this task:
-       [D][ ] month name (by: Oct 15 2019)
+       [D][ ] month name (by: Oct 15 2019) -- overdue
      Now you have 3 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Got it. I've added this task:
-       [D][ ] day before month (by: Dec 02 2019)
+       [D][ ] day before month (by: Dec 02 2019) -- overdue
      Now you have 4 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
@@ -1270,10 +1270,160 @@ bye
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Here are the tasks in your list:
-     1.[D][ ] year first (by: Oct 15 2019)
-     2.[D][ ] slashes (by: Oct 15 2019)
-     3.[D][ ] month name (by: Oct 15 2019)
-     4.[D][ ] day before month (by: Dec 02 2019)
+     1.[D][ ] year first (by: Oct 15 2019) -- overdue
+     2.[D][ ] slashes (by: Oct 15 2019) -- overdue
+     3.[D][ ] month name (by: Oct 15 2019) -- overdue
+     4.[D][ ] day before month (by: Dec 02 2019) -- overdue
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     The cold never bother me anyways!
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+```
+
+---
+
+### TC-23 - List the tasks falling on one date
+
+**Aim:** `on` answers a different question from `list`, and each kind of task answers it differently: a deadline falls on the one day it is due, an event on every day it runs including its first and last, and a todo on no day at all. The three queries here check all of that: Oct 15 finds the deadline and the running event, Oct 14 and Oct 16 find the event on its boundary days, where an exclusive comparison would wrongly leave it out, and Oct 20 finds nothing and must say so rather than print an empty heading. The todo never appears. The numbers shown are the ones the tasks have in the full list, 2 and 3 rather than 1 and 2, so that a number read here can be given straight to `mark` or `delete`; renumbering from 1 would make those commands act on the wrong task. The last two lines check that a missing date and an unreadable one are each reported.
+
+```input
+todo borrow book
+deadline return book /by 2019-10-15
+event conference /from 2019-10-14 /to 2019-10-16
+on 2019-10-15
+on 2019-10-14
+on 2019-10-16
+on 2019-10-20
+on
+on rubbish
+bye
+```
+
+```expected
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+      _____ _
+     |  ___| |___  __ _
+     | |__ | / __|/ _` |
+     |  __|| \__ \ (_| |
+     |_____|_|___/\__,_|
+     Hello! I'm Elsa.
+     Do you want to build a snowman?
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [T][ ] borrow book
+     Now you have 1 task in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [D][ ] return book (by: Oct 15 2019) -- overdue
+     Now you have 2 tasks in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [E][ ] conference (from: Oct 14 2019 to: Oct 16 2019)
+     Now you have 3 tasks in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Here are the tasks on Oct 15 2019:
+     2.[D][ ] return book (by: Oct 15 2019) -- overdue
+     3.[E][ ] conference (from: Oct 14 2019 to: Oct 16 2019)
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Here are the tasks on Oct 14 2019:
+     3.[E][ ] conference (from: Oct 14 2019 to: Oct 16 2019)
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Here are the tasks on Oct 16 2019:
+     3.[E][ ] conference (from: Oct 14 2019 to: Oct 16 2019)
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Nothing on Oct 20 2019.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OLAF!!! Which date? Use: on <date>, for example: on 2019-10-15.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OLAF!!! "rubbish" is not a date. Write it as 2019-10-15, 15/10/2019 (day/month/year) or Oct 15 2019. Use: on <date>
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     The cold never bother me anyways!
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+```
+
+---
+
+### TC-24 - Mark a deadline overdue only when it is still owed
+
+**Aim:** A deadline whose date has passed and which is not done is overdue, and nothing else is. The four tasks here cover each way that can go: a past deadline carries the note, a future one does not, a past one that has been marked done loses the note the moment it is marked, and an event never carries it whatever its dates, since an event that has finished is not a debt. Note the dates chosen: 2019 is in the past and 2999 in the future whenever these tests are run, so a case that depends on today's date still gives the same output every day. A date near today would make this case start failing on its own.
+
+```input
+deadline past deadline /by 2019-10-15
+deadline future deadline /by 2999-01-01
+deadline finished deadline /by 2019-10-15
+mark 3
+event past event /from 2019-10-14 /to 2019-10-16
+list
+bye
+```
+
+```expected
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+      _____ _
+     |  ___| |___  __ _
+     | |__ | / __|/ _` |
+     |  __|| \__ \ (_| |
+     |_____|_|___/\__,_|
+     Hello! I'm Elsa.
+     Do you want to build a snowman?
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [D][ ] past deadline (by: Oct 15 2019) -- overdue
+     Now you have 1 task in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [D][ ] future deadline (by: Jan 01 2999)
+     Now you have 2 tasks in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [D][ ] finished deadline (by: Oct 15 2019) -- overdue
+     Now you have 3 tasks in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Nice! I've marked this task as done:
+       [D][X] finished deadline (by: Oct 15 2019)
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [E][ ] past event (from: Oct 14 2019 to: Oct 16 2019)
+     Now you have 4 tasks in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Here are the tasks in your list:
+     1.[D][ ] past deadline (by: Oct 15 2019) -- overdue
+     2.[D][ ] future deadline (by: Jan 01 2999)
+     3.[D][X] finished deadline (by: Oct 15 2019)
+     4.[E][ ] past event (from: Oct 14 2019 to: Oct 16 2019)
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

@@ -1,3 +1,5 @@
+import java.time.LocalDate;
+
 /**
  * A single task in the user's list, holding its description and whether it is done.
  * Kinds of task that carry extra information, such as {@link Deadline}, extend this class.
@@ -37,6 +39,19 @@ public class Task {
     /** Records this task as not completed after all. */
     public void markAsNotDone() {
         this.isDone = false;
+    }
+
+    /**
+     * Returns whether this task falls on the given date.
+     * A plain task carries no date, so the answer is always no. The kinds of task
+     * that do carry dates override this and answer for themselves, in the same way
+     * they each write themselves differently in toString().
+     *
+     * @param date the date being asked about
+     * @return true if this task falls on that date
+     */
+    public boolean occursOn(LocalDate date) {
+        return false;
     }
 
     /**
