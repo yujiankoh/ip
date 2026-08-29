@@ -59,6 +59,15 @@ public class Dates {
             DateTimeFormatter.ofPattern("MMM dd yyyy", Locale.ENGLISH);
 
     /**
+     * Prevents this class from being instantiated. Every method here is static,
+     * so a Dates object would hold nothing and do nothing. Java supplies a public
+     * constructor to any class that declares none, so refusing one has to be
+     * written down rather than left implied.
+     */
+    private Dates() {
+    }
+
+    /**
      * Builds one of the formats a typed date may take.
      *
      * <p>Two settings matter here. STRICT rejects a day the month does not have,

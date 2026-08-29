@@ -52,6 +52,15 @@ public class Parser {
     }
 
     /**
+     * Prevents this class from being instantiated. Reading a line needs nothing
+     * remembered between calls, so every method here is static and a Parser
+     * object would hold nothing. Java supplies a public constructor to any class
+     * that declares none, so refusing one has to be written down.
+     */
+    private Parser() {
+    }
+
+    /**
      * Reads a typed line as a command ready to be carried out.
      *
      * <p>The switch here chooses which kind of command to build, which is the one

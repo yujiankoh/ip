@@ -9,14 +9,31 @@ package elsa.command;
  * are commands and how each is written, and nothing about what any of them does.
  */
 public enum CommandType {
+    /** Ends the session. */
     BYE("bye", "bye"),
+
+    /** Shows every task in the list. */
     LIST("list", "list"),
+
+    /** Shows the tasks falling on one date. */
     ON("on", "on <date>"),
+
+    /** Marks a task as done. */
     MARK("mark", "mark <task number>"),
+
+    /** Marks a task as not done after all. */
     UNMARK("unmark", "unmark <task number>"),
+
+    /** Removes a task from the list. */
     DELETE("delete", "delete <task number>"),
+
+    /** Adds a task with no date attached to it. */
     TODO("todo", "todo <description>"),
+
+    /** Adds a task that has to be done before a stated date. */
     DEADLINE("deadline", "deadline <description> /by <date>"),
+
+    /** Adds a task that runs between two stated dates. */
     EVENT("event", "event <description> /from <date> /to <date>"),
 
     /** The user pressed enter without typing anything, so the keyword is the empty string. */
