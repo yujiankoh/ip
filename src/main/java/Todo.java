@@ -31,6 +31,6 @@ public class Todo extends Task {
      */
     @Override
     public String toSaveFormat() {
-        return "T | " + super.toSaveFormat();
+        return TaskFormat.TODO + TaskFormat.SEPARATOR + super.toSaveFormat();
     }
 }

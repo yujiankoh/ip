@@ -9,30 +9,12 @@ import java.util.List;
  * chatbot: {@link #save} writes the list after every change, and {@link #load}
  * reads it back when the chatbot starts.
  *
- * <p>Each line of the file holds one task, with its fields separated by " | ":
- * <pre>
- * T | 1 | read book
- * D | 0 | return book | 2019-06-06
- * E | 0 | project meeting | 2019-08-06 | 2019-08-07
- * </pre>
- * The first field is the type letter, the second is 1 when the task is done
- * and 0 when it is not, and the rest are the fields that kind of task carries.
+ * <p>This class is about the file itself: whether it is there, creating the
+ * folder it sits in, reading its lines and writing them back. What one of those
+ * lines means is {@link TaskFormat}'s business, so a change to the format is
+ * made there and a change to how the file is handled is made here.
  */
 public class Storage {
-    /**
-     * What separates one field from the next on a line of the data file.
-     * It is public because a description containing it would split into extra
-     * fields and be read back wrongly, so the chatbot checks what the user
-     * types against it before storing a task.
-     */
-    public static final String SEPARATOR = " | ";
-
-    /** The marker written for a task that has been completed. */
-    private static final String DONE = "1";
-
-    /** The marker written for a task that has not been completed. */
-    private static final String NOT_DONE = "0";
-
     /**
      * The file this Storage looks after, as the caller wrote it, for example
      * "data/elsa.txt". Kept as text as well as a Path so that messages naming the
@@ -155,7 +137,7 @@ public class Storage {
                 continue;
             }
             try {
-                tasks.add(readSavedTask(line));
+                tasks.add(TaskFormat.decode(line));
             } catch (ElsaException e) {
                 // Line numbers start at 1 for the user, as they do in an editor.
                 problems.add("Line " + (i + 1) + ": " + e.getMessage());
@@ -166,76 +148,4 @@ public class Storage {
         return new LoadResult(new TaskList(tasks), problems);
     }
 
-    /**
-     * Turns one line of the data file back into a task.
-     * This is the reverse of {@link Task#toSaveFormat()}: the type letter chooses
-     * which kind of task to build, and the fields after it fill that task in.
-     *
-     * <p>Named for reading rather than parsing to keep it apart from {@link Parser},
-     * which reads the quite different language the user types. This one reads the
-     * file format, which the save methods above write, so the two halves of that
-     * format are defined in the same class.
-     *
-     * @param line one line of the data file
-     * @return the task the line describes
-     * @throws ElsaException if the line does not follow the format above
-     */
-    private static Task readSavedTask(String line) throws ElsaException {
-        // The separator is a literal " | ". split() takes a regular expression,
-        // in which "|" means "or", so it is escaped here to mean an ordinary bar.
-        String[] fields = line.split(" \\| ");
-        // Every task has at least a type letter, a done marker and a description.
-        if (fields.length < 3) {
-            throw new ElsaException("it has only " + fields.length
-                    + " field(s), and every task needs at least 3");
-        }
-
-        String description = fields[2];
-        if (description.isBlank()) {
-            throw new ElsaException("its description is blank");
-        }
-
-        Task task;
-        // Each kind of task needs a different number of fields, so each branch
-        // checks it has them before reading the ones beyond the description.
-        switch (fields[0]) {
-        case "T" -> task = new Todo(description);
-        case "D" -> {
-            requireFields(fields, 4);
-            task = new Deadline(description, Dates.parse(fields[3]));
-        }
-        case "E" -> {
-            requireFields(fields, 5);
-            task = new Event(description, Dates.parse(fields[3]),
-                    Dates.parse(fields[4]));
-        }
-        default -> throw new ElsaException("\"" + fields[0]
-                + "\" is not a task type; it should be T, D or E");
-        }
-
-        // The second field records whether the task was done when it was saved.
-        // Anything other than the two markers means the line cannot be trusted,
-        // so it is reported rather than quietly assumed to be not done.
-        switch (fields[1]) {
-        case DONE -> task.markAsDone();
-        case NOT_DONE -> task.markAsNotDone();
-        default -> throw new ElsaException("\"" + fields[1]
-                + "\" is not a done marker; it should be " + DONE + " or " + NOT_DONE);
-        }
-        return task;
-    }
-
-    /**
-     * Checks that a line carries all the fields its kind of task needs.
-     *
-     * @param fields   the fields the line was split into
-     * @param expected how many fields this kind of task needs
-     * @throws ElsaException if the line has fewer fields than expected
-     */
-    private static void requireFields(String[] fields, int expected) throws ElsaException {
-        if (fields.length < expected) {
-            throw new ElsaException("a " + fields[0] + " task needs " + expected
-                    + " fields, but this line has " + fields.length);
-        }
-    }
 }

@@ -253,9 +253,9 @@ public class Parser {
      */
     private static void requireNoSeparator(String value, String what, CommandType command)
             throws ElsaException {
-        if (value.contains(Storage.SEPARATOR)) {
+        if (value.contains(TaskFormat.SEPARATOR)) {
             throw new ElsaException("The " + what + " cannot contain \""
-                    + Storage.SEPARATOR.trim() + "\" with a space on each side, because"
+                    + TaskFormat.SEPARATOR.trim() + "\" with a space on each side, because"
                     + " that is how the parts of a stored task are separated. Use: "
                     + command.getUsage());
         }
