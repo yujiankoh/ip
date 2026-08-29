@@ -51,14 +51,15 @@ public class Elsa {
         ui.showWelcome();
         loadTasks();
 
-        // The flag ends the loop from inside execute(), where a plain break would
-        // only leave its switch. hasNextCommand() guards against input ending
-        // without a "bye".
-        boolean isRunning = true;
-        while (isRunning && ui.hasNextCommand()) {
-            Parser.ParsedLine line = Parser.parseLine(ui.readCommand());
+        // Each command says whether the session should end, so the loop does not
+        // need to know which one means goodbye. hasNextCommand() guards against
+        // input ending without a "bye".
+        boolean isExit = false;
+        while (!isExit && ui.hasNextCommand()) {
             try {
-                isRunning = execute(line.command(), line.arguments());
+                Command command = Parser.parse(ui.readCommand());
+                command.execute(tasks, ui, storage);
+                isExit = command.isExit();
             } catch (ElsaException e) {
                 // One place to report anything the chatbot could not carry out.
                 ui.showError(e.getMessage());
@@ -86,68 +87,6 @@ public class Elsa {
             ui.showError(e.getMessage());
             tasks = new TaskList();
         }
-    }
-
-    /**
-     * Carries out one command.
-     *
-     * @param command   the command the user named
-     * @param arguments everything typed after the keyword
-     * @return true to carry on reading commands, false once the user has said "bye"
-     * @throws ElsaException if the command could not be carried out
-     */
-    private boolean execute(CommandType command, String arguments) throws ElsaException {
-        switch (command) {
-        case BYE -> {
-            ui.showFarewell();
-            return false;
-        }
-        case LIST -> ui.showTasks(tasks);
-        case ON -> ui.showTasksOn(tasks, Parser.parseDate(arguments, command));
-        case MARK -> {
-            int index = Parser.parseTaskIndex(arguments, tasks.size(), command);
-            Task marked = tasks.mark(index);
-            storage.save(tasks);
-            ui.showMarked(marked);
-        }
-        case UNMARK -> {
-            int index = Parser.parseTaskIndex(arguments, tasks.size(), command);
-            Task unmarked = tasks.unmark(index);
-            storage.save(tasks);
-            ui.showUnmarked(unmarked);
-        }
-        case DELETE -> {
-            int index = Parser.parseTaskIndex(arguments, tasks.size(), command);
-            // delete() returns the task it took out, so it can be shown to the user.
-            Task removed = tasks.delete(index);
-            storage.save(tasks);
-            ui.showRemoved(removed, tasks.size());
-        }
-        case TODO -> addTask(Parser.parseTodo(arguments));
-        case DEADLINE -> addTask(Parser.parseDeadline(arguments));
-        case EVENT -> addTask(Parser.parseEvent(arguments));
-        case NOTHING -> throw new ElsaException("You did not type anything. Try \""
-                + CommandType.TODO.getUsage() + "\", or \"list\" to see what you have.");
-        case UNKNOWN -> throw new ElsaException(
-                "I'm sorry, but I don't know what that means :-(");
-        }
-        return true;
-    }
-
-    /**
-     * Adds a task to the list, saves the updated list to the hard disk, and
-     * confirms the addition to the user. The three commands that add a task all
-     * do these same three things, so they share this method.
-     *
-     * @param task the task the user asked to add
-     * @throws ElsaException if the updated list could not be saved
-     */
-    private void addTask(Task task) throws ElsaException {
-        tasks.add(task);
-        // Saved before the confirmation is shown, so the chatbot never claims to
-        // have stored a task that did not reach the disk.
-        storage.save(tasks);
-        ui.showAdded(task, tasks.size());
     }
 
     public static void main(String[] args) {
