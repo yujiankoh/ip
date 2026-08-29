@@ -1,0 +1,105 @@
+package elsa.task;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.time.LocalDate;
+import org.junit.jupiter.api.Test;
+
+/**
+ * Tests {@link Task}, the parts every kind of task shares: its description, its
+ * done marker, and the two ways it writes itself out.
+ *
+ * <p>A plain Task is never built by the chatbot itself, which always makes a
+ * todo, a deadline or an event. It is tested on its own anyway, because those
+ * three inherit this behaviour and each one adds only a marker around it. A
+ * failure here would otherwise show up three times over, in three test classes,
+ * without saying which class was really at fault.
+ */
+public class TaskTest {
+
+    @Test
+    public void getStatusIcon_newTask_returnsSpace() {
+        assertEquals(" ", new Task("read book").getStatusIcon());
+    }
+
+    @Test
+    public void getStatusIcon_afterMarkAsDone_returnsCross() {
+        Task task = new Task("read book");
+        task.markAsDone();
+        assertEquals("X", task.getStatusIcon());
+    }
+
+    @Test
+    public void getStatusIcon_afterMarkAsNotDone_returnsSpaceAgain() {
+        Task task = new Task("read book");
+        task.markAsDone();
+        task.markAsNotDone();
+        assertEquals(" ", task.getStatusIcon());
+    }
+
+    /** Marking a task that is already done should leave it done, not toggle it. */
+    @Test
+    public void markAsDone_taskAlreadyDone_staysDone() {
+        Task task = new Task("read book");
+        task.markAsDone();
+        task.markAsDone();
+        assertEquals("X", task.getStatusIcon());
+    }
+
+    @Test
+    public void markAsNotDone_taskAlreadyNotDone_staysNotDone() {
+        Task task = new Task("read book");
+        task.markAsNotDone();
+        assertEquals(" ", task.getStatusIcon());
+    }
+
+    /**
+     * A plain task carries no date, so it falls on no date. Deadlines and events
+     * override this; that they do is checked in their own test classes.
+     */
+    @Test
+    public void occursOn_anyDate_returnsFalse() {
+        Task task = new Task("read book");
+        assertFalse(task.occursOn(LocalDate.of(2019, 10, 15)));
+        assertFalse(task.occursOn(LocalDate.now()));
+    }
+
+    @Test
+    public void toString_notDone_showsEmptyBrackets() {
+        assertEquals("[ ] read book", new Task("read book").toString());
+    }
+
+    @Test
+    public void toString_done_showsCrossInBrackets() {
+        Task task = new Task("read book");
+        task.markAsDone();
+        assertEquals("[X] read book", task.toString());
+    }
+
+    @Test
+    public void toSaveFormat_notDone_writesZeroThenDescription() {
+        assertEquals("0 | read book", new Task("read book").toSaveFormat());
+    }
+
+    @Test
+    public void toSaveFormat_done_writesOneThenDescription() {
+        Task task = new Task("read book");
+        task.markAsDone();
+        assertEquals("1 | read book", task.toSaveFormat());
+    }
+
+    /**
+     * The markers written into the file are the ones TaskFormat names, not the
+     * characters shown to the user. Writing "X" to the file, or "1" to the
+     * screen, would be a plausible mistake, so the two are checked apart.
+     */
+    @Test
+    public void toSaveFormat_done_usesTheStoredMarkerNotTheDisplayedOne() {
+        Task task = new Task("read book");
+        task.markAsDone();
+        assertTrue(task.toSaveFormat().startsWith(TaskFormat.DONE));
+        assertFalse(task.toSaveFormat().startsWith("X"));
+    }
+}
