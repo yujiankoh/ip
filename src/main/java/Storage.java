@@ -12,8 +12,8 @@ import java.util.List;
  * <p>Each line of the file holds one task, with its fields separated by " | ":
  * <pre>
  * T | 1 | read book
- * D | 0 | return book | June 6th
- * E | 0 | project meeting | Aug 6th 2pm | 4pm
+ * D | 0 | return book | 2019-06-06
+ * E | 0 | project meeting | 2019-08-06 | 2019-08-07
  * </pre>
  * The first field is the type letter, the second is 1 when the task is done
  * and 0 when it is not, and the rest are the fields that kind of task carries.
@@ -185,11 +185,12 @@ public class Storage {
         case "T" -> task = new Todo(description);
         case "D" -> {
             requireFields(fields, 4);
-            task = new Deadline(description, fields[3]);
+            task = new Deadline(description, Dates.parse(fields[3]));
         }
         case "E" -> {
             requireFields(fields, 5);
-            task = new Event(description, fields[3], fields[4]);
+            task = new Event(description, Dates.parse(fields[3]),
+                    Dates.parse(fields[4]));
         }
         default -> throw new ElsaException("\"" + fields[0]
                 + "\" is not a task type; it should be T, D or E");

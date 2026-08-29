@@ -1,10 +1,12 @@
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
  * Entry point of the Elsa chatbot.
  * Greets the user, stores todos, deadlines and events, lists them back on request,
- * marks them as done or not done, deletes them, reports what it cannot understand,
+ * marks them as done or not done, deletes them, lists those falling on a given
+ * date, reports what it cannot understand,
  * and exits when the user types "bye".
  * The task list is saved to the hard disk every time it changes and is read back
  * at startup; see {@link Storage}.
@@ -91,6 +93,13 @@ public class Elsa {
                     isRunning = false;
                 }
                 case LIST -> printBlock(formatTasks(tasks));
+                case ON -> {
+                    if (arguments.isEmpty()) {
+                        throw new ElsaException("Which date? Use: " + command.getUsage()
+                                + ", for example: on 2019-10-15.");
+                    }
+                    printBlock(formatTasksOn(tasks, requireDate(arguments, command)));
+                }
                 case MARK -> {
                     int index = parseTaskIndex(arguments, tasks.size(), command);
                     tasks.get(index).markAsDone();
@@ -123,8 +132,8 @@ public class Elsa {
                     String[] parts = requireSeparator(arguments, BY_SEPARATOR, command);
                     String description = requireNonEmpty(parts[0],
                             "description of a deadline", command);
-                    String by = requireNonEmpty(parts[1],
-                            "due time after " + BY_SEPARATOR, command);
+                    LocalDate by = requireDate(requireNonEmpty(parts[1],
+                            "due date after " + BY_SEPARATOR, command), command);
                     addTask(tasks, new Deadline(description, by));
                 }
                 case EVENT -> {
@@ -134,10 +143,10 @@ public class Elsa {
                     String description = requireNonEmpty(parts[0],
                             "description of an event", command);
                     String[] times = requireSeparator(parts[1], TO_SEPARATOR, command);
-                    String from = requireNonEmpty(times[0],
-                            "start time after " + FROM_SEPARATOR, command);
-                    String to = requireNonEmpty(times[1],
-                            "end time after " + TO_SEPARATOR, command);
+                    LocalDate from = requireDate(requireNonEmpty(times[0],
+                            "start date after " + FROM_SEPARATOR, command), command);
+                    LocalDate to = requireDate(requireNonEmpty(times[1],
+                            "end date after " + TO_SEPARATOR, command), command);
                     addTask(tasks, new Event(description, from, to));
                 }
                 case NOTHING -> throw new ElsaException("You did not type anything. Try \""
@@ -205,6 +214,25 @@ public class Elsa {
                     + command.getUsage());
         }
         return parts;
+    }
+
+    /**
+     * Reads a piece of a command as a date, saying how to write one if it is not.
+     * The date itself is understood by {@link Dates}; this method only adds the
+     * usage of the command being run, so the user can see the whole line again.
+     *
+     * @param value   the text the user gave as a date
+     * @param command the command being run, which supplies the usage to show
+     * @return the date that text describes
+     * @throws ElsaException if the text is not a date
+     */
+    private static LocalDate requireDate(String value, Command command)
+            throws ElsaException {
+        try {
+            return Dates.parse(value);
+        } catch (ElsaException e) {
+            throw new ElsaException(e.getMessage() + ". Use: " + command.getUsage());
+        }
     }
 
     /**
@@ -365,6 +393,36 @@ public class Elsa {
             // List indices start at 0, but the display numbering starts at 1.
             // Appending the Task calls its toString() to render "[D][X] return book (by: Sunday)".
             list.append("\n").append(i + 1).append(".").append(tasks.get(i));
+        }
+        return list.toString();
+    }
+
+    /**
+     * Builds the list of tasks falling on one date, as a single multi-line string.
+     *
+     * <p>Each task keeps the number it has in the full list rather than being
+     * renumbered from 1, so that a number read here can be given straight to
+     * "mark" or "delete". Renumbering would make those commands act on the wrong
+     * task, because they count positions in the whole list.
+     *
+     * @param tasks the stored tasks, in the order they were added
+     * @param date  the date being asked about
+     * @return a heading followed by the matching tasks, or a line saying there are none
+     */
+    private static String formatTasksOn(ArrayList<Task> tasks, LocalDate date) {
+        StringBuilder list = new StringBuilder("Here are the tasks on "
+                + Dates.format(date) + ":");
+        boolean isFound = false;
+        for (int i = 0; i < tasks.size(); i++) {
+            // Each task decides for itself whether it falls on the date; see
+            // Task.occursOn(), which deadlines and events answer differently.
+            if (tasks.get(i).occursOn(date)) {
+                isFound = true;
+                list.append("\n").append(i + 1).append(".").append(tasks.get(i));
+            }
+        }
+        if (!isFound) {
+            return "Nothing on " + Dates.format(date) + ".";
         }
         return list.toString();
     }
