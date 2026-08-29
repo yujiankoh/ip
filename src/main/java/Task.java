@@ -73,7 +73,9 @@ public class Task {
      * @return whether the task is done, as 1 or 0, followed by its description
      */
     public String toSaveFormat() {
-        // 1 and 0 are used rather than true and false to keep the line short.
-        return (isDone ? "1" : "0") + " | " + description;
+        // The markers and the separator are named in TaskFormat, which also reads
+        // them back, so the two directions cannot drift apart.
+        return (isDone ? TaskFormat.DONE : TaskFormat.NOT_DONE)
+                + TaskFormat.SEPARATOR + description;
     }
 }

@@ -1090,19 +1090,19 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OLAF!!! The description of a todo cannot contain "|" with a space on each side, because that is how data/elsa.txt separates the parts of a task. Use: todo <description>
+     OLAF!!! The description of a todo cannot contain "|" with a space on each side, because that is how the parts of a stored task are separated. Use: todo <description>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OLAF!!! The description of a deadline cannot contain "|" with a space on each side, because that is how data/elsa.txt separates the parts of a task. Use: deadline <description> /by <date>
+     OLAF!!! The description of a deadline cannot contain "|" with a space on each side, because that is how the parts of a stored task are separated. Use: deadline <description> /by <date>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OLAF!!! The due date after /by cannot contain "|" with a space on each side, because that is how data/elsa.txt separates the parts of a task. Use: deadline <description> /by <date>
+     OLAF!!! The due date after /by cannot contain "|" with a space on each side, because that is how the parts of a stored task are separated. Use: deadline <description> /by <date>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OLAF!!! The start date after /from cannot contain "|" with a space on each side, because that is how data/elsa.txt separates the parts of a task. Use: event <description> /from <date> /to <date>
+     OLAF!!! The start date after /from cannot contain "|" with a space on each side, because that is how the parts of a stored task are separated. Use: event <description> /from <date> /to <date>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

@@ -67,6 +67,7 @@ public class Deadline extends Task {
      */
     @Override
     public String toSaveFormat() {
-        return "D | " + super.toSaveFormat() + " | " + Dates.toSaveFormat(by);
+        return TaskFormat.DEADLINE + TaskFormat.SEPARATOR + super.toSaveFormat()
+                + TaskFormat.SEPARATOR + Dates.toSaveFormat(by);
     }
 }

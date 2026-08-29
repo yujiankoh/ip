@@ -61,7 +61,8 @@ public class Event extends Task {
      */
     @Override
     public String toSaveFormat() {
-        return "E | " + super.toSaveFormat() + " | " + Dates.toSaveFormat(from)
-                + " | " + Dates.toSaveFormat(to);
+        return TaskFormat.EVENT + TaskFormat.SEPARATOR + super.toSaveFormat()
+                + TaskFormat.SEPARATOR + Dates.toSaveFormat(from)
+                + TaskFormat.SEPARATOR + Dates.toSaveFormat(to);
     }
 }
