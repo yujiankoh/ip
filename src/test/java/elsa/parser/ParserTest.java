@@ -10,6 +10,7 @@ import elsa.ElsaException;
 import elsa.command.AddCommand;
 import elsa.command.DeleteCommand;
 import elsa.command.ExitCommand;
+import elsa.command.FindCommand;
 import elsa.command.ListCommand;
 import elsa.command.MarkCommand;
 import elsa.command.OnCommand;
@@ -82,6 +83,33 @@ public class ParserTest {
     @Test
     public void parse_on_returnsOnCommand() throws ElsaException {
         assertInstanceOf(OnCommand.class, Parser.parse("on 2019-10-15"));
+    }
+
+    @Test
+    public void parse_find_returnsFindCommand() throws ElsaException {
+        assertInstanceOf(FindCommand.class, Parser.parse("find book"));
+    }
+
+    /** A keyword may be several words, so the rest of the line is taken as it is. */
+    @Test
+    public void parse_findWithSeveralWords_returnsFindCommand() throws ElsaException {
+        assertInstanceOf(FindCommand.class, Parser.parse("find read book"));
+    }
+
+    @Test
+    public void parse_findWithoutAKeyword_throwsException() {
+        assertThrows(ElsaException.class, () -> Parser.parse("find"));
+        assertThrows(ElsaException.class, () -> Parser.parse("find    "));
+    }
+
+    /**
+     * Unlike a description, a keyword is never stored, so text that could not be
+     * saved as a task is still allowed to be searched for.
+     */
+    @Test
+    public void parse_findWithTheFieldSeparator_isAccepted() throws ElsaException {
+        assertInstanceOf(FindCommand.class,
+                Parser.parse("find read" + TaskFormat.SEPARATOR + "book"));
     }
 
     /** Only leaving ends the session, whatever else was typed. */

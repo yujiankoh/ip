@@ -63,6 +63,25 @@ public class Task {
     }
 
     /**
+     * Returns whether this task's description contains the given keyword.
+     *
+     * <p>Only the description is searched, not the type marker or the dates, so
+     * that "find D" looks for the letter D in what the user wrote rather than
+     * returning every deadline. The search ignores case, because someone looking
+     * for a task they wrote themselves should not have to remember how they
+     * capitalised it.
+     *
+     * <p>Every kind of task carries a description, so unlike {@link #occursOn}
+     * this is answered the same way for all of them and none of them override it.
+     *
+     * @param keyword the text to look for
+     * @return true if the description contains that text
+     */
+    public boolean matches(String keyword) {
+        return description.toLowerCase().contains(keyword.toLowerCase());
+    }
+
+    /**
      * Returns the task as it should appear to the user, for example "[X] read book".
      * Subclasses add their own type marker and extra information around this.
      *

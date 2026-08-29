@@ -86,6 +86,19 @@ public class DeadlineTest {
         assertFalse(deadline.occursOn(PAST.plusDays(1)));
     }
 
+    /**
+     * Searching looks at the description only. A deadline's date is shown to the
+     * user but is not something they wrote, so "find 2019" must not return every
+     * task due that year.
+     */
+    @Test
+    public void matches_textFromTheDateRatherThanTheDescription_returnsFalse() {
+        Deadline deadline = new Deadline("return book", PAST);
+        assertTrue(deadline.matches("book"));
+        assertFalse(deadline.matches("2019"));
+        assertFalse(deadline.matches("Oct"));
+    }
+
     // ------------------------------------------------------------------
     // Writing it out
     // ------------------------------------------------------------------

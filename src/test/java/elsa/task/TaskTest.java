@@ -66,6 +66,72 @@ public class TaskTest {
         assertFalse(task.occursOn(LocalDate.now()));
     }
 
+    // ------------------------------------------------------------------
+    // Matching a keyword
+    // ------------------------------------------------------------------
+
+    @Test
+    public void matches_keywordInTheMiddle_returnsTrue() {
+        assertTrue(new Task("read a good book").matches("good"));
+    }
+
+    @Test
+    public void matches_keywordAtTheStart_returnsTrue() {
+        assertTrue(new Task("read book").matches("read"));
+    }
+
+    @Test
+    public void matches_keywordAtTheEnd_returnsTrue() {
+        assertTrue(new Task("read book").matches("book"));
+    }
+
+    @Test
+    public void matches_wholeDescription_returnsTrue() {
+        assertTrue(new Task("read book").matches("read book"));
+    }
+
+    /** A keyword need not be a whole word, so a prefix of one still matches. */
+    @Test
+    public void matches_partOfAWord_returnsTrue() {
+        assertTrue(new Task("read book").matches("boo"));
+    }
+
+    @Test
+    public void matches_keywordNotPresent_returnsFalse() {
+        assertFalse(new Task("read book").matches("zebra"));
+    }
+
+    /**
+     * Someone looking for a task they wrote themselves should not have to
+     * remember how they capitalised it, so the search ignores case both ways.
+     */
+    @Test
+    public void matches_differentCase_returnsTrue() {
+        assertTrue(new Task("Read Book").matches("book"));
+        assertTrue(new Task("read book").matches("BOOK"));
+        assertTrue(new Task("ReAd BoOk").matches("aD bO"));
+    }
+
+    /**
+     * Only the description is searched. The type marker and the done marker are
+     * part of how a task is shown, not of what the user wrote, so searching for
+     * "T" or "X" must not return every todo or every finished task.
+     */
+    @Test
+    public void matches_textFromTheDisplayedFormOnly_returnsFalse() {
+        Task task = new Task("read book");
+        task.markAsDone();
+        assertEquals("[X] read book", task.toString());
+        assertFalse(task.matches("[X]"));
+        assertFalse(task.matches("X"));
+    }
+
+    /** Every description contains the empty string, so every task matches it. */
+    @Test
+    public void matches_emptyKeyword_returnsTrue() {
+        assertTrue(new Task("read book").matches(""));
+    }
+
     @Test
     public void toString_notDone_showsEmptyBrackets() {
         assertEquals("[ ] read book", new Task("read book").toString());
