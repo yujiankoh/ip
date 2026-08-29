@@ -8,10 +8,16 @@ import java.time.LocalDate;
  */
 public class Task {
     /**
-     * Fields are protected rather than private so that the kinds of task
-     * that extend this class (todos, deadlines, events) can reuse them.
+     * The text describing what is to be done.
+     * Protected rather than private so that the kinds of task that extend this
+     * class (todos, deadlines, events) can reuse it.
      */
     protected String description;
+
+    /**
+     * Whether the task has been completed.
+     * Protected for the same reason as {@link #description}.
+     */
     protected boolean isDone;
 
     /**

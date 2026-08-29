@@ -75,6 +75,14 @@ public class TaskFormat {
     private static final String SPLIT_ON = Pattern.quote(SEPARATOR);
 
     /**
+     * Prevents this class from being instantiated. It is a place to keep the
+     * format in, not a thing to make one of. Java supplies a public constructor
+     * to any class that declares none, so refusing one has to be written down.
+     */
+    private TaskFormat() {
+    }
+
+    /**
      * Turns one line of the data file back into a task.
      * This is the reverse of {@link Task#toSaveFormat()}: the type letter chooses
      * which kind of task to build, and the fields after it fill that task in.

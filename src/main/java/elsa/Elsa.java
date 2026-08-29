@@ -97,6 +97,14 @@ public class Elsa {
         }
     }
 
+    /**
+     * Starts the chatbot.
+     *
+     * <p>The data file is named here rather than inside {@link Storage}, so that
+     * the one place deciding where the tasks live is the program's starting point.
+     *
+     * @param args command line arguments, which the chatbot does not use
+     */
     public static void main(String[] args) {
         new Elsa(FILE_PATH).run();
     }
