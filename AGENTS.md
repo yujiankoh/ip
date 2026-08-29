@@ -28,11 +28,29 @@ Unless the user says otherwise, assume that you are assisting a student working 
 
 Ensure that Java 25 is used when running the application or build tasks. On macOS, use `sdk use java 25.0.3.fx-zulu` to switch to Java 25 if needed.
 
+## Java coding standard
+
+All Java code in this project — under `src/main/java` and `src/test/java` alike — **must follow the SE-EDU Java coding standard (intermediate level)**. It is recorded in the `seedu-java-coding-standard` skill (`.claude/skills/seedu-java-coding-standard/SKILL.md`), which is the authority; the standard itself is at <https://se-education.org/guides/conventions/java/intermediate.html>.
+
+**Invoke the `seedu-java-coding-standard` skill before writing or editing any `.java` file**, and apply the standard while writing rather than as a clean-up pass afterwards. The same applies when reviewing Java code for style, or when asked whether some code conforms.
+
+The rules most often broken, as a reminder: 4 spaces and never tabs; lines under 110 characters and never over 120; K&R braces; braces on every conditional and loop body however short; explicit imports and never a fully qualified name written inline; methods named as verbs; booleans named `isX`/`hasX`/`wasX`; collections named in the plural; a Javadoc header on every public class and method, its first sentence a summary beginning `Returns ...`, `Adds ...` and so on.
+
+`./gradlew javadoc` must report **zero warnings**. Treat a new warning as a defect to fix, not as noise.
+
+Where the skill records a project-specific decision — such as `Dates.today()` keeping its noun name, or a `{@link}` being avoided because it would create a package dependency — follow it rather than reopening the question.
+
 ## Git
 
+**All commits and branches must follow the SE-EDU Git conventions**, recorded in the `seedu-git-standard` skill (`.claude/skills/seedu-git-standard/SKILL.md`), which is the authority; the conventions themselves are at <https://se-education.org/guides/conventions/git.html>.
+
+**Invoke the `seedu-git-standard` skill before drafting any commit message or naming any branch.**
+
+In short: the subject line is in the imperative mood, capitalised, has no full stop, and is at most 50 characters (72 hard). A non-trivial commit has a body, separated from the subject by a blank line and wrapped at 72 characters, explaining WHAT and WHY rather than HOW, and avoiding the words "currently" and "originally". Branches are kebab case, except increment branches, which are `branch-<TagName>` because the course instructions and the progress dashboard both expect that form.
+
 Use lightweight tags unless the user requests an annotated tag.
-When proposing or creating a commit message, include enough detail to explain the rationale for the change.
-Do not commit or push unless explicitly asked.
+Do not commit, tag or push unless explicitly asked; prepare the change and hand over the commands.
+Remember that `git push` does not carry tags, and that the branch needs pushing as well as the tag.
 
 ## Testing after code changes
 

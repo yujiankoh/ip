@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import elsa.ElsaException;
 import elsa.task.Deadline;
+import elsa.task.Event;
 import elsa.task.TaskList;
 import elsa.task.Todo;
 import java.io.IOException;
@@ -195,7 +196,7 @@ public class StorageTest {
         TaskList saved = new TaskList();
         saved.add(new Todo("read book"));
         saved.add(new Deadline("return book", LocalDate.of(2999, 1, 1)));
-        saved.add(new elsa.task.Event("project meeting",
+        saved.add(new Event("project meeting",
                 LocalDate.of(2019, 10, 14), LocalDate.of(2019, 10, 16)));
         saved.mark(0);
         storage.save(saved);
