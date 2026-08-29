@@ -155,7 +155,7 @@ public class Storage {
                 continue;
             }
             try {
-                tasks.add(parseTask(line));
+                tasks.add(readSavedTask(line));
             } catch (ElsaException e) {
                 // Line numbers start at 1 for the user, as they do in an editor.
                 problems.add("Line " + (i + 1) + ": " + e.getMessage());
@@ -171,11 +171,16 @@ public class Storage {
      * This is the reverse of {@link Task#toSaveFormat()}: the type letter chooses
      * which kind of task to build, and the fields after it fill that task in.
      *
+     * <p>Named for reading rather than parsing to keep it apart from {@link Parser},
+     * which reads the quite different language the user types. This one reads the
+     * file format, which the save methods above write, so the two halves of that
+     * format are defined in the same class.
+     *
      * @param line one line of the data file
      * @return the task the line describes
      * @throws ElsaException if the line does not follow the format above
      */
-    private static Task parseTask(String line) throws ElsaException {
+    private static Task readSavedTask(String line) throws ElsaException {
         // The separator is a literal " | ". split() takes a regular expression,
         // in which "|" means "or", so it is escaped here to mean an ordinary bar.
         String[] fields = line.split(" \\| ");
