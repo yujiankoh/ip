@@ -96,7 +96,7 @@ public class Elsa {
      * @return true to carry on reading commands, false once the user has said "bye"
      * @throws ElsaException if the command could not be carried out
      */
-    private boolean execute(Command command, String arguments) throws ElsaException {
+    private boolean execute(CommandType command, String arguments) throws ElsaException {
         switch (command) {
         case BYE -> {
             ui.showFarewell();
@@ -127,7 +127,7 @@ public class Elsa {
         case DEADLINE -> addTask(Parser.parseDeadline(arguments));
         case EVENT -> addTask(Parser.parseEvent(arguments));
         case NOTHING -> throw new ElsaException("You did not type anything. Try \""
-                + Command.TODO.getUsage() + "\", or \"list\" to see what you have.");
+                + CommandType.TODO.getUsage() + "\", or \"list\" to see what you have.");
         case UNKNOWN -> throw new ElsaException(
                 "I'm sorry, but I don't know what that means :-(");
         }

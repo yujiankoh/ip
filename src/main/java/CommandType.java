@@ -1,8 +1,12 @@
 /**
- * The commands the chatbot understands. Each constant pairs the keyword the user types
- * with the usage shown when that command is typed wrongly, so the two cannot be mismatched.
+ * The kinds of command the chatbot understands. Each constant pairs the keyword the
+ * user types with the usage shown when that command is typed wrongly, so the two
+ * cannot be mismatched.
+ *
+ * <p>This is the vocabulary of the language, not the behaviour: it says which words
+ * are commands and how each is written, and nothing about what any of them does.
  */
-public enum Command {
+public enum CommandType {
     BYE("bye", "bye"),
     LIST("list", "list"),
     ON("on", "on <date>"),
@@ -32,7 +36,7 @@ public enum Command {
      * @param keyword the word the user types to invoke this command
      * @param usage   the correct way to type this command, shown in error messages
      */
-    Command(String keyword, String usage) {
+    CommandType(String keyword, String usage) {
         this.keyword = keyword;
         this.usage = usage;
     }
@@ -61,9 +65,9 @@ public enum Command {
      * @param keyword the first word of the line the user typed
      * @return the matching command, or UNKNOWN if no command uses that keyword
      */
-    public static Command fromKeyword(String keyword) {
+    public static CommandType fromKeyword(String keyword) {
         // values() returns every constant declared above, in declaration order.
-        for (Command command : values()) {
+        for (CommandType command : values()) {
             if (keyword.equals(command.keyword)) {
                 return command;
             }

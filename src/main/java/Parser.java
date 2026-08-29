@@ -4,7 +4,7 @@ import java.time.LocalDate;
  * Makes sense of what the user typed.
  *
  * <p>This class turns text into the values the rest of the program works with:
- * a line becomes a {@link Command} and its arguments, and those arguments become
+ * a line becomes a {@link CommandType} and its arguments, and those arguments become
  * a {@link Task}, a task number or a date. Everything it rejects, it rejects with
  * an explanation written for the user, so the caller can hand that straight to
  * {@link Ui} without knowing why the input was wrong.
@@ -29,7 +29,7 @@ public class Parser {
      * @param command   the command the first word names, or UNKNOWN if none does
      * @param arguments everything after the first word, trimmed; empty if there is none
      */
-    public record ParsedLine(Command command, String arguments) {
+    public record ParsedLine(CommandType command, String arguments) {
     }
 
     /**
@@ -45,7 +45,7 @@ public class Parser {
         // as a todo missing its description, rather than as an unknown command.
         String[] words = line.split("\\s+", 2);
         String arguments = (words.length > 1) ? words[1].trim() : "";
-        return new ParsedLine(Command.fromKeyword(words[0]), arguments);
+        return new ParsedLine(CommandType.fromKeyword(words[0]), arguments);
     }
 
     /**
@@ -56,7 +56,7 @@ public class Parser {
      * @throws ElsaException if there is no description, or it cannot be stored
      */
     public static Todo parseTodo(String arguments) throws ElsaException {
-        Command command = Command.TODO;
+        CommandType command = CommandType.TODO;
         requireDescription(arguments, command);
         requireNoSeparator(arguments, "description of a todo", command);
         return new Todo(arguments);
@@ -70,7 +70,7 @@ public class Parser {
      * @throws ElsaException if a part is missing, empty, unstorable or not a date
      */
     public static Deadline parseDeadline(String arguments) throws ElsaException {
-        Command command = Command.DEADLINE;
+        CommandType command = CommandType.DEADLINE;
         requireDescription(arguments, command);
         // Limit of 2 keeps any later "/by" as part of the due date itself.
         String[] parts = requireSeparator(arguments, BY_SEPARATOR, command);
@@ -88,7 +88,7 @@ public class Parser {
      * @throws ElsaException if a part is missing, empty, unstorable or not a date
      */
     public static Event parseEvent(String arguments) throws ElsaException {
-        Command command = Command.EVENT;
+        CommandType command = CommandType.EVENT;
         requireDescription(arguments, command);
         // Split off the description first, then split what remains into the two dates.
         String[] parts = requireSeparator(arguments, FROM_SEPARATOR, command);
@@ -109,7 +109,7 @@ public class Parser {
      * @return the date the user named
      * @throws ElsaException if no date was given, or it is not a date
      */
-    public static LocalDate parseDate(String arguments, Command command)
+    public static LocalDate parseDate(String arguments, CommandType command)
             throws ElsaException {
         if (arguments.isEmpty()) {
             throw new ElsaException("Which date? Use: " + command.getUsage()
@@ -129,7 +129,7 @@ public class Parser {
      * @throws ElsaException if no number was given, it is not a whole number,
      *                       or no task has that number
      */
-    public static int parseTaskIndex(String arguments, int taskCount, Command command)
+    public static int parseTaskIndex(String arguments, int taskCount, CommandType command)
             throws ElsaException {
         String keyword = command.getKeyword();
         if (arguments.isEmpty()) {
@@ -148,7 +148,7 @@ public class Parser {
 
         if (taskCount == 0) {
             throw new ElsaException("There are no tasks yet, so there is nothing to "
-                    + keyword + ". Add one with \"" + Command.TODO.getUsage() + "\" first.");
+                    + keyword + ". Add one with \"" + CommandType.TODO.getUsage() + "\" first.");
         }
         if (number < 1 || number > taskCount) {
             String plural = (taskCount == 1) ? "task" : "tasks";
@@ -167,7 +167,7 @@ public class Parser {
      * @param command   the command being run, which supplies its own name and usage
      * @throws ElsaException if nothing was typed after the keyword
      */
-    private static void requireDescription(String arguments, Command command)
+    private static void requireDescription(String arguments, CommandType command)
             throws ElsaException {
         if (arguments.isEmpty()) {
             String keyword = command.getKeyword();
@@ -187,7 +187,7 @@ public class Parser {
      * @return the two pieces on either side of the first occurrence of the separator
      * @throws ElsaException if the separator does not appear in the text
      */
-    private static String[] requireSeparator(String text, String separator, Command command)
+    private static String[] requireSeparator(String text, String separator, CommandType command)
             throws ElsaException {
         // Limit of 2 keeps any later occurrence as part of the second piece.
         String[] parts = text.split(separator, 2);
@@ -208,7 +208,7 @@ public class Parser {
      * @return the date that text describes
      * @throws ElsaException if the text is not a date
      */
-    private static LocalDate requireDate(String value, Command command)
+    private static LocalDate requireDate(String value, CommandType command)
             throws ElsaException {
         try {
             return Dates.parse(value);
@@ -229,7 +229,7 @@ public class Parser {
      * @param command the command being run, which supplies the usage to show
      * @throws ElsaException if the piece contains the separator
      */
-    private static void requireNoSeparator(String value, String what, Command command)
+    private static void requireNoSeparator(String value, String what, CommandType command)
             throws ElsaException {
         if (value.contains(Storage.SEPARATOR)) {
             throw new ElsaException("The " + what + " cannot contain \""
@@ -248,7 +248,7 @@ public class Parser {
      * @return the value with surrounding spaces removed
      * @throws ElsaException if the piece is empty once trimmed
      */
-    private static String requireNonEmpty(String value, String what, Command command)
+    private static String requireNonEmpty(String value, String what, CommandType command)
             throws ElsaException {
         String trimmed = value.trim();
         if (trimmed.isEmpty()) {
