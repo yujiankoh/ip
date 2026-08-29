@@ -12,14 +12,29 @@ python .claude/skills/test-ui/scripts/run-ui-tests.py
 
 ## How the program is run
 
-The runner starts the program with this command, from the repository root:
+The runner builds the program once with Gradle, using this command:
 
-```run
-java src/main/java/elsa/Elsa.java
+```build
+gradlew shadowJar
 ```
 
-Java 25's source launcher compiles the other classes alongside `Elsa.java`,
-including those in sub-packages, so no separate build step is needed.
+and then starts it once per test case with this command, both from the
+repository root:
+
+```run
+java -jar build/libs/elsa.jar
+```
+
+The tests therefore run the same artifact the project ships. `java -jar` takes
+no class name: it reads `Main-Class` from the jar's manifest, which Gradle
+writes from the `mainClass` property in `build.gradle`. A wrong `mainClass`
+compiles cleanly and so cannot be caught by compilation, but it fails every
+case here immediately, which is the reason for testing the jar rather than the
+compiled classes or the sources.
+
+The build runs once, before the first case, so no case can test a stale jar.
+The runner picks `gradlew.bat` on Windows and `./gradlew` elsewhere, so the
+command written above stays the same on every platform.
 
 The chatbot saves its tasks to `./data/elsa.txt` under the repository root and
 reads them back at startup, so the runner puts that file into a known state

@@ -15,8 +15,12 @@ Only Python's standard library is used.
 
 The plan is read as Markdown with this structure:
 
+    ```build
+    gradlew shadowJar
+    ```
+
     ```run
-    java src/main/java/Elsa.java
+    java -jar build/libs/elsa.jar
     ```
 
     ### TC-1 - Greet and exit
@@ -30,6 +34,10 @@ The plan is read as Markdown with this structure:
     ```expected
     ...the exact console output...
     ```
+
+The optional ```build``` block is run once, before the first case, so that no
+case can be run against a stale build. If it fails, its output is shown and no
+case is run at all.
 
 The chatbot saves its tasks to a data file and reads them back at startup, so
 the runner controls that file before each case: a case with a ```data``` block
@@ -57,17 +65,51 @@ FENCE_RE = re.compile(r"^```(\w*)\s*$")
 DEFAULT_PLAN = Path("test/ui-test-plan.md")
 # Where the chatbot keeps its saved tasks, relative to the repository root.
 DATA_FILE = Path("data") / "elsa.txt"
-DEFAULT_COMMAND = "java src/main/java/Elsa.java"
+DEFAULT_COMMAND = "java -jar build/libs/elsa.jar"
 RULE = "-" * 70
+
+
+def resolve_wrapper(command: list[str], repo: Path) -> list[str]:
+    """Names the Gradle wrapper script the way the current platform needs it.
+
+    The test plan writes the build command as plain `gradlew ...` so that it reads
+    the same everywhere. The wrapper is really two files: `gradlew.bat` on Windows
+    and the extensionless shell script `gradlew` elsewhere. Neither is found by
+    name alone, because the repository root is not on PATH, so the full path is
+    used rather than relying on the working directory.
+    """
+    if not command or command[0] != "gradlew":
+        return command
+    script = "gradlew.bat" if sys.platform == "win32" else "gradlew"
+    return [str(repo / script)] + command[1:]
+
+
+def run_build(build: str, repo: Path) -> bool:
+    """Runs the plan's build command once. Returns True when the build succeeded."""
+    command = resolve_wrapper(shlex.split(build), repo)
+    print(f"Build:   {' '.join(command)}")
+    result = subprocess.run(command, cwd=str(repo), capture_output=True, text=True, timeout=600)
+    if result.returncode == 0:
+        print("Build:   OK")
+        return True
+    print("Build:   FAILED")
+    print(RULE)
+    for stream in (result.stdout, result.stderr):
+        for line in stream.rstrip().splitlines():
+            print(f"  ! {line}")
+    print(RULE)
+    print("No test case was run, because they would have tested a stale build.")
+    return False
 
 
 class PlanError(Exception):
     """Raised when the test plan cannot be understood."""
 
 
-def parse_plan(text: str) -> tuple[str, list[dict]]:
-    """Splits the plan into the run command and the list of test cases."""
+def parse_plan(text: str) -> tuple[str, str, list[dict]]:
+    """Splits the plan into the build command, the run command, and the test cases."""
     command = ""
+    build = ""
     cases: list[dict] = []
     current: dict | None = None
     fence: str | None = None
@@ -82,6 +124,8 @@ def parse_plan(text: str) -> tuple[str, list[dict]]:
                 block = "\n".join(buffer)
                 if fence == "run":
                     command = block.strip()
+                elif fence == "build":
+                    build = block.strip()
                 elif fence in ("input", "expected", "data"):
                     if current is None:
                         raise PlanError(f"line {number}: '{fence}' block before any '### ' heading")
@@ -112,7 +156,7 @@ def parse_plan(text: str) -> tuple[str, list[dict]]:
         if case["input"] is None or case["expected"] is None:
             raise PlanError(f"test case '{case['name']}' is missing an input or expected block")
 
-    return command or DEFAULT_COMMAND, cases
+    return command or DEFAULT_COMMAND, build, cases
 
 
 def normalise(text: str) -> list[str]:
@@ -222,7 +266,7 @@ def main(argv: list[str]) -> int:
         return 1
 
     try:
-        command, cases = parse_plan(plan_path.read_text(encoding="utf-8"))
+        command, build, cases = parse_plan(plan_path.read_text(encoding="utf-8"))
     except PlanError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
@@ -236,6 +280,18 @@ def main(argv: list[str]) -> int:
     print(f"Plan:    {plan_path}")
     print(f"Command: {command}")
     print(f"Cases:   {len(cases)}")
+
+    # Build before any case runs, so that a case can never pass against a stale build.
+    if build:
+        try:
+            if not run_build(build, repo):
+                return 1
+        except FileNotFoundError:
+            print(f"error: cannot run the build command '{build}' from {repo}", file=sys.stderr)
+            return 1
+        except subprocess.TimeoutExpired:
+            print("error: the build did not finish within 600 seconds", file=sys.stderr)
+            return 1
     print()
 
     for position, case in enumerate(cases, start=1):
