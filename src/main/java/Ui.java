@@ -134,7 +134,7 @@ public class Ui {
      *
      * @param tasks the stored tasks, in the order they were added
      */
-    public void showTasks(ArrayList<Task> tasks) {
+    public void showTasks(TaskList tasks) {
         if (tasks.isEmpty()) {
             showBlock(EMPTY_LIST);
             return;
@@ -157,7 +157,7 @@ public class Ui {
      * @param tasks the stored tasks, in the order they were added
      * @param date  the date being asked about
      */
-    public void showTasksOn(ArrayList<Task> tasks, LocalDate date) {
+    public void showTasksOn(TaskList tasks, LocalDate date) {
         StringBuilder list = new StringBuilder("Here are the tasks on "
                 + Dates.format(date) + ":");
         boolean isFound = false;

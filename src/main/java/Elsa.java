@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-
 /**
  * Entry point of the Elsa chatbot.
  * Greets the user, stores todos, deadlines and events, lists them back on request,
@@ -10,21 +8,19 @@ import java.util.ArrayList;
  * at startup; see {@link Storage}.
  *
  * <p>The work is shared out: {@link Ui} handles what the user sees and types,
- * {@link Parser} works out what a typed line means, and {@link Storage} keeps the
- * list on the disk. What is left here is the order those happen in, which is the
- * one thing that has to know about all three.
+ * {@link Parser} works out what a typed line means, {@link TaskList} holds the
+ * tasks, and {@link Storage} keeps them on the disk. What is left here is the
+ * order those happen in, which is the one thing that has to know about them all.
  */
 public class Elsa {
     public static void main(String[] args) {
         Ui ui = new Ui();
         ui.showWelcome();
 
-        // An ArrayList grows as tasks are added, so there is no fixed capacity to track
-        // separately: size() is always exactly how many tasks there are.
         // Tasks saved by an earlier run are read back here, so the list picks up where
         // the user left off. On the very first run there is no file yet, and load()
         // returns an empty list rather than treating that as a problem.
-        ArrayList<Task> tasks;
+        TaskList tasks;
         try {
             Storage.LoadResult loaded = Storage.load();
             tasks = loaded.tasks();
@@ -37,7 +33,7 @@ public class Elsa {
             // A file that cannot be understood is reported once, and the session goes
             // on with an empty list rather than refusing to start.
             ui.showError(e.getMessage());
-            tasks = new ArrayList<>();
+            tasks = new TaskList();
         }
 
         // The flag ends the loop from inside the switch, where a plain break would only
@@ -58,20 +54,20 @@ public class Elsa {
                 case ON -> ui.showTasksOn(tasks, Parser.parseDate(arguments, command));
                 case MARK -> {
                     int index = Parser.parseTaskIndex(arguments, tasks.size(), command);
-                    tasks.get(index).markAsDone();
+                    Task marked = tasks.mark(index);
                     Storage.save(tasks);
-                    ui.showMarked(tasks.get(index));
+                    ui.showMarked(marked);
                 }
                 case UNMARK -> {
                     int index = Parser.parseTaskIndex(arguments, tasks.size(), command);
-                    tasks.get(index).markAsNotDone();
+                    Task unmarked = tasks.unmark(index);
                     Storage.save(tasks);
-                    ui.showUnmarked(tasks.get(index));
+                    ui.showUnmarked(unmarked);
                 }
                 case DELETE -> {
                     int index = Parser.parseTaskIndex(arguments, tasks.size(), command);
-                    // remove() returns the task it took out, so it can be shown to the user.
-                    Task removed = tasks.remove(index);
+                    // delete() returns the task it took out, so it can be shown to the user.
+                    Task removed = tasks.delete(index);
                     Storage.save(tasks);
                     ui.showRemoved(removed, tasks.size());
                 }
@@ -100,7 +96,7 @@ public class Elsa {
      * @param task  the task the user asked to add
      * @throws ElsaException if the updated list could not be saved
      */
-    private static void addTask(Ui ui, ArrayList<Task> tasks, Task task)
+    private static void addTask(Ui ui, TaskList tasks, Task task)
             throws ElsaException {
         tasks.add(task);
         // Saved before the confirmation is shown, so the chatbot never claims to

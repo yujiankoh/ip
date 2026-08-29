@@ -60,7 +60,7 @@ public class Storage {
      * @param tasks    the tasks read from the file, in the order they appear
      * @param problems one message per line that could not be understood
      */
-    public record LoadResult(ArrayList<Task> tasks, ArrayList<String> problems) {
+    public record LoadResult(TaskList tasks, ArrayList<String> problems) {
     }
 
     /**
@@ -87,11 +87,11 @@ public class Storage {
      * @param tasks the tasks to save, in the order they appear in the list
      * @throws ElsaException if the file or its folder could not be written
      */
-    public static void save(ArrayList<Task> tasks) throws ElsaException {
+    public static void save(TaskList tasks) throws ElsaException {
         // Each task knows how to write itself as a line; see Task.toSaveFormat().
         ArrayList<String> lines = new ArrayList<>();
-        for (Task task : tasks) {
-            lines.add(task.toSaveFormat());
+        for (int i = 0; i < tasks.size(); i++) {
+            lines.add(tasks.get(i).toSaveFormat());
         }
 
         try {
@@ -125,7 +125,7 @@ public class Storage {
         ArrayList<Task> tasks = new ArrayList<>();
         ArrayList<String> problems = new ArrayList<>();
         if (!Files.exists(FILE_PATH)) {
-            return new LoadResult(tasks, problems);
+            return new LoadResult(new TaskList(tasks), problems);
         }
 
         List<String> lines;
@@ -151,7 +151,9 @@ public class Storage {
                 problems.add("Line " + (i + 1) + ": " + e.getMessage());
             }
         }
-        return new LoadResult(tasks, problems);
+        // Wrapped only at the end, so that the reading above works with a plain
+        // list and the caller still receives the list in the form it will use it.
+        return new LoadResult(new TaskList(tasks), problems);
     }
 
     /**
