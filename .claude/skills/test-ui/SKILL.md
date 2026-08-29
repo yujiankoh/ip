@@ -9,6 +9,12 @@ Run the text-based UI test cases recorded in `test/ui-test-plan.md`. Each case
 feeds a list of commands to the program on standard input and compares the whole
 console output against the expected output recorded in the plan.
 
+This is only one of the project's two suites, and running it is not on its own
+enough after a code change. The other is the JUnit unit tests in `src/test/java`,
+run with `./gradlew test`, which cover the top ~50% highest-value methods and
+must be kept up to that target whenever `src/main/java` changes. `AGENTS.md` is
+the authority on both; follow it rather than this file alone.
+
 ## Run the tests
 
 From the repository root:
