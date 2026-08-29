@@ -36,13 +36,38 @@ Do not commit or push unless explicitly asked.
 
 ## Testing after code changes
 
-The project has a text-based UI test suite: the test cases live in `test/ui-test-plan.md`, and the `test-ui` skill runs them (`.claude/skills/test-ui/scripts/run-ui-tests.py`).
+The project has two test suites, which cover opposite ends of the program and do not replace each other.
 
-After each change to code under `src/main/java`, and before proposing a commit:
+* **JUnit unit tests** live in `src/test/java`, mirroring the packages under `src/main/java`. Run them with `./gradlew test` (on Windows, `gradlew.bat test`). They check that one method handles every input it can be handed.
+* **Text-based UI tests** live in `test/ui-test-plan.md`, run by the `test-ui` skill (`.claude/skills/test-ui/scripts/run-ui-tests.py`). They start the whole program, type commands at it, and compare the entire console output. They check that the assembled program behaves correctly for a user.
 
-1. **Update `test/ui-test-plan.md` if needed.** Add a test case for each new command or behaviour, and update the expected output of existing cases when the change alters what the program prints. Every case's expected output contains the banner, greeting, and borders, so a change to any of those means updating every case. Derive expected output from the increment's requirements, not from what the program currently prints — expected output copied from actual output records present behaviour as correct and cannot detect an existing bug.
-2. **Invoke the `test-ui` skill** to run the suite.
-3. **Show the test session transcript** — the commands typed and the console output — and report how many cases passed. Show it rather than only summarising it.
-4. **If a case fails, stop there.** Report the expected and actual outputs, and say whether the code or the test plan is at fault. Do not edit either one purely to make the suite pass.
+### JUnit coverage target
 
-Changes that do not touch `src/main/java` — documentation, skills, or the test plan itself — do not need a test run.
+**Aim to have JUnit tests for roughly the top 50% highest-value methods**, judged by how much logic a method holds multiplied by how badly a silent failure in it would hurt. Complex, core, or critical business logic comes first.
+
+Currently in the covered half: `Dates`, `Parser.parse`, `TaskFormat.decode`, `Storage.save`/`load`, `Task` and its three subclasses, the mutating methods of `TaskList`, and `CommandType.fromKeyword`.
+
+Currently, and deliberately, outside it: `Ui`, whose methods only print and are already covered end to end by the UI suite; the `Command` subclasses' `execute`, which each need a task list, a user interface and a store; and plain getters or methods that pass straight through to a field or a collection.
+
+**The JUnit tests must be updated after each code change so that this target continues to hold.** Concretely, in the same commit as the change:
+
+* a new method that falls in the high-value half needs tests before the commit, not after;
+* a changed method needs its existing tests updated to match the new behaviour, derived from the requirements rather than from what the code now returns;
+* a method that moves or is renamed takes its test class with it, so the mirrored path and the `ClassNameTest` name stay correct;
+* a deleted method has its tests deleted with it.
+
+Follow the Gradle and JUnit conventions: `src/test/java/<same package path>/<ClassName>Test.java`, and test methods named `featureUnderTest_testScenario_expectedBehavior`.
+
+Prefer tests that would actually fail if the method were wrong. A quick way to confirm one would: change the method under test so that it is wrong, check that the expected tests fail and that they name the right thing, then put the method back.
+
+### What to do after each change under `src/main/java`
+
+Before proposing a commit:
+
+1. **Update the JUnit tests** as described above, then run `./gradlew test` and report how many tests passed.
+2. **Update `test/ui-test-plan.md` if needed.** Add a test case for each new command or behaviour, and update the expected output of existing cases when the change alters what the program prints. Every case's expected output contains the banner, greeting, and borders, so a change to any of those means updating every case. Derive expected output from the increment's requirements, not from what the program currently prints — expected output copied from actual output records present behaviour as correct and cannot detect an existing bug.
+3. **Invoke the `test-ui` skill** to run the UI suite.
+4. **Show the test session transcript** — the commands typed and the console output — and report how many cases passed. Show it rather than only summarising it.
+5. **If anything fails, stop there.** Report the expected and actual results, and say whether the code or the test is at fault. Do not edit either one purely to make a suite pass.
+
+Changes that do not touch `src/main/java` — documentation, skills, or a test plan itself — do not need a test run.
