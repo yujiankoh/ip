@@ -21,6 +21,15 @@ import elsa.ui.Ui;
  */
 public abstract class Command {
     /**
+     * Creates a command. Declared so that the subclasses' constructors have
+     * something written down to call, rather than the one Java would supply.
+     * Protected because only a subclass has any reason to call it: this class is
+     * abstract, so a Command on its own cannot be made.
+     */
+    protected Command() {
+    }
+
+    /**
      * Carries this command out.
      *
      * <p>The three things a command might need are handed in rather than held as

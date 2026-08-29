@@ -12,6 +12,14 @@ import elsa.ui.Ui;
  * decided by the command itself rather than by the loop recognising "bye".
  */
 public class ExitCommand extends Command {
+    /**
+     * Creates a command that ends the session.
+     * Leaving needs nothing said about it, so unlike most commands this one is
+     * built with no arguments.
+     */
+    public ExitCommand() {
+    }
+
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) {
         // The list is saved after every change, so there is nothing left to write.
