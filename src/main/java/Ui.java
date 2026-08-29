@@ -180,12 +180,13 @@ public class Ui {
      * Shows a warning naming the lines of the data file that could not be read.
      *
      * @param problems one message per line that could not be understood
+     * @param fileName the file the lines came from, named so the user can go and fix it
      */
-    public void showSkippedLines(ArrayList<String> problems) {
+    public void showSkippedLines(ArrayList<String> problems, String fileName) {
         String plural = (problems.size() == 1) ? "line" : "lines";
         String them = (problems.size() == 1) ? "it" : "them";
         StringBuilder message = new StringBuilder("I could not understand "
-                + problems.size() + " " + plural + " of " + Storage.getFileName()
+                + problems.size() + " " + plural + " of " + fileName
                 + ", so I have left " + them + " out:");
         for (String problem : problems) {
             message.append("\n  ").append(problem);

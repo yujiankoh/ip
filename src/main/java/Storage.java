@@ -33,20 +33,21 @@ public class Storage {
     /** The marker written for a task that has not been completed. */
     private static final String NOT_DONE = "0";
 
-    /** The folder the data file is kept in, named on its own so that it can also
-     * be shown to the user without an operating system's separator in it. */
-    private static final String FOLDER = "data";
-
-    /** The name of the data file inside that folder. */
-    private static final String FILE_NAME = "elsa.txt";
+    /**
+     * The file this Storage looks after, as the caller wrote it, for example
+     * "data/elsa.txt". Kept as text as well as a Path so that messages naming the
+     * file read the same on every operating system: Path.toString() would use the
+     * separator of whichever one is running.
+     */
+    private final String name;
 
     /**
-     * Where the task list is kept. The path is relative, so it is resolved against
-     * the folder the program is run from (the project root) rather than naming one
-     * computer's drive, and Path.of joins the parts with the separator the current
-     * operating system uses, so the same code works on Windows and on macOS.
+     * Where the task list is kept. The path given is relative, so it is resolved
+     * against the folder the program is run from rather than naming one computer's
+     * drive, and Path.of turns it into a path the current operating system
+     * understands, so the same code works on Windows and on macOS.
      */
-    private static final Path FILE_PATH = Path.of(FOLDER, FILE_NAME);
+    private final Path filePath;
 
     /**
      * What a load produced: the tasks that could be read, and one message for
@@ -64,19 +65,28 @@ public class Storage {
     }
 
     /**
+     * Creates a store that keeps the tasks in one named file.
+     *
+     * <p>The file is named by the caller rather than fixed here, so that the one
+     * place deciding where the tasks live is the program's starting point, and so
+     * that a test could point a Storage at a file of its own. Write the path with
+     * forward slashes: every operating system accepts them.
+     *
+     * @param filePath where to keep the tasks, relative to where the program is run
+     */
+    public Storage(String filePath) {
+        this.name = filePath;
+        this.filePath = Path.of(filePath);
+    }
+
+    /**
      * Returns the name of the data file, so that messages to the user can say
      * where the tasks are kept without other classes knowing the path itself.
      *
-     * <p>The parts are joined with a forward slash rather than with
-     * FILE_PATH.toString(), which would use the separator of whichever operating
-     * system happens to be running and so word the same message differently on
-     * Windows and on macOS. A forward slash is understood everywhere, and it
-     * keeps the recorded output of the tests the same on every computer.
-     *
      * @return the path of the data file as text, such as "data/elsa.txt"
      */
-    public static String getFileName() {
-        return FOLDER + "/" + FILE_NAME;
+    public String getFileName() {
+        return name;
     }
 
     /**
@@ -87,7 +97,7 @@ public class Storage {
      * @param tasks the tasks to save, in the order they appear in the list
      * @throws ElsaException if the file or its folder could not be written
      */
-    public static void save(TaskList tasks) throws ElsaException {
+    public void save(TaskList tasks) throws ElsaException {
         // Each task knows how to write itself as a line; see Task.toSaveFormat().
         ArrayList<String> lines = new ArrayList<>();
         for (int i = 0; i < tasks.size(); i++) {
@@ -97,8 +107,8 @@ public class Storage {
         try {
             // The data folder is not part of the repository, so create it on the
             // first save. createDirectories does nothing if it already exists.
-            Files.createDirectories(FILE_PATH.getParent());
-            Files.write(FILE_PATH, lines);
+            Files.createDirectories(filePath.getParent());
+            Files.write(filePath, lines);
         } catch (IOException e) {
             // Rethrown as an ElsaException so the chatbot reports it the same way
             // as any other problem, instead of a stack trace ending the session.
@@ -121,16 +131,16 @@ public class Storage {
      * @return the tasks that could be read, and a message per line that could not
      * @throws ElsaException if the file exists but could not be read at all
      */
-    public static LoadResult load() throws ElsaException {
+    public LoadResult load() throws ElsaException {
         ArrayList<Task> tasks = new ArrayList<>();
         ArrayList<String> problems = new ArrayList<>();
-        if (!Files.exists(FILE_PATH)) {
+        if (!Files.exists(filePath)) {
             return new LoadResult(new TaskList(tasks), problems);
         }
 
         List<String> lines;
         try {
-            lines = Files.readAllLines(FILE_PATH);
+            lines = Files.readAllLines(filePath);
         } catch (IOException e) {
             // Unreadable, a folder rather than a file, or not text at all:
             // nothing can be salvaged, so this is reported as a failure.

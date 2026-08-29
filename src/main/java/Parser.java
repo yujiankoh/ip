@@ -234,8 +234,8 @@ public class Parser {
         if (value.contains(Storage.SEPARATOR)) {
             throw new ElsaException("The " + what + " cannot contain \""
                     + Storage.SEPARATOR.trim() + "\" with a space on each side, because"
-                    + " that is how " + Storage.getFileName() + " separates the parts of a"
-                    + " task. Use: " + command.getUsage());
+                    + " that is how the parts of a stored task are separated. Use: "
+                    + command.getUsage());
         }
     }
 

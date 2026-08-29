@@ -13,8 +13,14 @@
  * order those happen in, which is the one thing that has to know about them all.
  */
 public class Elsa {
+    /** Where the tasks are kept between runs, relative to the project root. */
+    private static final String FILE_PATH = "data/elsa.txt";
+
     /** What the user sees and types. Never replaced once the session starts. */
     private final Ui ui;
+
+    /** Reads and writes the saved tasks. */
+    private final Storage storage;
 
     /**
      * The tasks being kept. Not final because it is replaced when the saved list
@@ -23,13 +29,17 @@ public class Elsa {
     private TaskList tasks;
 
     /**
-     * Creates a chatbot with nothing in its list yet.
+     * Creates a chatbot that keeps its tasks in the named file, with nothing in
+     * its list yet.
      * Reading the saved tasks is left to {@link #run()} rather than done here, so
      * that the greeting is shown before any complaint about the saved file, and
      * so that making a chatbot does not by itself touch the disk.
+     *
+     * @param filePath where the tasks are kept, relative to where the program is run
      */
-    public Elsa() {
+    public Elsa(String filePath) {
         this.ui = new Ui();
+        this.storage = new Storage(filePath);
         this.tasks = new TaskList();
     }
 
@@ -63,12 +73,12 @@ public class Elsa {
      */
     private void loadTasks() {
         try {
-            Storage.LoadResult loaded = Storage.load();
+            Storage.LoadResult loaded = storage.load();
             tasks = loaded.tasks();
             if (!loaded.problems().isEmpty()) {
                 // The tasks that did load are kept, so the user is told what was
                 // lost rather than the whole file being thrown away.
-                ui.showSkippedLines(loaded.problems());
+                ui.showSkippedLines(loaded.problems(), storage.getFileName());
             }
         } catch (ElsaException e) {
             // A file that cannot be understood is reported once, and the session
@@ -97,20 +107,20 @@ public class Elsa {
         case MARK -> {
             int index = Parser.parseTaskIndex(arguments, tasks.size(), command);
             Task marked = tasks.mark(index);
-            Storage.save(tasks);
+            storage.save(tasks);
             ui.showMarked(marked);
         }
         case UNMARK -> {
             int index = Parser.parseTaskIndex(arguments, tasks.size(), command);
             Task unmarked = tasks.unmark(index);
-            Storage.save(tasks);
+            storage.save(tasks);
             ui.showUnmarked(unmarked);
         }
         case DELETE -> {
             int index = Parser.parseTaskIndex(arguments, tasks.size(), command);
             // delete() returns the task it took out, so it can be shown to the user.
             Task removed = tasks.delete(index);
-            Storage.save(tasks);
+            storage.save(tasks);
             ui.showRemoved(removed, tasks.size());
         }
         case TODO -> addTask(Parser.parseTodo(arguments));
@@ -136,11 +146,11 @@ public class Elsa {
         tasks.add(task);
         // Saved before the confirmation is shown, so the chatbot never claims to
         // have stored a task that did not reach the disk.
-        Storage.save(tasks);
+        storage.save(tasks);
         ui.showAdded(task, tasks.size());
     }
 
     public static void main(String[] args) {
-        new Elsa().run();
+        new Elsa(FILE_PATH).run();
     }
 }
