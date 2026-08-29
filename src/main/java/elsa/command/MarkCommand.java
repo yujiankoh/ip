@@ -1,3 +1,11 @@
+package elsa.command;
+
+import elsa.ElsaException;
+import elsa.storage.Storage;
+import elsa.task.Task;
+import elsa.task.TaskList;
+import elsa.ui.Ui;
+
 /** Marks one task as done. */
 public class MarkCommand extends TaskNumberCommand {
     /**

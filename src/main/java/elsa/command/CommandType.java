@@ -1,3 +1,5 @@
+package elsa.command;
+
 /**
  * The kinds of command the chatbot understands. Each constant pairs the keyword the
  * user types with the usage shown when that command is typed wrongly, so the two

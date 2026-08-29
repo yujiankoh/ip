@@ -1,3 +1,11 @@
+package elsa;
+
+import elsa.command.Command;
+import elsa.parser.Parser;
+import elsa.storage.Storage;
+import elsa.task.TaskList;
+import elsa.ui.Ui;
+
 /**
  * Entry point of the Elsa chatbot.
  * Greets the user, stores todos, deadlines and events, lists them back on request,

@@ -1,3 +1,5 @@
+package elsa.task;
+
 /**
  * A task with no date or time attached to it, for example "borrow book".
  */

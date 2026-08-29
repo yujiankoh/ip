@@ -1,3 +1,8 @@
+package elsa.command;
+
+import elsa.ElsaException;
+import elsa.task.TaskList;
+
 /**
  * A command that names one task by the number shown in the list, such as
  * "mark 2" or "delete 3".

@@ -1,3 +1,7 @@
+package elsa.task;
+
+import elsa.Dates;
+import elsa.ElsaException;
 import java.util.regex.Pattern;
 
 /**
@@ -14,13 +18,13 @@ import java.util.regex.Pattern;
  *
  * <p>This class exists because the format used to be spread over five files: the
  * four task classes each wrote their own line with the separator and markers
- * spelled out again, and {@link Storage} read all of them. Nothing owned the
+ * spelled out again, and the storage class read all of them. Nothing owned the
  * format, so the writing and the reading could drift apart with nothing to catch
  * it. Now the separator, the markers and the type letters are named here once,
  * the task classes write with them, and {@link #decode} reads with them.
  *
- * <p>{@link Storage} is left with the file itself: whether it exists, reading its
- * lines and writing them back.
+ * <p>Storage is left with the file itself: whether it exists, reading its lines
+ * and writing them back.
  *
  * <p>The two directions are not symmetrical, and cannot easily be. Writing is
  * done by each task in its own toSaveFormat(), so a task type says how it is
