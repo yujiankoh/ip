@@ -1,3 +1,8 @@
+package elsa.ui;
+
+import elsa.Dates;
+import elsa.task.Task;
+import elsa.task.TaskList;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;

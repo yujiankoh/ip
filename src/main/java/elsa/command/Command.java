@@ -1,7 +1,14 @@
+package elsa.command;
+
+import elsa.ElsaException;
+import elsa.storage.Storage;
+import elsa.task.TaskList;
+import elsa.ui.Ui;
+
 /**
  * Something the user has asked the chatbot to do, ready to be carried out.
  *
- * <p>A command is built by {@link Parser} from the line the user typed, and knows
+ * <p>A command is built by the parser from the line the user typed, and knows
  * everything it needs before it runs: which task to add, which number to delete,
  * which date to ask about. Running it is then a matter of calling
  * {@link #execute}, without anyone having to ask which kind of command it is.

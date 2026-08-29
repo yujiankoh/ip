@@ -15,11 +15,11 @@ python .claude/skills/test-ui/scripts/run-ui-tests.py
 The runner starts the program with this command, from the repository root:
 
 ```run
-java src/main/java/Elsa.java
+java src/main/java/elsa/Elsa.java
 ```
 
-Java 25's source launcher compiles `Task.java` alongside `Elsa.java`, so no
-separate build step is needed.
+Java 25's source launcher compiles the other classes alongside `Elsa.java`,
+including those in sub-packages, so no separate build step is needed.
 
 The chatbot saves its tasks to `./data/elsa.txt` under the repository root and
 reads them back at startup, so the runner puts that file into a known state

@@ -1,3 +1,5 @@
+package elsa;
+
 /**
  * Signals that the user's input could not be carried out, and carries the
  * explanation to show them. Extends Exception rather than RuntimeException so

@@ -1,10 +1,18 @@
+package elsa.command;
+
+import elsa.ElsaException;
+import elsa.storage.Storage;
+import elsa.task.Task;
+import elsa.task.TaskList;
+import elsa.ui.Ui;
+
 /**
  * Adds one task to the list.
  *
  * <p>One class covers todos, deadlines and events, because adding is the same
  * work whichever kind of task it is: the parser has already built the task, and
  * this only has to store it. What differs between the three is how they are
- * written, which is {@link Parser}'s concern, not this one's.
+ * written, which is the parser's concern, not this one's.
  */
 public class AddCommand extends Command {
     private final Task task;
