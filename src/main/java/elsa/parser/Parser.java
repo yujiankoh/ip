@@ -7,6 +7,7 @@ import elsa.command.Command;
 import elsa.command.CommandType;
 import elsa.command.DeleteCommand;
 import elsa.command.ExitCommand;
+import elsa.command.FindCommand;
 import elsa.command.ListCommand;
 import elsa.command.MarkCommand;
 import elsa.command.OnCommand;
@@ -81,6 +82,7 @@ public class Parser {
         case BYE -> new ExitCommand();
         case LIST -> new ListCommand();
         case ON -> new OnCommand(parseDate(arguments, type));
+        case FIND -> new FindCommand(parseKeyword(arguments, type));
         case MARK -> new MarkCommand(parseTaskNumber(arguments, type));
         case UNMARK -> new UnmarkCommand(parseTaskNumber(arguments, type));
         case DELETE -> new DeleteCommand(parseTaskNumber(arguments, type));
@@ -178,6 +180,27 @@ public class Parser {
                     + ", for example: on 2019-10-15.");
         }
         return requireDate(arguments, command);
+    }
+
+    /**
+     * Reads the argument of a command that searches for text, such as "find".
+     *
+     * <p>The keyword is not checked against the separator that divides the fields
+     * of a saved task, unlike a description: searching for it finds nothing, but
+     * nothing is stored either, so there is nothing to go wrong.
+     *
+     * @param arguments everything the user typed after the keyword
+     * @param command   the command being run, which supplies the usage to show
+     * @return the text to search for, with surrounding spaces removed
+     * @throws ElsaException if no keyword was given
+     */
+    private static String parseKeyword(String arguments, CommandType command)
+            throws ElsaException {
+        if (arguments.isEmpty()) {
+            throw new ElsaException("What should I look for? Use: " + command.getUsage()
+                    + ", for example: find book.");
+        }
+        return arguments;
     }
 
     /**

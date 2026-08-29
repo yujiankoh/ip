@@ -18,6 +18,9 @@ public enum CommandType {
     /** Shows the tasks falling on one date. */
     ON("on", "on <date>"),
 
+    /** Shows the tasks whose description contains a keyword. */
+    FIND("find", "find <keyword>"),
+
     /** Marks a task as done. */
     MARK("mark", "mark <task number>"),
 

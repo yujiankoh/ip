@@ -182,6 +182,34 @@ public class Ui {
     }
 
     /**
+     * Shows the tasks whose description contains a keyword.
+     *
+     * <p>As in {@link #showTasksOn}, each task keeps the number it has in the
+     * full list rather than being renumbered from 1, so that a number read here
+     * can be given straight to "mark" or "delete".
+     *
+     * @param tasks   the stored tasks, in the order they were added
+     * @param keyword the text being searched for
+     */
+    public void showMatchingTasks(TaskList tasks, String keyword) {
+        StringBuilder list = new StringBuilder("Here are the matching tasks in your list:");
+        boolean isFound = false;
+        for (int i = 0; i < tasks.size(); i++) {
+            // Each task decides for itself whether it matches; see Task.matches(),
+            // which searches the description only.
+            if (tasks.get(i).matches(keyword)) {
+                isFound = true;
+                appendNumbered(list, i, tasks.get(i));
+            }
+        }
+        if (!isFound) {
+            showBlock("Nothing matching \"" + keyword + "\".");
+            return;
+        }
+        showBlock(list.toString());
+    }
+
+    /**
      * Shows a warning naming the lines of the data file that could not be read.
      *
      * @param problems one message per line that could not be understood
