@@ -1,6 +1,5 @@
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 /**
  * Entry point of the Elsa chatbot.
@@ -10,44 +9,23 @@ import java.util.Scanner;
  * and exits when the user types "bye".
  * The task list is saved to the hard disk every time it changes and is read back
  * at startup; see {@link Storage}.
+ *
+ * <p>What the user sees and types is handled by {@link Ui}, so this class is left
+ * with working out what each command means and carrying it out.
  */
 public class Elsa {
-    /**
-     * Horizontal line that separates one message block from the next.
-     * Drawn as a row of ASCII "snowflakes" to suit the chatbot's name.
-     * String.repeat builds the row so the width is stated once, as a number.
-     */
-    private static final String BORDER = "   " + " *".repeat(30);
-
-    /** Indentation applied to every line of message text inside a block. */
-    private static final String INDENT = "     ";
-
-    /** Prefix added to every error message shown to the user. */
-    private static final String ERROR_PREFIX = "OLAF!!! ";
-
-    /** Separates a deadline's description from the time it is due. */
+    /** Separates a deadline's description from the date it is due. */
     private static final String BY_SEPARATOR = "/by";
 
-    /** Separates an event's description from its start time. */
+    /** Separates an event's description from its start date. */
     private static final String FROM_SEPARATOR = "/from";
 
-    /** Separates an event's start time from its end time. */
+    /** Separates an event's start date from its end date. */
     private static final String TO_SEPARATOR = "/to";
 
-    // Each "\\" in the source produces a single backslash in the ASCII-art banner.
-    private static final String BANNER = " _____ _           \n"
-            + "|  ___| |___  __ _ \n"
-            + "| |__ | / __|/ _` |\n"
-            + "|  __|| \\__ \\ (_| |\n"
-            + "|_____|_|___/\\__,_|";
-
-    private static final String GREETING = "Hello! I'm Elsa.\n"
-            + "Do you want to build a snowman?";
-
-    private static final String FAREWELL = "The cold never bother me anyways!";
-
     public static void main(String[] args) {
-        printBlock(BANNER + "\n" + GREETING);
+        Ui ui = new Ui();
+        ui.showWelcome();
 
         // An ArrayList grows as tasks are added, so there is no fixed capacity to track
         // separately: size() is always exactly how many tasks there are.
@@ -61,21 +39,20 @@ public class Elsa {
             if (!loaded.problems().isEmpty()) {
                 // The tasks that did load are kept, so the user is told what was
                 // lost rather than the whole file being thrown away.
-                printBlock(ERROR_PREFIX + skippedLinesMessage(loaded.problems()));
+                ui.showSkippedLines(loaded.problems());
             }
         } catch (ElsaException e) {
             // A file that cannot be understood is reported once, and the session goes
             // on with an empty list rather than refusing to start.
-            printBlock(ERROR_PREFIX + e.getMessage());
+            ui.showError(e.getMessage());
             tasks = new ArrayList<>();
         }
 
-        Scanner scanner = new Scanner(System.in);
         // The flag ends the loop from inside the switch, where a plain break would only
-        // leave the switch. hasNextLine() guards against input ending without a "bye".
+        // leave the switch. hasNextCommand() guards against input ending without a "bye".
         boolean isRunning = true;
-        while (isRunning && scanner.hasNextLine()) {
-            String line = scanner.nextLine().trim();
+        while (isRunning && ui.hasNextCommand()) {
+            String line = ui.readCommand();
 
             // Every line is one keyword plus whatever follows it. The split is on a run
             // of whitespace so that a tab, or several spaces, separates them just as one
@@ -89,56 +66,54 @@ public class Elsa {
             try {
                 switch (command) {
                 case BYE -> {
-                    printBlock(FAREWELL);
+                    ui.showFarewell();
                     isRunning = false;
                 }
-                case LIST -> printBlock(formatTasks(tasks));
+                case LIST -> ui.showTasks(tasks);
                 case ON -> {
                     if (arguments.isEmpty()) {
                         throw new ElsaException("Which date? Use: " + command.getUsage()
                                 + ", for example: on 2019-10-15.");
                     }
-                    printBlock(formatTasksOn(tasks, requireDate(arguments, command)));
+                    ui.showTasksOn(tasks, requireDate(arguments, command));
                 }
                 case MARK -> {
                     int index = parseTaskIndex(arguments, tasks.size(), command);
                     tasks.get(index).markAsDone();
                     Storage.save(tasks);
-                    printBlock("Nice! I've marked this task as done:\n"
-                            + "  " + tasks.get(index));
+                    ui.showMarked(tasks.get(index));
                 }
                 case UNMARK -> {
                     int index = parseTaskIndex(arguments, tasks.size(), command);
                     tasks.get(index).markAsNotDone();
                     Storage.save(tasks);
-                    printBlock("OK, I've marked this task as not done yet:\n"
-                            + "  " + tasks.get(index));
+                    ui.showUnmarked(tasks.get(index));
                 }
                 case DELETE -> {
                     int index = parseTaskIndex(arguments, tasks.size(), command);
                     // remove() returns the task it took out, so it can be shown to the user.
                     Task removed = tasks.remove(index);
                     Storage.save(tasks);
-                    printBlock(removedMessage(removed, tasks.size()));
+                    ui.showRemoved(removed, tasks.size());
                 }
                 case TODO -> {
                     requireDescription(arguments, command);
                     requireNoSeparator(arguments, "description of a todo", command);
-                    addTask(tasks, new Todo(arguments));
+                    addTask(ui, tasks, new Todo(arguments));
                 }
                 case DEADLINE -> {
                     requireDescription(arguments, command);
-                    // Limit of 2 keeps any later "/by" as part of the due time itself.
+                    // Limit of 2 keeps any later "/by" as part of the due date itself.
                     String[] parts = requireSeparator(arguments, BY_SEPARATOR, command);
                     String description = requireNonEmpty(parts[0],
                             "description of a deadline", command);
                     LocalDate by = requireDate(requireNonEmpty(parts[1],
                             "due date after " + BY_SEPARATOR, command), command);
-                    addTask(tasks, new Deadline(description, by));
+                    addTask(ui, tasks, new Deadline(description, by));
                 }
                 case EVENT -> {
                     requireDescription(arguments, command);
-                    // Split off the description first, then split what remains into the two times.
+                    // Split off the description first, then split what remains into the two dates.
                     String[] parts = requireSeparator(arguments, FROM_SEPARATOR, command);
                     String description = requireNonEmpty(parts[0],
                             "description of an event", command);
@@ -147,7 +122,7 @@ public class Elsa {
                             "start date after " + FROM_SEPARATOR, command), command);
                     LocalDate to = requireDate(requireNonEmpty(times[1],
                             "end date after " + TO_SEPARATOR, command), command);
-                    addTask(tasks, new Event(description, from, to));
+                    addTask(ui, tasks, new Event(description, from, to));
                 }
                 case NOTHING -> throw new ElsaException("You did not type anything. Try \""
                         + Command.TODO.getUsage() + "\", or \"list\" to see what you have.");
@@ -156,7 +131,7 @@ public class Elsa {
                 }
             } catch (ElsaException e) {
                 // One place to report anything the chatbot could not carry out.
-                printBlock(ERROR_PREFIX + e.getMessage());
+                ui.showError(e.getMessage());
             }
         }
     }
@@ -166,16 +141,18 @@ public class Elsa {
      * confirms the addition to the user. The three commands that add a task all
      * do these same three things, so they share this method.
      *
+     * @param ui    the user interface that confirms the addition
      * @param tasks the task list to add to
      * @param task  the task the user asked to add
      * @throws ElsaException if the updated list could not be saved
      */
-    private static void addTask(ArrayList<Task> tasks, Task task) throws ElsaException {
+    private static void addTask(Ui ui, ArrayList<Task> tasks, Task task)
+            throws ElsaException {
         tasks.add(task);
-        // Saved before the confirmation is printed, so the chatbot never claims to
+        // Saved before the confirmation is shown, so the chatbot never claims to
         // have stored a task that did not reach the disk.
         Storage.save(tasks);
-        printBlock(addedMessage(task, tasks.size()));
+        ui.showAdded(task, tasks.size());
     }
 
     /**
@@ -258,28 +235,6 @@ public class Elsa {
     }
 
     /**
-     * Builds the warning shown when some lines of the data file could not be read.
-     *
-     * @param problems one message per line that could not be understood
-     * @return the warning text, listing each line and what will happen to it
-     */
-    private static String skippedLinesMessage(ArrayList<String> problems) {
-        String plural = (problems.size() == 1) ? "line" : "lines";
-        StringBuilder message = new StringBuilder("I could not understand "
-                + problems.size() + " " + plural + " of " + Storage.getFileName()
-                + ", so I have left " + ((problems.size() == 1) ? "it" : "them")
-                + " out:");
-        for (String problem : problems) {
-            message.append("\n  ").append(problem);
-        }
-        // Said plainly, because the next change to the list rewrites the file.
-        message.append("\nYour other tasks loaded normally. Saving will rewrite the"
-                + " file without the " + plural + " above, so edit the file now if you"
-                + " want to keep " + ((problems.size() == 1) ? "it" : "them") + ".");
-        return message.toString();
-    }
-
-    /**
      * Checks that a piece of a command was actually filled in.
      *
      * @param value   the piece to check, before trimming
@@ -297,43 +252,6 @@ public class Elsa {
         }
         requireNoSeparator(trimmed, what, command);
         return trimmed;
-    }
-
-    /**
-     * Builds the confirmation shown after the list has gained or lost a task.
-     *
-     * @param lead      the opening line saying what happened
-     * @param task      the task that was added or removed
-     * @param taskCount how many tasks are in the list now
-     * @return the confirmation text, spanning three lines
-     */
-    private static String taskCountMessage(String lead, Task task, int taskCount) {
-        String plural = (taskCount == 1) ? "task" : "tasks";
-        return lead + "\n"
-                + "  " + task + "\n"
-                + "Now you have " + taskCount + " " + plural + " in the list.";
-    }
-
-    /**
-     * Builds the confirmation shown after a task has been added.
-     *
-     * @param task      the task that was just added
-     * @param taskCount how many tasks are in the list now
-     * @return the confirmation text, spanning three lines
-     */
-    private static String addedMessage(Task task, int taskCount) {
-        return taskCountMessage("Got it. I've added this task:", task, taskCount);
-    }
-
-    /**
-     * Builds the confirmation shown after a task has been removed.
-     *
-     * @param task      the task that was just removed
-     * @param taskCount how many tasks are left in the list
-     * @return the confirmation text, spanning three lines
-     */
-    private static String removedMessage(Task task, int taskCount) {
-        return taskCountMessage("Noted. I've removed this task:", task, taskCount);
     }
 
     /**
@@ -376,69 +294,5 @@ public class Elsa {
 
         // The user counts from 1, so subtract 1 to get the list index.
         return number - 1;
-    }
-
-    /**
-     * Builds the numbered list of stored tasks as a single multi-line string.
-     *
-     * @param tasks the stored tasks, in the order they were added
-     * @return a heading followed by one line per task, numbered from 1
-     */
-    private static String formatTasks(ArrayList<Task> tasks) {
-        if (tasks.isEmpty()) {
-            return "Into the Unknown.";
-        }
-        StringBuilder list = new StringBuilder("Here are the tasks in your list:");
-        for (int i = 0; i < tasks.size(); i++) {
-            // List indices start at 0, but the display numbering starts at 1.
-            // Appending the Task calls its toString() to render "[D][X] return book (by: Sunday)".
-            list.append("\n").append(i + 1).append(".").append(tasks.get(i));
-        }
-        return list.toString();
-    }
-
-    /**
-     * Builds the list of tasks falling on one date, as a single multi-line string.
-     *
-     * <p>Each task keeps the number it has in the full list rather than being
-     * renumbered from 1, so that a number read here can be given straight to
-     * "mark" or "delete". Renumbering would make those commands act on the wrong
-     * task, because they count positions in the whole list.
-     *
-     * @param tasks the stored tasks, in the order they were added
-     * @param date  the date being asked about
-     * @return a heading followed by the matching tasks, or a line saying there are none
-     */
-    private static String formatTasksOn(ArrayList<Task> tasks, LocalDate date) {
-        StringBuilder list = new StringBuilder("Here are the tasks on "
-                + Dates.format(date) + ":");
-        boolean isFound = false;
-        for (int i = 0; i < tasks.size(); i++) {
-            // Each task decides for itself whether it falls on the date; see
-            // Task.occursOn(), which deadlines and events answer differently.
-            if (tasks.get(i).occursOn(date)) {
-                isFound = true;
-                list.append("\n").append(i + 1).append(".").append(tasks.get(i));
-            }
-        }
-        if (!isFound) {
-            return "Nothing on " + Dates.format(date) + ".";
-        }
-        return list.toString();
-    }
-
-    /**
-     * Prints a message enclosed between two horizontal borders,
-     * indenting each line so that it lines up inside the block.
-     *
-     * @param message the text to display; may span several lines separated by "\n"
-     */
-    private static void printBlock(String message) {
-        System.out.println(BORDER);
-        for (String line : message.split("\n")) {
-            System.out.println(INDENT + line);
-        }
-        System.out.println(BORDER);
-        System.out.println();
     }
 }
