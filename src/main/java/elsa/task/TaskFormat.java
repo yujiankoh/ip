@@ -1,8 +1,9 @@
 package elsa.task;
 
+import java.util.regex.Pattern;
+
 import elsa.Dates;
 import elsa.ElsaException;
-import java.util.regex.Pattern;
 
 /**
  * The shape of one line in the data file, and how to read one back.
@@ -107,29 +108,29 @@ public class TaskFormat {
         // Each kind of task needs a different number of fields, so each branch
         // checks it has them before reading the ones beyond the description.
         switch (fields[0]) {
-        case TODO -> task = new Todo(description);
-        case DEADLINE -> {
-            requireFields(fields, DEADLINE_FIELDS);
-            task = new Deadline(description, Dates.parse(fields[3]));
-        }
-        case EVENT -> {
-            requireFields(fields, EVENT_FIELDS);
-            task = new Event(description, Dates.parse(fields[3]),
-                    Dates.parse(fields[4]));
-        }
-        default -> throw new ElsaException("\"" + fields[0]
-                + "\" is not a task type; it should be " + TODO + ", " + DEADLINE
-                + " or " + EVENT);
+            case TODO -> task = new Todo(description);
+            case DEADLINE -> {
+                requireFields(fields, DEADLINE_FIELDS);
+                task = new Deadline(description, Dates.parse(fields[3]));
+            }
+            case EVENT -> {
+                requireFields(fields, EVENT_FIELDS);
+                task = new Event(description, Dates.parse(fields[3]),
+                        Dates.parse(fields[4]));
+            }
+            default -> throw new ElsaException("\"" + fields[0]
+                    + "\" is not a task type; it should be " + TODO + ", " + DEADLINE
+                    + " or " + EVENT);
         }
 
         // The second field records whether the task was done when it was saved.
         // Anything other than the two markers means the line cannot be trusted,
         // so it is reported rather than quietly assumed to be not done.
         switch (fields[1]) {
-        case DONE -> task.markAsDone();
-        case NOT_DONE -> task.markAsNotDone();
-        default -> throw new ElsaException("\"" + fields[1]
-                + "\" is not a done marker; it should be " + DONE + " or " + NOT_DONE);
+            case DONE -> task.markAsDone();
+            case NOT_DONE -> task.markAsNotDone();
+            default -> throw new ElsaException("\"" + fields[1]
+                    + "\" is not a done marker; it should be " + DONE + " or " + NOT_DONE);
         }
         return task;
     }

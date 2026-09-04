@@ -36,7 +36,13 @@ All Java code in this project — under `src/main/java` and `src/test/java` alik
 
 The rules most often broken, as a reminder: 4 spaces and never tabs; lines under 110 characters and never over 120; K&R braces; braces on every conditional and loop body however short; explicit imports and never a fully qualified name written inline; methods named as verbs; booleans named `isX`/`hasX`/`wasX`; collections named in the plural; a Javadoc header on every public class and method, its first sentence a summary beginning `Returns ...`, `Adds ...` and so on.
 
-`./gradlew javadoc` must report **zero warnings**. Treat a new warning as a defect to fix, not as noise.
+Checkstyle enforces the mechanical part of the standard, using the SE-EDU AddressBook Level 3 rules in `config/checkstyle/`. Both of these must pass with no violations:
+
+```
+./gradlew checkstyleMain checkstyleTest
+```
+
+`./gradlew javadoc` must likewise report **zero warnings**. Treat a new violation or warning as a defect to fix, not as noise, and do not loosen a Checkstyle rule to make code pass.
 
 Where the skill records a project-specific decision — such as `Dates.today()` keeping its noun name, or a `{@link}` being avoided because it would create a package dependency — follow it rather than reopening the question.
 
@@ -82,10 +88,11 @@ Prefer tests that would actually fail if the method were wrong. A quick way to c
 
 Before proposing a commit:
 
-1. **Update the JUnit tests** as described above, then run `./gradlew test` and report how many tests passed.
-2. **Update `test/ui-test-plan.md` if needed.** Add a test case for each new command or behaviour, and update the expected output of existing cases when the change alters what the program prints. Every case's expected output contains the banner, greeting, and borders, so a change to any of those means updating every case. Derive expected output from the increment's requirements, not from what the program currently prints — expected output copied from actual output records present behaviour as correct and cannot detect an existing bug.
-3. **Invoke the `test-ui` skill** to run the UI suite.
-4. **Show the test session transcript** — the commands typed and the console output — and report how many cases passed. Show it rather than only summarising it.
-5. **If anything fails, stop there.** Report the expected and actual results, and say whether the code or the test is at fault. Do not edit either one purely to make a suite pass.
+1. **Run Checkstyle** with `./gradlew checkstyleMain checkstyleTest` and fix every violation it reports.
+2. **Update the JUnit tests** as described above, then run `./gradlew test` and report how many tests passed.
+3. **Update `test/ui-test-plan.md` if needed.** Add a test case for each new command or behaviour, and update the expected output of existing cases when the change alters what the program prints. Every case's expected output contains the banner, greeting, and borders, so a change to any of those means updating every case. Derive expected output from the increment's requirements, not from what the program currently prints — expected output copied from actual output records present behaviour as correct and cannot detect an existing bug.
+4. **Invoke the `test-ui` skill** to run the UI suite.
+5. **Show the test session transcript** — the commands typed and the console output — and report how many cases passed. Show it rather than only summarising it.
+6. **If anything fails, stop there.** Report the expected and actual results, and say whether the code or the test is at fault. Do not edit either one purely to make a suite pass.
 
 Changes that do not touch `src/main/java` — documentation, skills, or a test plan itself — do not need a test run.

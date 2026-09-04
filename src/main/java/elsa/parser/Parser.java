@@ -1,5 +1,7 @@
 package elsa.parser;
 
+import java.time.LocalDate;
+
 import elsa.Dates;
 import elsa.ElsaException;
 import elsa.command.AddCommand;
@@ -18,7 +20,6 @@ import elsa.task.Event;
 import elsa.task.TaskFormat;
 import elsa.task.Todo;
 import elsa.ui.Ui;
-import java.time.LocalDate;
 
 /**
  * Makes sense of what the user typed.
@@ -79,20 +80,20 @@ public class Parser {
         String arguments = line.arguments();
 
         return switch (type) {
-        case BYE -> new ExitCommand();
-        case LIST -> new ListCommand();
-        case ON -> new OnCommand(parseDate(arguments, type));
-        case FIND -> new FindCommand(parseKeyword(arguments, type));
-        case MARK -> new MarkCommand(parseTaskNumber(arguments, type));
-        case UNMARK -> new UnmarkCommand(parseTaskNumber(arguments, type));
-        case DELETE -> new DeleteCommand(parseTaskNumber(arguments, type));
-        case TODO -> new AddCommand(parseTodo(arguments));
-        case DEADLINE -> new AddCommand(parseDeadline(arguments));
-        case EVENT -> new AddCommand(parseEvent(arguments));
-        case NOTHING -> throw new ElsaException("You did not type anything. Try \""
-                + CommandType.TODO.getUsage() + "\", or \"list\" to see what you have.");
-        case UNKNOWN -> throw new ElsaException(
-                "I'm sorry, but I don't know what that means :-(");
+            case BYE -> new ExitCommand();
+            case LIST -> new ListCommand();
+            case ON -> new OnCommand(parseDate(arguments, type));
+            case FIND -> new FindCommand(parseKeyword(arguments, type));
+            case MARK -> new MarkCommand(parseTaskNumber(arguments, type));
+            case UNMARK -> new UnmarkCommand(parseTaskNumber(arguments, type));
+            case DELETE -> new DeleteCommand(parseTaskNumber(arguments, type));
+            case TODO -> new AddCommand(parseTodo(arguments));
+            case DEADLINE -> new AddCommand(parseDeadline(arguments));
+            case EVENT -> new AddCommand(parseEvent(arguments));
+            case NOTHING -> throw new ElsaException("You did not type anything. Try \""
+                    + CommandType.TODO.getUsage() + "\", or \"list\" to see what you have.");
+            case UNKNOWN -> throw new ElsaException(
+                    "I'm sorry, but I don't know what that means :-(");
         };
     }
 

@@ -1,6 +1,5 @@
 package elsa;
 
-import elsa.storage.Storage;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -8,6 +7,8 @@ import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
 import java.util.List;
 import java.util.Locale;
+
+import elsa.storage.Storage;
 
 /**
  * Reads and writes the dates that deadlines and events carry.
@@ -42,9 +43,9 @@ public class Dates {
      * "oct 15 2019" is read as readily as "Oct 15 2019".
      */
     private static final List<DateTimeFormatter> INPUT_FORMATS = List.of(
-            inputFormat("uuuu-MM-dd"),   // 2019-10-15
-            inputFormat("d/M/uuuu"),     // 15/10/2019, and 2/12/2019 as 2 December
-            inputFormat("MMM d uuuu"),   // Oct 15 2019
+            inputFormat("uuuu-MM-dd"), // 2019-10-15
+            inputFormat("d/M/uuuu"), // 15/10/2019, and 2/12/2019 as 2 December
+            inputFormat("MMM d uuuu"), // Oct 15 2019
             inputFormat("MMMM d uuuu")); // October 15 2019
 
     /**

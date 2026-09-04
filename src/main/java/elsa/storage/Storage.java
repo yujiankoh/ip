@@ -1,14 +1,15 @@
 package elsa.storage;
 
-import elsa.ElsaException;
-import elsa.task.Task;
-import elsa.task.TaskFormat;
-import elsa.task.TaskList;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+
+import elsa.ElsaException;
+import elsa.task.Task;
+import elsa.task.TaskFormat;
+import elsa.task.TaskList;
 
 /**
  * Keeps the task list on the hard disk so that it outlives a single run of the

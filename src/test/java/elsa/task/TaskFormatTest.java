@@ -4,9 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import elsa.ElsaException;
 import java.time.LocalDate;
+
 import org.junit.jupiter.api.Test;
+
+import elsa.ElsaException;
 
 /**
  * Tests {@link TaskFormat#decode}, which turns one line of the data file back
@@ -102,8 +104,7 @@ public class TaskFormatTest {
 
     @Test
     public void decode_eventWithOnlyOneDate_throwsException() {
-        assertThrows(ElsaException.class,
-                () -> TaskFormat.decode("E | 0 | project meeting | 2019-10-14"));
+        assertThrows(ElsaException.class, () -> TaskFormat.decode("E | 0 | project meeting | 2019-10-14"));
     }
 
     // ------------------------------------------------------------------
@@ -112,8 +113,7 @@ public class TaskFormatTest {
 
     @Test
     public void decode_blankDescription_throwsException() {
-        assertThrows(ElsaException.class,
-                () -> TaskFormat.decode("D | 0 |  | 2019-10-15"));
+        assertThrows(ElsaException.class, () -> TaskFormat.decode("D | 0 |  | 2019-10-15"));
     }
 
     @Test
@@ -140,8 +140,7 @@ public class TaskFormatTest {
 
     @Test
     public void decode_deadlineWithTextInsteadOfADate_throwsException() {
-        assertThrows(ElsaException.class,
-                () -> TaskFormat.decode("D | 0 | return book | someday"));
+        assertThrows(ElsaException.class, () -> TaskFormat.decode("D | 0 | return book | someday"));
     }
 
     /**
@@ -150,14 +149,12 @@ public class TaskFormatTest {
      */
     @Test
     public void decode_deadlineWithAnImpossibleDate_throwsException() {
-        assertThrows(ElsaException.class,
-                () -> TaskFormat.decode("D | 0 | return book | 2019-02-30"));
+        assertThrows(ElsaException.class, () -> TaskFormat.decode("D | 0 | return book | 2019-02-30"));
     }
 
     @Test
     public void decode_eventWithABadSecondDate_throwsException() {
-        assertThrows(ElsaException.class,
-                () -> TaskFormat.decode("E | 0 | meeting | 2019-10-14 | not-a-date"));
+        assertThrows(ElsaException.class, () -> TaskFormat.decode("E | 0 | meeting | 2019-10-14 | not-a-date"));
     }
 
     /**
@@ -167,8 +164,7 @@ public class TaskFormatTest {
      */
     @Test
     public void decode_unknownTypeLetter_messageNamesTheLetter() {
-        ElsaException thrown = assertThrows(ElsaException.class,
-                () -> TaskFormat.decode("X | 0 | read book"));
+        ElsaException thrown = assertThrows(ElsaException.class, () -> TaskFormat.decode("X | 0 | read book"));
         assertTrue(thrown.getMessage().contains("X"));
     }
 

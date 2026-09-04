@@ -1,9 +1,10 @@
 package elsa.command;
 
+import java.time.LocalDate;
+
 import elsa.storage.Storage;
 import elsa.task.TaskList;
 import elsa.ui.Ui;
-import java.time.LocalDate;
 
 /** Shows the tasks falling on one date. */
 public class OnCommand extends Command {

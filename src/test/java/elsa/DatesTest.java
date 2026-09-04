@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
+
 import org.junit.jupiter.api.Test;
 
 /**
@@ -198,8 +199,7 @@ public class DatesTest {
      */
     @Test
     public void parse_notADate_messageNamesTheTextAndTheAcceptedForms() {
-        ElsaException thrown = assertThrows(ElsaException.class,
-                () -> Dates.parse("tomorrow"));
+        ElsaException thrown = assertThrows(ElsaException.class, () -> Dates.parse("tomorrow"));
         String message = thrown.getMessage();
         assertEquals(true, message.contains("tomorrow"));
         assertEquals(true, message.contains(Dates.ACCEPTED_FORMS));
