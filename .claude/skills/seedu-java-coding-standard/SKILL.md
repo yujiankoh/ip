@@ -75,9 +75,18 @@ public void someMethod() throws SomeException {
 | A comma is followed by a space | `doSomething(a, b, c);` | `doSomething(a,b,c);` |
 
 - **Separate logical units within a block with one blank line.**
-- In a `switch`, `case` labels sit at the same indentation as the `switch`. Arrow
-  form (`case ABC -> ...`) and switch expressions are both fine. A `case` that
-  falls through to the next carries an explicit `// Fallthrough` comment.
+- In a `switch`, `case` labels are **indented 4 spaces past the `switch`**, and
+  the closing brace returns to the `switch`'s own indentation. Arrow form
+  (`case ABC -> ...`) and switch expressions are both fine. A `case` that falls
+  through to the next carries an explicit `// Fallthrough` comment.
+
+```java
+switch (fields[1]) {
+    case DONE -> task.markAsDone();
+    case NOT_DONE -> task.markAsNotDone();
+    default -> throw new ElsaException("unknown marker");
+}
+```
 
 ## Statements
 
@@ -85,9 +94,17 @@ public void someMethod() throws SomeException {
 - **Import classes explicitly**; never `import java.util.*;`. Equally, never
   write a fully qualified name inline (`new elsa.task.Event(...)`) in place of an
   import.
-- **Import order must be consistent** across the project. This project lists
-  every import alphabetically in one block, which is what IntelliJ produces by
-  default here.
+- **Import order must be consistent** across the project. Checkstyle's
+  `CustomImportOrder` fixes it as five groups, each separated from the next by a
+  blank line and each sorted alphabetically within itself:
+
+  1. `import static ...`
+  2. `java.` and `javax.`
+  3. `org.`
+  4. `com.`
+  5. everything else, which here means `elsa.` and `javafx.`
+
+  The project's own `elsa.` imports therefore come **last**, not first.
 - **Array brackets attach to the type**: `int[] a`, never `int a[]`.
 - **Declare a variable in the smallest scope that will do, and initialise it
   where it is declared.**
@@ -157,17 +174,31 @@ them rather than reopening them.
 
 ## Checking
 
-There is no linter wired in yet (`A-CheckStyle` would add one). Until then:
+Checkstyle enforces the mechanical part of this standard. Its rules are in
+`config/checkstyle/checkstyle.xml`, taken from the SE-EDU AddressBook Level 3
+project, with `config/checkstyle/suppressions.xml` relaxing the Javadoc rules for
+test classes. Run it over both source sets:
+
+```bash
+./gradlew checkstyleMain checkstyleTest
+```
+
+A violation fails the build, and the reports under `build/reports/checkstyle/`
+list every one. Fix the code rather than loosening a rule. Where a rule genuinely
+cannot apply, suppress it for that region only:
+
+```java
+//CHECKSTYLE.OFF: RuleName
+//CHECKSTYLE.ON: RuleName
+```
+
+Checkstyle does not check Javadoc content, so this still has to stay at **zero
+warnings**:
 
 ```bash
 ./gradlew javadoc
 ```
 
-reports missing and malformed Javadoc, and must stay at **zero warnings**. The
-rest is checked by reading, helped by:
-
-```bash
-awk 'length > 120 {print FILENAME":"FNR}' $(find src -name '*.java')   # hard limit
-grep -rn 'import .*\*;' src --include='*.java'                          # wildcard imports
-grep -rnE 'new (elsa|java)\.' src --include='*.java'                    # inline qualified names
-```
+The judgement-level rules — whether a name reads well, whether a comment explains
+why rather than what, whether a method does one thing — are not expressible as
+Checkstyle rules and are still checked by reading.

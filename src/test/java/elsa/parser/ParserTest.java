@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.Test;
+
 import elsa.ElsaException;
 import elsa.command.AddCommand;
 import elsa.command.DeleteCommand;
@@ -16,7 +18,6 @@ import elsa.command.MarkCommand;
 import elsa.command.OnCommand;
 import elsa.command.UnmarkCommand;
 import elsa.task.TaskFormat;
-import org.junit.jupiter.api.Test;
 
 /**
  * Tests {@link Parser#parse}, which turns a typed line into a command.
@@ -194,10 +195,8 @@ public class ParserTest {
 
     @Test
     public void parse_eventWithAnEmptyDate_throwsException() {
-        assertThrows(ElsaException.class,
-                () -> Parser.parse("event meeting /from /to 2019-10-16"));
-        assertThrows(ElsaException.class,
-                () -> Parser.parse("event meeting /from 2019-10-14 /to"));
+        assertThrows(ElsaException.class, () -> Parser.parse("event meeting /from /to 2019-10-16"));
+        assertThrows(ElsaException.class, () -> Parser.parse("event meeting /from 2019-10-14 /to"));
     }
 
     // ------------------------------------------------------------------
@@ -221,8 +220,8 @@ public class ParserTest {
      */
     @Test
     public void parse_badDate_messageSaysHowToWriteTheCommand() {
-        ElsaException thrown = assertThrows(ElsaException.class,
-                () -> Parser.parse("deadline return book /by someday"));
+        String command = "deadline return book /by someday";
+        ElsaException thrown = assertThrows(ElsaException.class, () -> Parser.parse(command));
         assertTrue(thrown.getMessage().contains("deadline <description> /by <date>"));
     }
 
@@ -278,8 +277,7 @@ public class ParserTest {
     public void parse_descriptionContainingTheFieldSeparator_throwsException() {
         String separator = TaskFormat.SEPARATOR;
         assertThrows(ElsaException.class, () -> Parser.parse("todo read" + separator + "book"));
-        assertThrows(ElsaException.class,
-                () -> Parser.parse("deadline read" + separator + "book /by 2019-10-15"));
+        assertThrows(ElsaException.class, () -> Parser.parse("deadline read" + separator + "book /by 2019-10-15"));
     }
 
     /** The separator is a bar with a space on each side, so a bare bar is fine. */

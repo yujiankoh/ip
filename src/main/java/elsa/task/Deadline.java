@@ -1,7 +1,8 @@
 package elsa.task;
 
-import elsa.Dates;
 import java.time.LocalDate;
+
+import elsa.Dates;
 
 /**
  * A task that has to be done before a stated date,
