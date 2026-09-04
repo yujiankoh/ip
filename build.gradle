@@ -20,6 +20,24 @@ checkstyle {
 
 dependencies {
     String jUnitVersion = '5.14.4'
+    String javaFxVersion = '17.0.7'
+
+    // JavaFX ships a separate native library per operating system, named by the
+    // classifier at the end of each line. All three are declared so that the
+    // project builds and runs on any of them, rather than only on the machine
+    // that wrote this file.
+    implementation "org.openjfx:javafx-base:${javaFxVersion}:win"
+    implementation "org.openjfx:javafx-base:${javaFxVersion}:mac"
+    implementation "org.openjfx:javafx-base:${javaFxVersion}:linux"
+    implementation "org.openjfx:javafx-controls:${javaFxVersion}:win"
+    implementation "org.openjfx:javafx-controls:${javaFxVersion}:mac"
+    implementation "org.openjfx:javafx-controls:${javaFxVersion}:linux"
+    implementation "org.openjfx:javafx-fxml:${javaFxVersion}:win"
+    implementation "org.openjfx:javafx-fxml:${javaFxVersion}:mac"
+    implementation "org.openjfx:javafx-fxml:${javaFxVersion}:linux"
+    implementation "org.openjfx:javafx-graphics:${javaFxVersion}:win"
+    implementation "org.openjfx:javafx-graphics:${javaFxVersion}:mac"
+    implementation "org.openjfx:javafx-graphics:${javaFxVersion}:linux"
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:${jUnitVersion}"
 
@@ -58,4 +76,14 @@ shadowJar {
 
 run {
     standardInput = System.in
+}
+
+// The GUI is not yet the way the chatbot is used, so `run` and the shipped jar
+// still start the text interface at elsa.Elsa. This task starts the JavaFX
+// window instead, which lets both be run while the GUI is being built up.
+tasks.register('runGui', JavaExec) {
+    group = 'application'
+    description = 'Runs the JavaFX window.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'elsa.gui.Launcher'
 }

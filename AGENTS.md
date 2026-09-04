@@ -71,7 +71,7 @@ The project has two test suites, which cover opposite ends of the program and do
 
 Currently in the covered half: `Dates`, `Parser.parse`, `TaskFormat.decode`, `Storage.save`/`load`, `Task` and its three subclasses, the mutating methods of `TaskList`, and `CommandType.fromKeyword`.
 
-Currently, and deliberately, outside it: `Ui`, whose methods only print and are already covered end to end by the UI suite; the `Command` subclasses' `execute`, which each need a task list, a user interface and a store; and plain getters or methods that pass straight through to a field or a collection.
+Currently, and deliberately, outside it: `Ui`, whose methods only print and are already covered end to end by the UI suite; `elsa.gui.Main` and `elsa.gui.Launcher`, which only build and show a window and would need a running JavaFX toolkit to exercise; the `Command` subclasses' `execute`, which each need a task list, a user interface and a store; and plain getters or methods that pass straight through to a field or a collection.
 
 **The JUnit tests must be updated after each code change so that this target continues to hold.** Concretely, in the same commit as the change:
 
