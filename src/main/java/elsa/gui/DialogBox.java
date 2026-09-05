@@ -2,6 +2,7 @@ package elsa.gui;
 
 import java.io.IOException;
 
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -117,6 +118,7 @@ public class DialogBox extends HBox {
     public static DialogBox getUserDialog(String message, Image picture) {
         DialogBox dialogBox = new DialogBox(message, picture);
         dialogBox.dialog.getStyleClass().add("user-bubble");
+        dialogBox.alignBeside(Pos.TOP_RIGHT, Pos.CENTER_RIGHT);
         return dialogBox;
     }
 
@@ -131,20 +133,39 @@ public class DialogBox extends HBox {
         DialogBox dialogBox = new DialogBox(message, picture);
         dialogBox.dialog.getStyleClass().add("elsa-bubble");
         dialogBox.flip();
+        dialogBox.alignBeside(Pos.TOP_LEFT, Pos.CENTER_LEFT);
         return dialogBox;
     }
 
     /**
-     * Turns this dialog box round, so the picture is on the left of the words
-     * and the whole entry sits against the left edge, still level with the
-     * middle of the picture.
-     * Reversing the children is what moves the picture, and changing the
-     * alignment is what moves the entry; both are needed, because one decides
-     * the order within the row and the other where the row sits in the width
-     * available to it.
+     * Ties where this entry sits beside its picture to how tall the words are.
+     *
+     * <p>A bubble taller than the picture is lined up with the top of it, the
+     * way a paragraph lines up with the margin beside it; a bubble shorter than
+     * the picture is centred on it, because a short line held at the top would
+     * leave most of the picture's height as a gap and read as though the two
+     * were not part of the same entry.
+     *
+     * <p>Bound rather than chosen once, because the height is not known when the
+     * entry is made: the words have not been laid out yet, and the height
+     * changes again whenever the window is resized and the message rewraps.
+     *
+     * @param whenTaller  where to sit while the words are taller than the picture.
+     * @param whenShorter where to sit otherwise.
+     */
+    private void alignBeside(Pos whenTaller, Pos whenShorter) {
+        this.alignmentProperty().bind(Bindings
+                .when(dialog.heightProperty().greaterThan(PICTURE_SIZE))
+                .then(whenTaller)
+                .otherwise(whenShorter));
+    }
+
+    /**
+     * Turns this dialog box round, so the picture is on the left of the words.
+     * This only reorders the row; which edge the row itself sits against is
+     * settled by {@link #alignBeside}, which the caller uses next.
      */
     private void flip() {
-        this.setAlignment(Pos.CENTER_LEFT);
         ObservableList<Node> children = FXCollections.observableArrayList(this.getChildren());
         FXCollections.reverse(children);
         this.getChildren().setAll(children);
