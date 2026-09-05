@@ -70,32 +70,61 @@ public class ElsaTest {
     }
 
     /**
-     * The window has no menu and no prompt, so the opening message is the only
-     * place a first-time user is told what they can type. Every command has to
-     * appear, or one of them is unreachable in the window for anyone who does
+     * The window has no menu, so the opening message is the only place a
+     * first-time user is pointed anywhere. It has to name the one command that
+     * leads to all the others, or nothing does.
+     */
+    @Test
+    public void startSession_always_pointsTheUserAtHelp(@TempDir Path folder) {
+        String opening = elsaIn(folder).startSession();
+
+        assertTrue(opening.contains(CommandType.HELP.getKeyword()),
+                "the opening message never mentions help");
+    }
+
+    /**
+     * Help is what the greeting sends the user to, so every command has to
+     * appear in it. One missing is unreachable in the window for anyone who does
      * not already know it.
      */
     @Test
-    public void startSession_always_listsEveryCommandTheChatbotUnderstands(@TempDir Path folder) {
-        String opening = elsaIn(folder).startSession();
+    public void getResponse_help_listsEveryCommandTheChatbotUnderstands(@TempDir Path folder) {
+        Elsa elsa = elsaIn(folder);
+        elsa.startSession();
 
+        String help = elsa.getResponse("help");
         for (String usage : CommandType.getUsages()) {
-            assertTrue(opening.contains(usage), "the opening message never mentions: " + usage);
+            assertTrue(help.contains(usage), "help never mentions: " + usage);
         }
     }
 
     /**
-     * Four of the commands listed take a date, so the opening message is also
-     * the only place the window says what a date may look like. It is taken from
-     * the same constant that refuses an unreadable date, so a form accepted by
-     * one and not named by the other would be a contradiction.
+     * Four of the commands help lists take a date, so help is also the only
+     * place the window says what a date may look like. It is taken from the same
+     * constant that refuses an unreadable date, so a form accepted by one and
+     * not named by the other would be a contradiction.
      */
     @Test
-    public void startSession_always_saysHowToWriteADate(@TempDir Path folder) {
-        String opening = elsaIn(folder).startSession();
+    public void getResponse_help_saysHowToWriteADate(@TempDir Path folder) {
+        Elsa elsa = elsaIn(folder);
+        elsa.startSession();
 
-        assertTrue(opening.contains(Dates.ACCEPTED_FORMS),
-                "the opening message never says how to write a date");
+        assertTrue(elsa.getResponse("help").contains(Dates.ACCEPTED_FORMS),
+                "help never says how to write a date");
+    }
+
+    /** Help only reads; it must not end the session or disturb the task list. */
+    @Test
+    public void getResponse_help_changesNothing(@TempDir Path folder) {
+        Elsa elsa = elsaIn(folder);
+        elsa.startSession();
+        elsa.getResponse("todo read book");
+
+        elsa.getResponse("help");
+
+        assertFalse(elsa.isExiting(), "help does not end the session");
+        assertEquals("Here are the tasks in your list:\n1.[T][ ] read book",
+                elsa.getResponse("list"), "help leaves the task list alone");
     }
 
     @Test

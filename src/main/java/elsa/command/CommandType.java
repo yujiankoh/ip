@@ -14,8 +14,9 @@ import java.util.List;
  * <p>The order the constants are declared in is the order {@link #getUsages}
  * hands them back, which is the order the window lists them in when it opens. It
  * therefore runs from what a new user needs first to what they need last:
- * putting a task in, looking at what is there, changing it, and leaving. A new
- * command goes where a user would want to meet it, not on the end.
+ * putting a task in, looking at what is there, changing it, asking what else
+ * there is, and leaving. A new command goes where a user would want to meet it,
+ * not on the end.
  */
 public enum CommandType {
     /** Adds a task with no date attached to it. */
@@ -44,6 +45,9 @@ public enum CommandType {
 
     /** Removes a task from the list. */
     DELETE("delete", "delete <task number>"),
+
+    /** Lists how every command is written. */
+    HELP("help", "help"),
 
     /** Ends the session. */
     BYE("bye", "bye"),

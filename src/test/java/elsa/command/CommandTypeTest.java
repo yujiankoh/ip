@@ -72,6 +72,16 @@ public class CommandTypeTest {
         assertEquals(CommandType.BYE.getUsage(), usages.get(usages.size() - 1));
     }
 
+    /**
+     * The window's greeting sends the user to help by name, so the keyword has
+     * to stay the word the greeting says.
+     */
+    @Test
+    public void fromKeyword_help_returnsHelp() {
+        assertEquals(CommandType.HELP, CommandType.fromKeyword("help"));
+        assertEquals("help", CommandType.HELP.getKeyword());
+    }
+
     @Test
     public void fromKeyword_knownKeyword_returnsThatCommand() {
         assertEquals(CommandType.BYE, CommandType.fromKeyword("bye"));
