@@ -20,8 +20,8 @@ public class OnCommand extends Command {
     }
 
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) {
+    public String execute(TaskList tasks, Ui ui, Storage storage) {
         // Nothing changes, so the list is not saved.
-        ui.showTasksOn(tasks, date);
+        return ui.getTasksOnMessage(tasks, date);
     }
 }

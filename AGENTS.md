@@ -69,9 +69,9 @@ The project has two test suites, which cover opposite ends of the program and do
 
 **Aim to have JUnit tests for roughly the top 50% highest-value methods**, judged by how much logic a method holds multiplied by how badly a silent failure in it would hurt. Complex, core, or critical business logic comes first.
 
-Currently in the covered half: `Dates`, `Parser.parse`, `TaskFormat.decode`, `Storage.save`/`load`, `Task` and its three subclasses, the mutating methods of `TaskList`, and `CommandType.fromKeyword`.
+Currently in the covered half: `Dates`, `Parser.parse`, `TaskFormat.decode`, `Storage.save`/`load`, `Task` and its three subclasses, the mutating methods of `TaskList`, `CommandType.fromKeyword`, and `Elsa.startSession`/`getResponse`/`isExiting`.
 
-Currently, and deliberately, outside it: `Ui`, whose methods only print and are already covered end to end by the UI suite; `elsa.gui.Main` and `elsa.gui.Launcher`, which only build and show a window and would need a running JavaFX toolkit to exercise; the `Command` subclasses' `execute`, which each need a task list, a user interface and a store; and plain getters or methods that pass straight through to a field or a collection.
+Currently, and deliberately, outside it: `Ui`, whose `get...Message` methods are pure string building reached in every `ElsaTest` assertion and checked end to end by the UI suite, and whose `show` only prints; `elsa.gui.Main`, `elsa.gui.Launcher` and `elsa.gui.DialogBox`, which only build and show a window and would need a running JavaFX toolkit to exercise; the `Command` subclasses' `execute`, each of which is run through `Elsa.getResponse` by `ElsaTest` rather than assembled with its own task list, user interface and store; and plain getters or methods that pass straight through to a field or a collection.
 
 **The JUnit tests must be updated after each code change so that this target continues to hold.** Concretely, in the same commit as the change:
 

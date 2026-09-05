@@ -15,9 +15,9 @@ public class ListCommand extends Command {
     }
 
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) {
+    public String execute(TaskList tasks, Ui ui, Storage storage) {
         // Nothing changes, so the list is not saved. Only commands that alter the
         // list write to the disk.
-        ui.showTasks(tasks);
+        return ui.getTasksMessage(tasks);
     }
 }

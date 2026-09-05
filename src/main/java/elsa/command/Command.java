@@ -36,12 +36,17 @@ public abstract class Command {
      * fields, so that a command can be built by the parser, which has none of
      * them, and run later by the chatbot, which has all three.
      *
+     * <p>The reply is returned rather than shown, because the chatbot has two
+     * faces and a command must not know which one it is answering. The terminal
+     * prints what comes back; the window puts it in a dialog box.
+     *
      * @param tasks   the task list to read or change
-     * @param ui      the user interface to report through
+     * @param ui      the user interface to word the reply
      * @param storage the store to write the list to if it changed
+     * @return what the chatbot says in reply
      * @throws ElsaException if the command cannot be carried out
      */
-    public abstract void execute(TaskList tasks, Ui ui, Storage storage) throws ElsaException;
+    public abstract String execute(TaskList tasks, Ui ui, Storage storage) throws ElsaException;
 
     /**
      * Returns whether the session should end after this command.

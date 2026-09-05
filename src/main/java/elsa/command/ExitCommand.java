@@ -21,9 +21,9 @@ public class ExitCommand extends Command {
     }
 
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) {
+    public String execute(TaskList tasks, Ui ui, Storage storage) {
         // The list is saved after every change, so there is nothing left to write.
-        ui.showFarewell();
+        return ui.getFarewellMessage();
     }
 
     @Override

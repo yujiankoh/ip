@@ -18,8 +18,8 @@ public class FindCommand extends Command {
     }
 
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) {
+    public String execute(TaskList tasks, Ui ui, Storage storage) {
         // Nothing changes, so the list is not saved.
-        ui.showMatchingTasks(tasks, keyword);
+        return ui.getMatchingTasksMessage(tasks, keyword);
     }
 }

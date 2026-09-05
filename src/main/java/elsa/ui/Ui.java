@@ -11,11 +11,16 @@ import elsa.task.TaskList;
 /**
  * Everything the chatbot says to the user and reads back from them.
  *
- * <p>This class is the only one that writes to the screen or reads from the
- * keyboard. Keeping that in one place means the rest of the program decides
- * <em>what</em> has happened and leaves this class to decide <em>how</em> it is
- * worded and laid out, so a change to the wording, the borders or the greeting
- * is made here and nowhere else.
+ * <p>This class is the only one that words what the chatbot says. The rest of
+ * the program decides <em>what</em> has happened and leaves this class to decide
+ * <em>how</em> it is put, so a change to the wording, the borders or the
+ * greeting is made here and nowhere else.
+ *
+ * <p>Wording a message and showing it are separate. Every {@code get...Message}
+ * method returns text and displays nothing, because the chatbot is spoken to
+ * through two faces: a terminal, which prints the text between borders through
+ * {@link #show}, and a window, which puts the same text in a dialog box. Only
+ * the terminal reads from the keyboard, so {@link #readCommand} stays here too.
  */
 public class Ui {
     /**
@@ -78,82 +83,108 @@ public class Ui {
         return scanner.nextLine().trim();
     }
 
-    /** Shows the banner and greeting that open a session. */
-    public void showWelcome() {
-        showBlock(BANNER + "\n" + GREETING);
-    }
-
-    /** Shows the parting message. */
-    public void showFarewell() {
-        showBlock(FAREWELL);
+    /**
+     * Returns the banner and greeting that open a session in the terminal.
+     *
+     * @return the opening message, banner first.
+     */
+    public String getWelcomeMessage() {
+        return BANNER + "\n" + GREETING;
     }
 
     /**
-     * Shows something the chatbot could not do, marked as a complaint.
+     * Returns the greeting that opens a session in the window, without the
+     * banner.
+     * The banner is drawn out of punctuation, which lines up only in a font
+     * whose characters are all one width. A window's font is not, so the banner
+     * would arrive crooked and is left to the terminal.
+     *
+     * @return the opening message, greeting only.
+     */
+    public String getGreetingMessage() {
+        return GREETING;
+    }
+
+    /**
+     * Returns the parting message.
+     *
+     * @return what the chatbot says as the session ends.
+     */
+    public String getFarewellMessage() {
+        return FAREWELL;
+    }
+
+    /**
+     * Returns something the chatbot could not do, marked as a complaint.
      *
      * @param message the explanation, written for the user
+     * @return the explanation behind the chatbot's complaint prefix.
      */
-    public void showError(String message) {
-        showBlock(ERROR_PREFIX + message);
+    public String getErrorMessage(String message) {
+        return ERROR_PREFIX + message;
     }
 
     /**
-     * Shows the confirmation after a task has been added.
+     * Returns the confirmation shown after a task has been added.
      *
      * @param task      the task that was just added
      * @param taskCount how many tasks are in the list now
+     * @return the confirmation text.
      */
-    public void showAdded(Task task, int taskCount) {
-        showBlock(taskCountMessage("Got it. I've added this task:", task, taskCount));
+    public String getAddedMessage(Task task, int taskCount) {
+        return taskCountMessage("Got it. I've added this task:", task, taskCount);
     }
 
     /**
-     * Shows the confirmation after a task has been removed.
+     * Returns the confirmation shown after a task has been removed.
      *
      * @param task      the task that was just removed
      * @param taskCount how many tasks are left in the list
+     * @return the confirmation text.
      */
-    public void showRemoved(Task task, int taskCount) {
-        showBlock(taskCountMessage("Noted. I've removed this task:", task, taskCount));
+    public String getRemovedMessage(Task task, int taskCount) {
+        return taskCountMessage("Noted. I've removed this task:", task, taskCount);
     }
 
     /**
-     * Shows the confirmation after a task has been marked done.
+     * Returns the confirmation shown after a task has been marked done.
      *
      * @param task the task that was marked
+     * @return the confirmation text.
      */
-    public void showMarked(Task task) {
-        showBlock("Nice! I've marked this task as done:\n  " + task);
+    public String getMarkedMessage(Task task) {
+        return "Nice! I've marked this task as done:\n  " + task;
     }
 
     /**
-     * Shows the confirmation after a task has been marked not done.
+     * Returns the confirmation shown after a task has been marked not done.
      *
      * @param task the task that was unmarked
+     * @return the confirmation text.
      */
-    public void showUnmarked(Task task) {
-        showBlock("OK, I've marked this task as not done yet:\n  " + task);
+    public String getUnmarkedMessage(Task task) {
+        return "OK, I've marked this task as not done yet:\n  " + task;
     }
 
     /**
-     * Shows the whole task list, numbered from 1.
+     * Returns the whole task list, numbered from 1.
      *
      * @param tasks the stored tasks, in the order they were added
+     * @return the numbered list, or a stand-in line if there is nothing in it.
      */
-    public void showTasks(TaskList tasks) {
+    public String getTasksMessage(TaskList tasks) {
         if (tasks.isEmpty()) {
-            showBlock(EMPTY_LIST);
-            return;
+            return EMPTY_LIST;
         }
         StringBuilder list = new StringBuilder("Here are the tasks in your list:");
         for (int i = 0; i < tasks.size(); i++) {
             appendNumbered(list, i, tasks.get(i));
         }
-        showBlock(list.toString());
+        return list.toString();
     }
 
     /**
-     * Shows the tasks falling on one date.
+     * Returns the tasks falling on one date.
      *
      * <p>Each task keeps the number it has in the full list rather than being
      * renumbered from 1, so that a number read here can be given straight to
@@ -162,8 +193,9 @@ public class Ui {
      *
      * @param tasks the stored tasks, in the order they were added
      * @param date  the date being asked about
+     * @return the matching tasks, or a line saying there are none.
      */
-    public void showTasksOn(TaskList tasks, LocalDate date) {
+    public String getTasksOnMessage(TaskList tasks, LocalDate date) {
         StringBuilder list = new StringBuilder("Here are the tasks on "
                 + Dates.format(date) + ":");
         boolean isFound = false;
@@ -176,23 +208,23 @@ public class Ui {
             }
         }
         if (!isFound) {
-            showBlock("Nothing on " + Dates.format(date) + ".");
-            return;
+            return "Nothing on " + Dates.format(date) + ".";
         }
-        showBlock(list.toString());
+        return list.toString();
     }
 
     /**
-     * Shows the tasks whose description contains a keyword.
+     * Returns the tasks whose description contains a keyword.
      *
-     * <p>As in {@link #showTasksOn}, each task keeps the number it has in the
+     * <p>As in {@link #getTasksOnMessage}, each task keeps the number it has in the
      * full list rather than being renumbered from 1, so that a number read here
      * can be given straight to "mark" or "delete".
      *
      * @param tasks   the stored tasks, in the order they were added
      * @param keyword the text being searched for
+     * @return the matching tasks, or a line saying there are none.
      */
-    public void showMatchingTasks(TaskList tasks, String keyword) {
+    public String getMatchingTasksMessage(TaskList tasks, String keyword) {
         StringBuilder list = new StringBuilder("Here are the matching tasks in your list:");
         boolean isFound = false;
         for (int i = 0; i < tasks.size(); i++) {
@@ -204,19 +236,19 @@ public class Ui {
             }
         }
         if (!isFound) {
-            showBlock("Nothing matching \"" + keyword + "\".");
-            return;
+            return "Nothing matching \"" + keyword + "\".";
         }
-        showBlock(list.toString());
+        return list.toString();
     }
 
     /**
-     * Shows a warning naming the lines of the data file that could not be read.
+     * Returns a warning naming the lines of the data file that could not be read.
      *
      * @param problems one message per line that could not be understood
      * @param fileName the file the lines came from, named so the user can go and fix it
+     * @return the warning, worded as a complaint.
      */
-    public void showSkippedLines(ArrayList<String> problems, String fileName) {
+    public String getSkippedLinesMessage(ArrayList<String> problems, String fileName) {
         String plural = (problems.size() == 1) ? "line" : "lines";
         String them = (problems.size() == 1) ? "it" : "them";
         StringBuilder message = new StringBuilder("I could not understand "
@@ -229,7 +261,7 @@ public class Ui {
         message.append("\nYour other tasks loaded normally. Saving will rewrite the"
                 + " file without the " + plural + " above, so edit the file now if you"
                 + " want to keep " + them + ".");
-        showError(message.toString());
+        return getErrorMessage(message.toString());
     }
 
     /**
@@ -261,12 +293,14 @@ public class Ui {
     }
 
     /**
-     * Prints a message enclosed between two horizontal borders,
-     * indenting each line so that it lines up inside the block.
+     * Prints a message enclosed between two horizontal borders, indenting each
+     * line so that it lines up inside the block.
+     * Only the terminal shows messages this way. The window draws its own border
+     * round each dialog box, and is handed the same text undecorated.
      *
      * @param message the text to display; may span several lines separated by "\n"
      */
-    private void showBlock(String message) {
+    public void show(String message) {
         System.out.println(BORDER);
         for (String line : message.split("\n")) {
             System.out.println(INDENT + line);

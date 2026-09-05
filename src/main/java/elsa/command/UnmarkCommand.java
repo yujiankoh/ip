@@ -18,9 +18,9 @@ public class UnmarkCommand extends TaskNumberCommand {
     }
 
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) throws ElsaException {
+    public String execute(TaskList tasks, Ui ui, Storage storage) throws ElsaException {
         Task unmarked = tasks.unmark(indexIn(tasks));
         storage.save(tasks);
-        ui.showUnmarked(unmarked);
+        return ui.getUnmarkedMessage(unmarked);
     }
 }

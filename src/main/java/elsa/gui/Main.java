@@ -1,7 +1,9 @@
 package elsa.gui;
 
 import elsa.Elsa;
+import javafx.animation.PauseTransition;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -11,6 +13,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 /**
  * The JavaFX application that shows the chatbot's window.
@@ -44,6 +47,13 @@ public class Main extends Application {
 
     /** How far each control sits from the edge it is pinned to, in pixels. */
     private static final double EDGE_GAP = 1.0;
+
+    /**
+     * How long the farewell stays on screen before the window closes.
+     * Closing the moment the reply is added would take the farewell away before
+     * it could be read.
+     */
+    private static final Duration FAREWELL_PAUSE = Duration.seconds(1.5);
 
     /** Scrolls the conversation once it is taller than the window. */
     private ScrollPane scrollPane;
@@ -97,6 +107,11 @@ public class Main extends Application {
 
         handleEvents();
 
+        // The chatbot speaks first, as it does in the terminal. This is also what
+        // reads the saved tasks, so it has to happen before any command runs.
+        dialogContainer.getChildren().add(
+                DialogBox.getElsaDialog(elsa.startSession(), elsaImage));
+
         stage.show();
     }
 
@@ -130,6 +145,26 @@ public class Main extends Application {
                 DialogBox.getElsaDialog(elsaText, elsaImage));
 
         userInput.clear();
+
+        if (elsa.isExiting()) {
+            closeAfterFarewell();
+        }
+    }
+
+    /**
+     * Closes the window once the farewell has been on screen long enough to read.
+     * The wait cannot be a sleep: that would stop the thread JavaFX draws on, so
+     * the farewell would never appear and the window would freeze instead. A
+     * PauseTransition instead asks JavaFX to call back later, leaving it free to
+     * draw in the meantime.
+     */
+    private void closeAfterFarewell() {
+        userInput.setDisable(true);
+        sendButton.setDisable(true);
+
+        PauseTransition pause = new PauseTransition(FAREWELL_PAUSE);
+        pause.setOnFinished(event -> Platform.exit());
+        pause.play();
     }
 
     /**
