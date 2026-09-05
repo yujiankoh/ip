@@ -1594,3 +1594,60 @@ bye
      The cold never bother me anyways!
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 ```
+
+---
+
+### TC-28 - List the commands with help
+
+**Aim:** Check that `help` names every command the chatbot understands, and says how a date may be written. This is what the window's greeting sends a new user to, so a command missing here is one nobody is told about. Running `help` before and after adding a task also shows it reads rather than changes: the task list is the same afterwards, and the answer does not depend on what is in it.
+
+```input
+help
+todo read book
+list
+bye
+```
+
+```expected
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+      _____ _
+     |  ___| |___  __ _
+     | |__ | / __|/ _` |
+     |  __|| \__ \ (_| |
+     |_____|_|___/\__,_|
+     Hello! I'm Elsa.
+     Do you want to build a snowman?
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Here is what you can ask me:
+       todo <description>
+       deadline <description> /by <date>
+       event <description> /from <date> /to <date>
+       list
+       on <date>
+       find <keyword>
+       mark <task number>
+       unmark <task number>
+       delete <task number>
+       help
+       bye
+
+     Write a date as 2019-10-15, 15/10/2019 (day/month/year) or Oct 15 2019.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [T][ ] read book
+     Now you have 1 task in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Here are the tasks in your list:
+     1.[T][ ] read book
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     The cold never bother me anyways!
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+```

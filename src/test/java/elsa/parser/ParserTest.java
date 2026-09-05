@@ -13,6 +13,7 @@ import elsa.command.AddCommand;
 import elsa.command.DeleteCommand;
 import elsa.command.ExitCommand;
 import elsa.command.FindCommand;
+import elsa.command.HelpCommand;
 import elsa.command.ListCommand;
 import elsa.command.MarkCommand;
 import elsa.command.OnCommand;
@@ -47,6 +48,11 @@ public class ParserTest {
     @Test
     public void parse_list_returnsListCommand() throws ElsaException {
         assertInstanceOf(ListCommand.class, Parser.parse("list"));
+    }
+
+    @Test
+    public void parse_help_returnsHelpCommand() throws ElsaException {
+        assertInstanceOf(HelpCommand.class, Parser.parse("help"));
     }
 
     @Test

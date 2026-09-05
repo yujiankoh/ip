@@ -1,5 +1,8 @@
 package elsa.command;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * The kinds of command the chatbot understands. Each constant pairs the keyword the
  * user types with the usage shown when that command is typed wrongly, so the two
@@ -7,10 +10,23 @@ package elsa.command;
  *
  * <p>This is the vocabulary of the language, not the behaviour: it says which words
  * are commands and how each is written, and nothing about what any of them does.
+ *
+ * <p>The order the constants are declared in is the order {@link #getUsages}
+ * hands them back, which is the order the window lists them in when it opens. It
+ * therefore runs from what a new user needs first to what they need last:
+ * putting a task in, looking at what is there, changing it, asking what else
+ * there is, and leaving. A new command goes where a user would want to meet it,
+ * not on the end.
  */
 public enum CommandType {
-    /** Ends the session. */
-    BYE("bye", "bye"),
+    /** Adds a task with no date attached to it. */
+    TODO("todo", "todo <description>"),
+
+    /** Adds a task that has to be done before a stated date. */
+    DEADLINE("deadline", "deadline <description> /by <date>"),
+
+    /** Adds a task that runs between two stated dates. */
+    EVENT("event", "event <description> /from <date> /to <date>"),
 
     /** Shows every task in the list. */
     LIST("list", "list"),
@@ -30,14 +46,11 @@ public enum CommandType {
     /** Removes a task from the list. */
     DELETE("delete", "delete <task number>"),
 
-    /** Adds a task with no date attached to it. */
-    TODO("todo", "todo <description>"),
+    /** Lists how every command is written. */
+    HELP("help", "help"),
 
-    /** Adds a task that has to be done before a stated date. */
-    DEADLINE("deadline", "deadline <description> /by <date>"),
-
-    /** Adds a task that runs between two stated dates. */
-    EVENT("event", "event <description> /from <date> /to <date>"),
+    /** Ends the session. */
+    BYE("bye", "bye"),
 
     /** The user pressed enter without typing anything, so the keyword is the empty string. */
     NOTHING("", ""),
@@ -79,6 +92,31 @@ public enum CommandType {
      */
     public String getUsage() {
         return usage;
+    }
+
+    /**
+     * Returns how every command a user can type is written, in the order a new
+     * user should meet them.
+     *
+     * <p>NOTHING and UNKNOWN are left out. They are not commands anyone types:
+     * they are what the chatbot calls a blank line and a word it does not know,
+     * and neither has a way of being written down.
+     *
+     * <p>This is read by whatever introduces the chatbot to the user, so that
+     * the introduction cannot fall out of step with what the chatbot actually
+     * understands. A command added above appears in it without anything else
+     * being edited.
+     *
+     * @return one usage line per command, for example "find &lt;keyword&gt;"
+     */
+    public static List<String> getUsages() {
+        List<String> usages = new ArrayList<>();
+        for (CommandType command : values()) {
+            if (command.usage != null && !command.usage.isEmpty()) {
+                usages.add(command.usage);
+            }
+        }
+        return usages;
     }
 
     /**

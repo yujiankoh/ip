@@ -27,11 +27,11 @@ public class AddCommand extends Command {
     }
 
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) throws ElsaException {
+    public String execute(TaskList tasks, Ui ui, Storage storage) throws ElsaException {
         tasks.add(task);
-        // Saved before the confirmation is shown, so the chatbot never claims to
+        // Saved before the confirmation is worded, so the chatbot never claims to
         // have stored a task that did not reach the disk.
         storage.save(tasks);
-        ui.showAdded(task, tasks.size());
+        return ui.getAddedMessage(task, tasks.size());
     }
 }

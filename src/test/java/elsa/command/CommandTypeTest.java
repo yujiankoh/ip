@@ -1,8 +1,11 @@
 package elsa.command;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -26,6 +29,57 @@ public class CommandTypeTest {
             assertEquals(command, CommandType.fromKeyword(command.getKeyword()),
                     "the keyword of " + command + " no longer finds it");
         }
+    }
+
+    /**
+     * The window introduces itself with this list, so a command missing from it
+     * is one a new user has no way of discovering.
+     */
+    @Test
+    public void getUsages_everyCommandAUserCanType_isListed() {
+        List<String> usages = CommandType.getUsages();
+
+        for (CommandType command : CommandType.values()) {
+            boolean isTypeable = command != CommandType.NOTHING && command != CommandType.UNKNOWN;
+            if (isTypeable) {
+                assertTrue(usages.contains(command.getUsage()),
+                        command + " is missing from the list shown to the user");
+            }
+        }
+    }
+
+    /**
+     * NOTHING and UNKNOWN are what the chatbot calls a blank line and a word it
+     * does not know. Listing either would tell the user to type something that
+     * is not a command.
+     */
+    @Test
+    public void getUsages_nothingAndUnknown_areLeftOut() {
+        List<String> usages = CommandType.getUsages();
+
+        assertEquals(CommandType.values().length - 2, usages.size(),
+                "exactly the two commands nobody types should be left out");
+        assertFalse(usages.contains(""), "NOTHING has no usage and must not be listed");
+        assertFalse(usages.contains(null), "UNKNOWN has no usage and must not be listed");
+    }
+
+    /** A user should meet the commands that put a task in before the one that leaves. */
+    @Test
+    public void getUsages_theOrderShown_startsWithAddingAndEndsWithLeaving() {
+        List<String> usages = CommandType.getUsages();
+
+        assertEquals(CommandType.TODO.getUsage(), usages.get(0));
+        assertEquals(CommandType.BYE.getUsage(), usages.get(usages.size() - 1));
+    }
+
+    /**
+     * The window's greeting sends the user to help by name, so the keyword has
+     * to stay the word the greeting says.
+     */
+    @Test
+    public void fromKeyword_help_returnsHelp() {
+        assertEquals(CommandType.HELP, CommandType.fromKeyword("help"));
+        assertEquals("help", CommandType.HELP.getKeyword());
     }
 
     @Test

@@ -10,6 +10,7 @@ import elsa.command.CommandType;
 import elsa.command.DeleteCommand;
 import elsa.command.ExitCommand;
 import elsa.command.FindCommand;
+import elsa.command.HelpCommand;
 import elsa.command.ListCommand;
 import elsa.command.MarkCommand;
 import elsa.command.OnCommand;
@@ -82,6 +83,7 @@ public class Parser {
         return switch (type) {
             case BYE -> new ExitCommand();
             case LIST -> new ListCommand();
+            case HELP -> new HelpCommand();
             case ON -> new OnCommand(parseDate(arguments, type));
             case FIND -> new FindCommand(parseKeyword(arguments, type));
             case MARK -> new MarkCommand(parseTaskNumber(arguments, type));
