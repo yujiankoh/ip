@@ -2,6 +2,7 @@ package elsa.ui;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import elsa.Dates;
@@ -93,16 +94,37 @@ public class Ui {
     }
 
     /**
-     * Returns the greeting that opens a session in the window, without the
-     * banner.
-     * The banner is drawn out of punctuation, which lines up only in a font
-     * whose characters are all one width. A window's font is not, so the banner
-     * would arrive crooked and is left to the terminal.
+     * Returns the greeting that opens a session in the window: who the chatbot
+     * is, and what it can be asked to do.
      *
-     * @return the opening message, greeting only.
+     * <p>The banner is left out. It is drawn out of punctuation, which lines up
+     * only in a font whose characters are all one width; a window's font is not,
+     * so the banner would arrive crooked and is left to the terminal.
+     *
+     * <p>The window has no menu and no prompt, so an empty conversation would
+     * leave a first-time user with nothing to go on. Listing the commands here
+     * is the window's answer to that.
+     *
+     * <p>The lines are handed in rather than looked up, because this package is
+     * already depended on by the one that knows them and must not depend on it
+     * back.
+     *
+     * <p>Four of those lines end in a date without saying what one looks like,
+     * so the forms a date may be written in are named underneath. They are taken
+     * from {@link Dates}, which is also what refuses a date it cannot read, so
+     * the two cannot come to disagree about what is accepted.
+     *
+     * @param usages how each command is written, one per line
+     * @return the opening message.
      */
-    public String getGreetingMessage() {
-        return GREETING;
+    public String getGreetingMessage(List<String> usages) {
+        StringBuilder message = new StringBuilder(GREETING);
+        message.append("\n\nHere is what you can ask me:");
+        for (String usage : usages) {
+            message.append("\n  ").append(usage);
+        }
+        message.append("\n\nWrite a date as ").append(Dates.ACCEPTED_FORMS).append(".");
+        return message.toString();
     }
 
     /**

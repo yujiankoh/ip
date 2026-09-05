@@ -1,6 +1,7 @@
 package elsa;
 
 import elsa.command.Command;
+import elsa.command.CommandType;
 import elsa.parser.Parser;
 import elsa.storage.Storage;
 import elsa.task.TaskList;
@@ -83,9 +84,8 @@ public class Elsa {
      */
     public String startSession() {
         String loadReport = loadTasks();
-        return loadReport.isEmpty()
-                ? ui.getGreetingMessage()
-                : ui.getGreetingMessage() + "\n\n" + loadReport;
+        String greeting = ui.getGreetingMessage(CommandType.getUsages());
+        return loadReport.isEmpty() ? greeting : greeting + "\n\n" + loadReport;
     }
 
     /**

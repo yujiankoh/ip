@@ -12,6 +12,8 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import elsa.command.CommandType;
+
 /**
  * Tests {@link Elsa#getResponse} and {@link Elsa#startSession}, the pair of
  * methods the window speaks to the chatbot through.
@@ -61,13 +63,45 @@ public class ElsaTest {
 
     @Test
     public void startSession_noSavedFile_greetsWithoutComplaining(@TempDir Path folder) {
-        assertEquals(GREETING, elsaIn(folder).startSession());
+        String opening = elsaIn(folder).startSession();
+
+        assertTrue(opening.startsWith(GREETING), "the greeting comes first");
+        assertFalse(opening.contains(ERROR_PREFIX), "there is nothing to complain about");
+    }
+
+    /**
+     * The window has no menu and no prompt, so the opening message is the only
+     * place a first-time user is told what they can type. Every command has to
+     * appear, or one of them is unreachable in the window for anyone who does
+     * not already know it.
+     */
+    @Test
+    public void startSession_always_listsEveryCommandTheChatbotUnderstands(@TempDir Path folder) {
+        String opening = elsaIn(folder).startSession();
+
+        for (String usage : CommandType.getUsages()) {
+            assertTrue(opening.contains(usage), "the opening message never mentions: " + usage);
+        }
+    }
+
+    /**
+     * Four of the commands listed take a date, so the opening message is also
+     * the only place the window says what a date may look like. It is taken from
+     * the same constant that refuses an unreadable date, so a form accepted by
+     * one and not named by the other would be a contradiction.
+     */
+    @Test
+    public void startSession_always_saysHowToWriteADate(@TempDir Path folder) {
+        String opening = elsaIn(folder).startSession();
+
+        assertTrue(opening.contains(Dates.ACCEPTED_FORMS),
+                "the opening message never says how to write a date");
     }
 
     @Test
     public void startSession_savedTasks_greetsAndReadsThemBack(@TempDir Path folder) throws IOException {
         Elsa elsa = elsaIn(folder, "T | 1 | read book", "T | 0 | buy milk");
-        assertEquals(GREETING, elsa.startSession());
+        assertTrue(elsa.startSession().startsWith(GREETING), "the greeting comes first");
 
         assertEquals("Here are the tasks in your list:\n1.[T][X] read book\n2.[T][ ] buy milk",
                 elsa.getResponse("list"));
