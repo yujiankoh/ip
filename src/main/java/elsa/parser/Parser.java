@@ -85,7 +85,7 @@ public class Parser {
             case LIST -> new ListCommand();
             case HELP -> new HelpCommand();
             case ON -> new OnCommand(parseDate(arguments, type));
-            case FIND -> new FindCommand(parseKeyword(arguments, type));
+            case FIND -> new FindCommand(parseKeywords(arguments, type));
             case MARK -> new MarkCommand(parseTaskNumber(arguments, type));
             case UNMARK -> new UnmarkCommand(parseTaskNumber(arguments, type));
             case DELETE -> new DeleteCommand(parseTaskNumber(arguments, type));
@@ -192,18 +192,25 @@ public class Parser {
      * of a saved task, unlike a description: searching for it finds nothing, but
      * nothing is stored either, so there is nothing to go wrong.
      *
+     * <p>Whitespace separates one keyword from the next, so "find book milk"
+     * asks about two things rather than about the phrase "book milk". A task
+     * matching either is shown, which is what someone scanning a list wants;
+     * searching for a phrase is still done by naming the narrower word.
+     *
      * @param arguments everything the user typed after the keyword
      * @param command   the command being run, which supplies the usage to show
-     * @return the text to search for, with surrounding spaces removed
+     * @return the texts to search for, at least one
      * @throws ElsaException if no keyword was given
      */
-    private static String parseKeyword(String arguments, CommandType command)
+    private static String[] parseKeywords(String arguments, CommandType command)
             throws ElsaException {
         if (arguments.isEmpty()) {
             throw new ElsaException("What should I look for? Use: " + command.getUsage()
                     + ", for example: find book.");
         }
-        return arguments;
+        // The arguments are already trimmed, so splitting on a run of whitespace
+        // cannot produce an empty keyword at either end.
+        return arguments.split("\\s+");
     }
 
     /**

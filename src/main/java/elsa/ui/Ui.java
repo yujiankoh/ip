@@ -246,25 +246,44 @@ public class Ui {
      * full list rather than being renumbered from 1, so that a number read here
      * can be given straight to "mark" or "delete".
      *
-     * @param tasks   the stored tasks, in the order they were added
-     * @param keyword the text being searched for
+     * @param tasks    the stored tasks, in the order they were added
+     * @param keywords the texts being searched for, one or more
      * @return the matching tasks, or a line saying there are none.
      */
-    public String getMatchingTasksMessage(TaskList tasks, String keyword) {
+    public String getMatchingTasksMessage(TaskList tasks, String... keywords) {
         StringBuilder list = new StringBuilder("Here are the matching tasks in your list:");
         boolean isFound = false;
         for (int i = 0; i < tasks.size(); i++) {
             // Each task decides for itself whether it matches; see Task.matches(),
             // which searches the description only.
-            if (tasks.get(i).matches(keyword)) {
+            if (tasks.get(i).matches(keywords)) {
                 isFound = true;
                 appendNumbered(list, i, tasks.get(i));
             }
         }
         if (!isFound) {
-            return "Nothing matching \"" + keyword + "\".";
+            return "Nothing matching " + quoteAll(keywords) + ".";
         }
         return list.toString();
+    }
+
+    /**
+     * Returns the keywords in quotation marks, run together as English rather
+     * than as a list, so that the complaint reads as a sentence: one on its own,
+     * two joined by "or", and more than two separated by commas until the last.
+     *
+     * @param keywords the texts that were searched for
+     * @return the keywords quoted and joined
+     */
+    private static String quoteAll(String... keywords) {
+        StringBuilder quoted = new StringBuilder();
+        for (int i = 0; i < keywords.length; i++) {
+            if (i > 0) {
+                quoted.append(i == keywords.length - 1 ? " or " : ", ");
+            }
+            quoted.append("\"").append(keywords[i]).append("\"");
+        }
+        return quoted.toString();
     }
 
     /**

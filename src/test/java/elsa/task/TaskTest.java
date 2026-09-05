@@ -127,6 +127,40 @@ public class TaskTest {
         assertFalse(task.matches("X"));
     }
 
+    /**
+     * Any of the keywords is enough, so a task matching only the second is still
+     * found. Requiring all of them would leave it out.
+     */
+    @Test
+    public void matches_severalKeywordsOneOfWhichIsPresent_returnsTrue() {
+        assertTrue(new Task("read book").matches("zebra", "book"));
+        assertTrue(new Task("read book").matches("read", "zebra"));
+    }
+
+    @Test
+    public void matches_severalKeywordsNoneOfWhichArePresent_returnsFalse() {
+        assertFalse(new Task("read book").matches("zebra", "unicorn"));
+    }
+
+    /**
+     * The words of a phrase are separate keywords, so a task matching one of
+     * them is found even though the phrase itself does not appear.
+     */
+    @Test
+    public void matches_wordsOfAPhraseSeparately_returnsTrue() {
+        assertTrue(new Task("buy milk").matches("return", "milk"));
+    }
+
+    /**
+     * No keyword can be found in a description that was never asked about. The
+     * parser never calls it this way, but a method taking any number of
+     * arguments can be handed none, so it has to answer.
+     */
+    @Test
+    public void matches_noKeywordsAtAll_returnsFalse() {
+        assertFalse(new Task("read book").matches());
+    }
+
     /** Every description contains the empty string, so every task matches it. */
     @Test
     public void matches_emptyKeyword_returnsTrue() {

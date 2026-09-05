@@ -1587,7 +1587,7 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OLAF!!! What should I look for? Use: find <keyword>, for example: find book.
+     OLAF!!! What should I look for? Use: find <keyword>..., for example: find book.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -1626,7 +1626,7 @@ bye
        event <description> /from <date> /to <date>
        list
        on <date>
-       find <keyword>
+       find <keyword>...
        mark <task number>
        unmark <task number>
        delete <task number>
@@ -1645,6 +1645,70 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Here are the tasks in your list:
      1.[T][ ] read book
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     The cold never bother me anyways!
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+```
+
+---
+
+### TC-29 - Find by several keywords at once
+
+**Aim:** Check that the words after `find` are separate keywords rather than one phrase, and that a task matching any one of them is shown. `find book milk` must return two tasks that have no word in common, which a phrase search could never do. The numbers shown are the ones the tasks have in the full list, 1 and 3, so a number read here can be given straight to `mark` or `delete`. The last two lines check the complaint when nothing matches: it names every keyword that was asked about, joined as English, so the user can see which of them were tried.
+
+```input
+todo read book
+todo walk the dog
+todo buy milk
+find book milk
+find zebra unicorn
+find zebra unicorn dragon
+bye
+```
+
+```expected
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+      _____ _
+     |  ___| |___  __ _
+     | |__ | / __|/ _` |
+     |  __|| \__ \ (_| |
+     |_____|_|___/\__,_|
+     Hello! I'm Elsa.
+     Do you want to build a snowman?
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [T][ ] read book
+     Now you have 1 task in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [T][ ] walk the dog
+     Now you have 2 tasks in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [T][ ] buy milk
+     Now you have 3 tasks in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Here are the matching tasks in your list:
+     1.[T][ ] read book
+     3.[T][ ] buy milk
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Nothing matching "zebra" or "unicorn".
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Nothing matching "zebra", "unicorn" or "dragon".
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

@@ -213,6 +213,35 @@ public class ElsaTest {
         assertEquals("Nothing matching \"zebra\".", elsa.getResponse("find zebra"));
     }
 
+    /**
+     * Several words after "find" are several keywords. A task matching any one
+     * of them is shown, and each keeps the number it has in the full list.
+     */
+    @Test
+    public void getResponse_findWithSeveralKeywords_showsTasksMatchingAnyOfThem(@TempDir Path folder) {
+        Elsa elsa = elsaIn(folder);
+        elsa.startSession();
+        elsa.getResponse("todo read book");
+        elsa.getResponse("todo buy milk");
+        elsa.getResponse("todo walk the dog");
+
+        assertEquals("Here are the matching tasks in your list:\n1.[T][ ] read book\n2.[T][ ] buy milk",
+                elsa.getResponse("find book milk"));
+    }
+
+    /** A complaint about several keywords names all of them, joined as English. */
+    @Test
+    public void getResponse_severalKeywordsMatchingNothing_namesThemAll(@TempDir Path folder) {
+        Elsa elsa = elsaIn(folder);
+        elsa.startSession();
+        elsa.getResponse("todo read book");
+
+        assertEquals("Nothing matching \"zebra\" or \"unicorn\".",
+                elsa.getResponse("find zebra unicorn"));
+        assertEquals("Nothing matching \"zebra\", \"unicorn\" or \"dragon\".",
+                elsa.getResponse("find zebra unicorn dragon"));
+    }
+
     @Test
     public void getResponse_surroundingSpaces_readTheSameAsWithout(@TempDir Path folder) {
         Elsa elsa = elsaIn(folder);
