@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  One entry in the conversation: what was said, beside the picture of whoever
+  said it.
+
+  The root is fx:root rather than a named control, because a window is loaded
+  once but a dialog box is made afresh for every line spoken. fx:root makes this
+  file a template: DialogBox hands itself to the loader as both the root and the
+  controller, and gets a filled-in copy back.
+
+  The alignment here is the user's, picture on the right. Elsa's entries are
+  turned round afterwards, in DialogBox.flip().
+-->
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+
+<fx:root type="javafx.scene.layout.HBox"
+         alignment="CENTER_RIGHT"
+         styleClass="dialog-box"
+         xmlns="http://javafx.com/javafx/17"
+         xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <!-- minHeight -Infinity stops a wrapped message being cut off with an
+             ellipsis, which is what a Label does when it is given less height
+             than its text needs. -->
+        <Label fx:id="dialog" styleClass="dialog-label"
+               wrapText="true" minHeight="-Infinity" />
+        <ImageView fx:id="displayPicture" styleClass="avatar"
+                   fitWidth="100.0" fitHeight="100.0" />
+    </children>
+</fx:root>

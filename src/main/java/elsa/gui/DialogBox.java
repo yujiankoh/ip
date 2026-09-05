@@ -1,7 +1,11 @@
 package elsa.gui;
 
+import java.io.IOException;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -20,17 +24,23 @@ import javafx.scene.shape.Circle;
  * a Label or a Button could, and the container holding it needs to know nothing
  * about what is inside.
  *
+ * <p>What it contains is described in {@code /view/DialogBox.fxml} rather than
+ * built here. That file uses the {@code fx:root} construct, which is what suits
+ * a control made over and over: this object hands itself to the loader as both
+ * the root to fill in and the controller to fill in, so each dialog box gets its
+ * own copy of the children the file describes.
+ *
  * <p>Who spoke is shown two ways: which side of the window the entry sits on,
  * and how the bubble is coloured. A dialog box is therefore made through
  * {@link #getUserDialog(String, Image)} or {@link #getElsaDialog(String, Image)}
  * rather than with {@code new}, so that every entry is turned the right way
  * round and coloured to match, and no caller has to remember to do it.
  *
- * <p>The colours themselves are in {@code /css/elsa.css}. This class only says
- * which style class an entry belongs to.
+ * <p>The colours themselves are in {@code /css/elsa.css}. This class and the
+ * FXML only say which style class an entry belongs to.
  */
 public class DialogBox extends HBox {
-    /** How wide and tall the picture is drawn, in pixels. */
+    /** How wide and tall the picture is drawn, in pixels. Matches the FXML. */
     private static final double PICTURE_SIZE = 100.0;
 
     /**
@@ -41,11 +51,13 @@ public class DialogBox extends HBox {
      */
     private static final double MAX_BUBBLE_SHARE = 0.72;
 
-    /** What was said. */
-    private final Label text;
+    /** What was said. Filled in by the loader from the matching fx:id. */
+    @FXML
+    private Label dialog;
 
-    /** The picture of whoever said it. */
-    private final ImageView displayPicture;
+    /** The picture of whoever said it. Filled in by the loader likewise. */
+    @FXML
+    private ImageView displayPicture;
 
     /**
      * Creates a dialog box showing a message beside a picture, with the picture
@@ -55,34 +67,44 @@ public class DialogBox extends HBox {
      * @param picture the picture of whoever said them.
      */
     private DialogBox(String message, Image picture) {
-        text = new Label(message);
-        displayPicture = new ImageView(picture);
+        loadFxml();
 
-        this.getStyleClass().add("dialog-box");
-        text.getStyleClass().add("dialog-label");
-        displayPicture.getStyleClass().add("avatar");
+        dialog.setText(message);
+        displayPicture.setImage(picture);
 
-        // Without this a long message is drawn as one line running off the side
-        // of the window, because a Label does not wrap by default.
-        text.setWrapText(true);
+        // The two things below cannot be written in the FXML, which can only set
+        // a property to a value, not tie one property to another or hand over an
+        // object it would have to build itself.
+
         // Bound rather than set, so the limit follows the window as it is
         // resized instead of being worked out once when the entry is made.
-        text.maxWidthProperty().bind(this.widthProperty().multiply(MAX_BUBBLE_SHARE));
+        dialog.maxWidthProperty().bind(this.widthProperty().multiply(MAX_BUBBLE_SHARE));
 
-        displayPicture.setFitWidth(PICTURE_SIZE);
-        displayPicture.setFitHeight(PICTURE_SIZE);
-        // Cropped to a circle, which is why the picture is not asked to keep its
-        // proportions: inside a round crop a picture very slightly wider than it
-        // is tall reads no differently, and both speakers get the same shape
-        // whatever they hand in.
+        // Cropped to a circle, which is why the FXML does not ask the picture to
+        // keep its proportions: inside a round crop a picture very slightly
+        // wider than it is tall reads no differently, and both speakers get the
+        // same shape whatever they hand in.
         displayPicture.setClip(new Circle(PICTURE_SIZE / 2, PICTURE_SIZE / 2, PICTURE_SIZE / 2));
+    }
 
-        // Sat against the middle of the picture rather than its top. A short
-        // message pinned to the top leaves most of the picture's height beside
-        // it as a gap, which reads as though the two were not part of the same
-        // entry.
-        this.setAlignment(Pos.CENTER_RIGHT);
-        this.getChildren().addAll(text, displayPicture);
+    /**
+     * Fills this dialog box in from the layout described in the FXML.
+     * Setting the root and the controller to this object is what the
+     * {@code fx:root} construct expects: the file describes children to add to
+     * something that already exists, rather than a new object to build.
+     */
+    private void loadFxml() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/DialogBox.fxml"));
+            loader.setRoot(this);
+            loader.setController(this);
+            loader.load();
+        } catch (IOException e) {
+            // Not recoverable and not the user's doing: the layout is part of the
+            // program, so a copy that cannot be read means the build is wrong.
+            // Thrown rather than printed, so it cannot be missed.
+            throw new IllegalStateException("/view/DialogBox.fxml could not be read", e);
+        }
     }
 
     /**
@@ -94,7 +116,7 @@ public class DialogBox extends HBox {
      */
     public static DialogBox getUserDialog(String message, Image picture) {
         DialogBox dialogBox = new DialogBox(message, picture);
-        dialogBox.text.getStyleClass().add("user-bubble");
+        dialogBox.dialog.getStyleClass().add("user-bubble");
         return dialogBox;
     }
 
@@ -107,7 +129,7 @@ public class DialogBox extends HBox {
      */
     public static DialogBox getElsaDialog(String message, Image picture) {
         DialogBox dialogBox = new DialogBox(message, picture);
-        dialogBox.text.getStyleClass().add("elsa-bubble");
+        dialogBox.dialog.getStyleClass().add("elsa-bubble");
         dialogBox.flip();
         return dialogBox;
     }
