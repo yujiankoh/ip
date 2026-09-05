@@ -63,7 +63,12 @@ public class Task {
     }
 
     /**
-     * Returns whether this task's description contains the given keyword.
+     * Returns whether this task's description contains any of the given keywords.
+     *
+     * <p>Any rather than all, so that "find book milk" answers "show me anything
+     * about either", which is what someone scanning a list wants. Asking for all
+     * of them would narrow the list instead, and a user who wants that can search
+     * for the narrower word on its own.
      *
      * <p>Only the description is searched, not the type marker or the dates, so
      * that "find D" looks for the letter D in what the user wrote rather than
@@ -74,11 +79,19 @@ public class Task {
      * <p>Every kind of task carries a description, so unlike {@link #occursOn}
      * this is answered the same way for all of them and none of them override it.
      *
-     * @param keyword the text to look for
-     * @return true if the description contains that text
+     * @param keywords the texts to look for, one or more
+     * @return true if the description contains at least one of them
      */
-    public boolean matches(String keyword) {
-        return description.toLowerCase().contains(keyword.toLowerCase());
+    public boolean matches(String... keywords) {
+        String searchable = description.toLowerCase();
+        for (String keyword : keywords) {
+            if (searchable.contains(keyword.toLowerCase())) {
+                return true;
+            }
+        }
+        // No keyword matched. With none given there is nothing to match, so the
+        // same answer serves: a task cannot contain a keyword nobody named.
+        return false;
     }
 
     /**

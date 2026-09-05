@@ -97,7 +97,12 @@ public class ParserTest {
         assertInstanceOf(FindCommand.class, Parser.parse("find book"));
     }
 
-    /** A keyword may be several words, so the rest of the line is taken as it is. */
+    /**
+     * Several words after "find" are several keywords rather than one phrase.
+     * Which tasks that then matches is settled by {@link elsa.task.Task#matches},
+     * and checked from end to end in ElsaTest; all that can be seen from here is
+     * that the line is accepted and built into a find.
+     */
     @Test
     public void parse_findWithSeveralWords_returnsFindCommand() throws ElsaException {
         assertInstanceOf(FindCommand.class, Parser.parse("find read book"));
