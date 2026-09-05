@@ -52,6 +52,33 @@ public class Elsa {
     }
 
     /**
+     * Creates a chatbot that keeps its tasks where this program usually keeps
+     * them.
+     * There are two ways to start the chatbot, the terminal and the window, and
+     * both want the same file. Naming it once here means neither has to know the
+     * path, and moving the file later is one change rather than two.
+     */
+    public Elsa() {
+        this(FILE_PATH);
+    }
+
+    /**
+     * Returns what the chatbot says in reply to a line the user typed.
+     *
+     * <p>This is what the window calls for each line sent, in place of the loop
+     * in {@link #run()} that the terminal drives. It only echoes the line for
+     * now: making it answer properly means {@link Ui} returning what it has to
+     * say rather than printing it, which is a change to every command and is
+     * left to its own step.
+     *
+     * @param input the line the user typed.
+     * @return what the chatbot says back.
+     */
+    public String getResponse(String input) {
+        return "Elsa heard: " + input;
+    }
+
+    /**
      * Runs one session: greets the user, reads the saved tasks, then carries out
      * commands until the user says "bye" or the input ends.
      */
@@ -100,12 +127,13 @@ public class Elsa {
     /**
      * Starts the chatbot.
      *
-     * <p>The data file is named here rather than inside {@link Storage}, so that
-     * the one place deciding where the tasks live is the program's starting point.
+     * <p>This starts the chatbot in a terminal. The window starts it through
+     * {@link elsa.gui.Launcher} instead, and both share the data file named by
+     * {@link #Elsa()}.
      *
      * @param args command line arguments, which the chatbot does not use
      */
     public static void main(String[] args) {
-        new Elsa(FILE_PATH).run();
+        new Elsa().run();
     }
 }

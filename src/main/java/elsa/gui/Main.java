@@ -1,5 +1,6 @@
 package elsa.gui;
 
+import elsa.Elsa;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -62,6 +63,9 @@ public class Main extends Application {
     /** The picture shown beside what Elsa says. */
     private final Image elsaImage = new Image(this.getClass().getResourceAsStream("/images/ElsaPortrait.png"));
 
+    /** The chatbot the window is a face for. */
+    private final Elsa elsa = new Elsa();
+
     /**
      * Creates the application object.
      * JavaFX makes this object itself, by reflection, so it needs a constructor
@@ -91,14 +95,41 @@ public class Main extends Application {
         styleWindow(stage, mainLayout);
         anchorControls();
 
-        // Two dialog boxes, so that the layout can be seen to work, and both
-        // pictures seen to load, before part three gives the window anything
-        // real to say.
-        dialogContainer.getChildren().addAll(
-                new DialogBox("Hello!", userImage),
-                new DialogBox("Do you want to build a snowman?", elsaImage));
+        handleEvents();
 
         stage.show();
+    }
+
+    /**
+     * Says what the window should do when the user acts.
+     * JavaFX does not ask the program what happened; the program says in advance
+     * which method answers which event, and JavaFX calls it when the event
+     * arrives. Both the button and the Enter key are wired to the same method,
+     * so that either way of sending a line does the same thing.
+     */
+    private void handleEvents() {
+        sendButton.setOnMouseClicked(event -> handleUserInput());
+        userInput.setOnAction(event -> handleUserInput());
+
+        // The conversation is taller every time a line is added, and the scroll
+        // pane does not follow on its own, so each change in height scrolls it
+        // back to the bottom. 1.0 is the bottom.
+        dialogContainer.heightProperty().addListener(observable -> scrollPane.setVvalue(1.0));
+    }
+
+    /**
+     * Shows what the user typed, and what Elsa says back, then empties the text
+     * field ready for the next line.
+     */
+    private void handleUserInput() {
+        String userText = userInput.getText();
+        String elsaText = elsa.getResponse(userText);
+
+        dialogContainer.getChildren().addAll(
+                DialogBox.getUserDialog(userText, userImage),
+                DialogBox.getElsaDialog(elsaText, elsaImage));
+
+        userInput.clear();
     }
 
     /**
