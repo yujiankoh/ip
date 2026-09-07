@@ -20,7 +20,7 @@ The plan is read as Markdown with this structure:
     ```
 
     ```run
-    java -cp build/libs/elsa.jar elsa.Elsa
+    java -ea -cp build/libs/elsa.jar elsa.Elsa
     ```
 
     ### TC-1 - Greet and exit
@@ -65,7 +65,7 @@ FENCE_RE = re.compile(r"^```(\w*)\s*$")
 DEFAULT_PLAN = Path("test/ui-test-plan.md")
 # Where the chatbot keeps its saved tasks, relative to the repository root.
 DATA_FILE = Path("data") / "elsa.txt"
-DEFAULT_COMMAND = "java -cp build/libs/elsa.jar elsa.Elsa"
+DEFAULT_COMMAND = "java -ea -cp build/libs/elsa.jar elsa.Elsa"
 RULE = "-" * 70
 
 
