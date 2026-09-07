@@ -86,4 +86,15 @@ tasks.register('runText', JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     mainClass = 'elsa.Elsa'
     standardInput = System.in
+    enableAssertions = true
+}
+
+// Java ignores every `assert` statement unless the JVM is started with -ea, so
+// an assertion that is never enabled is only a comment that costs a line. The
+// `test` task turns them on by default; a JavaExec task does not, so both ways
+// of starting the chatbot by hand say so here. The shipped jar deliberately
+// runs without them: an assertion is a check on this code's own reasoning, and
+// a user gaining a crash where they had a working program is a poor trade.
+tasks.named('run') {
+    enableAssertions = true
 }

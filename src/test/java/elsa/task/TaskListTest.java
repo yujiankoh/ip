@@ -3,6 +3,7 @@ package elsa.task;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
@@ -74,6 +75,23 @@ public class TaskListTest {
     // ------------------------------------------------------------------
 
     /** The task removed is handed back, so the caller can show which one it was. */
+    @Test
+    public void get_positionPastTheEnd_assertionFails() {
+        TaskList tasks = threeTasks();
+        // Gradle runs the tests with -ea, so the assertion inside get() is live.
+        // A position no task sits at is a mistake in the calling code rather than
+        // something a user could type, which is why it is an assertion and not an
+        // ElsaException: the parser and TaskNumberCommand have already refused
+        // every number a user could get wrong before a position reaches here.
+        assertThrows(AssertionError.class, () -> tasks.get(3));
+    }
+
+    @Test
+    public void delete_negativePosition_assertionFails() {
+        TaskList tasks = threeTasks();
+        assertThrows(AssertionError.class, () -> tasks.delete(-1));
+    }
+
     @Test
     public void delete_middleTask_returnsThatTask() {
         TaskList tasks = threeTasks();

@@ -103,6 +103,7 @@ public class Elsa {
         try {
             Command command = Parser.parse(input.trim());
             String response = command.execute(tasks, ui, storage);
+            assert response != null : "every command owes the user a reply";
             isExiting = command.isExit();
             return response;
         } catch (ElsaException e) {

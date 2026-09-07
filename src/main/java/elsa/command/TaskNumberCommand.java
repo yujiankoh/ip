@@ -57,6 +57,9 @@ public abstract class TaskNumberCommand extends Command {
                     + tasks.size() + ".");
         }
         // The user counts from 1, so subtract 1 to get the list position.
-        return number - 1;
+        int index = number - 1;
+        assert index >= 0 && index < tasks.size()
+                : "task " + number + " gave position " + index + " in " + tasks.size();
+        return index;
     }
 }
