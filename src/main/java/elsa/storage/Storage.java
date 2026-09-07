@@ -121,22 +121,43 @@ public class Storage {
      * @throws ElsaException if the file exists but could not be read at all
      */
     public LoadResult load() throws ElsaException {
-        ArrayList<Task> tasks = new ArrayList<>();
-        ArrayList<String> problems = new ArrayList<>();
         if (!Files.exists(filePath)) {
-            return new LoadResult(new TaskList(tasks), problems);
+            return new LoadResult(new TaskList(), new ArrayList<>());
         }
+        return decodeLines(readLines());
+    }
 
-        List<String> lines;
+    /**
+     * Returns every line of the data file, in the order they appear in it.
+     *
+     * @return the lines of the file
+     * @throws ElsaException if the file could not be read
+     */
+    private List<String> readLines() throws ElsaException {
         try {
-            lines = Files.readAllLines(filePath);
+            return Files.readAllLines(filePath);
         } catch (IOException e) {
             // Unreadable, a folder rather than a file, or not text at all:
             // nothing can be salvaged, so this is reported as a failure.
             throw new ElsaException("I could not read your saved tasks from "
                     + getFileName() + ". The reason given was: " + e);
         }
+    }
 
+    /**
+     * Turns the lines of the data file into tasks, keeping a message for each
+     * line that could not be understood.
+     *
+     * <p>Nothing here touches the disk, which is why it is static: the lines have
+     * been read by the time it is called, and what one of them means is decided
+     * by the format rather than by this class.
+     *
+     * @param lines the lines read from the file
+     * @return the tasks the lines describe, and a message per line that failed
+     */
+    private static LoadResult decodeLines(List<String> lines) {
+        ArrayList<Task> tasks = new ArrayList<>();
+        ArrayList<String> problems = new ArrayList<>();
         for (int i = 0; i < lines.size(); i++) {
             String line = lines.get(i);
             // A blank line carries no task, so skip it rather than complain.
