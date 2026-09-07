@@ -22,15 +22,16 @@ and then starts it once per test case with this command, both from the
 repository root:
 
 ```run
-java -jar build/libs/elsa.jar
+java -cp build/libs/elsa.jar elsa.Elsa
 ```
 
-The tests therefore run the same artifact the project ships. `java -jar` takes
-no class name: it reads `Main-Class` from the jar's manifest, which Gradle
-writes from the `mainClass` property in `build.gradle`. A wrong `mainClass`
-compiles cleanly and so cannot be caught by compilation, but it fails every
-case here immediately, which is the reason for testing the jar rather than the
-compiled classes or the sources.
+The tests therefore run the same artifact the project ships. The jar's manifest
+names `elsa.gui.Launcher`, which opens the window, so these tests cannot use
+`java -jar`: a window reads nothing from standard input and prints nothing to
+the console. `-cp` puts the same jar on the classpath and then names the class
+to start, which reaches the text interface inside the shipped artifact. Testing
+the jar rather than the compiled classes still catches a jar that was built
+without a class or a resource it needs at runtime.
 
 The build runs once, before the first case, so no case can test a stale jar.
 The runner picks `gradlew.bat` on Windows and `./gradlew` elsewhere, so the

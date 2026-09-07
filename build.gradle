@@ -60,7 +60,9 @@ test {
 }
 
 application {
-    mainClass = 'elsa.Elsa'
+    // The window is how the chatbot is used, so it is what `gradle run` starts
+    // and what Gradle writes as `Main-Class` into the shipped jar's manifest.
+    mainClass = 'elsa.gui.Launcher'
 }
 
 jar {
@@ -74,16 +76,14 @@ shadowJar {
     archiveFileName = 'elsa.jar'
 }
 
-run {
-    standardInput = System.in
-}
-
-// The GUI is not yet the way the chatbot is used, so `run` and the shipped jar
-// still start the text interface at elsa.Elsa. This task starts the JavaFX
-// window instead, which lets both be run while the GUI is being built up.
-tasks.register('runGui', JavaExec) {
+// The text interface at elsa.Elsa is no longer what the chatbot ships as, but
+// it is still the interface the text-based UI tests drive, so it stays runnable
+// under its own task. `standardInput` is redirected because, unlike the window,
+// it reads its commands from the console.
+tasks.register('runText', JavaExec) {
     group = 'application'
-    description = 'Runs the JavaFX window.'
+    description = 'Runs the text interface.'
     classpath = sourceSets.main.runtimeClasspath
-    mainClass = 'elsa.gui.Launcher'
+    mainClass = 'elsa.Elsa'
+    standardInput = System.in
 }
