@@ -214,7 +214,7 @@ public class Ui {
      * @return the matching tasks, or a line saying there are none.
      */
     public String getTasksOnMessage(TaskList tasks, LocalDate date) {
-        // Each task decides for itself whether it falls on the date; see
+        // What falling on a date means differs by kind of task; see
         // Task.occursOn(), which deadlines and events answer differently.
         return listTasks(tasks, task -> task.occursOn(date),
                 "Here are the tasks on " + Dates.format(date) + ":",
@@ -229,8 +229,8 @@ public class Ui {
      * @return the matching tasks, or a line saying there are none.
      */
     public String getMatchingTasksMessage(TaskList tasks, String... keywords) {
-        // Each task decides for itself whether it matches; see Task.matches(),
-        // which searches the description only.
+        // Only the description is searched, not the dates or the type marker;
+        // see Task.matches().
         return listTasks(tasks, task -> task.matches(keywords),
                 "Here are the matching tasks in your list:",
                 "Nothing matching " + quoteAll(keywords) + ".");
@@ -322,7 +322,6 @@ public class Ui {
      */
     private static void appendNumbered(StringBuilder list, int index, Task task) {
         // List indices start at 0, but the display numbering starts at 1.
-        // Appending the Task calls its toString() to render "[D][X] return book".
         list.append("\n").append(index + 1).append(".").append(task);
     }
 

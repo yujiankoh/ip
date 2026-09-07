@@ -157,7 +157,6 @@ public class Parser {
     private static Event parseEvent(String arguments) throws ElsaException {
         CommandType command = CommandType.EVENT;
         requireDescription(arguments, command);
-        // Split off the description first, then split what remains into the two dates.
         String[] parts = requireSeparator(arguments, FROM_SEPARATOR, command);
         String description = requireNonEmpty(parts[0], "description of an event", command);
         String[] dates = requireSeparator(parts[1], TO_SEPARATOR, command);

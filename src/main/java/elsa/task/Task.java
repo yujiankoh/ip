@@ -89,8 +89,8 @@ public class Task {
                 return true;
             }
         }
-        // No keyword matched. With none given there is nothing to match, so the
-        // same answer serves: a task cannot contain a keyword nobody named.
+        // With no keyword given there is nothing to match, so the same answer
+        // serves: a task cannot contain a keyword nobody named.
         return false;
     }
 

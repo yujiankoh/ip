@@ -87,7 +87,6 @@ public class Storage {
      * @throws ElsaException if the file or its folder could not be written
      */
     public void save(TaskList tasks) throws ElsaException {
-        // Each task knows how to write itself as a line; see Task.toSaveFormat().
         ArrayList<String> lines = new ArrayList<>();
         for (int i = 0; i < tasks.size(); i++) {
             lines.add(tasks.get(i).toSaveFormat());
