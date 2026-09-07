@@ -1,6 +1,6 @@
 package elsa.command;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -113,13 +113,12 @@ public enum CommandType {
      * @return one usage line per command, for example "find &lt;keyword&gt;"
      */
     public static List<String> getUsages() {
-        List<String> usages = new ArrayList<>();
-        for (CommandType command : values()) {
-            if (command.usage != null && !command.usage.isEmpty()) {
-                usages.add(command.usage);
-            }
-        }
-        return usages;
+        // A stream keeps the order it was fed, so the usages still come out in
+        // the declaration order the class comment above promises.
+        return Arrays.stream(values())
+                .map(command -> command.usage)
+                .filter(usage -> usage != null && !usage.isEmpty())
+                .toList();
     }
 
     /**
@@ -129,12 +128,12 @@ public enum CommandType {
      * @return the matching command, or UNKNOWN if no command uses that keyword
      */
     public static CommandType fromKeyword(String keyword) {
-        // values() returns every constant declared above, in declaration order.
-        for (CommandType command : values()) {
-            if (keyword.equals(command.keyword)) {
-                return command;
-            }
-        }
-        return UNKNOWN;
+        // findFirst stops at the match, and orElse supplies the answer for a
+        // word no command claims, so the "not found" case is stated rather than
+        // being whatever the search happened to fall through to.
+        return Arrays.stream(values())
+                .filter(command -> keyword.equals(command.keyword))
+                .findFirst()
+                .orElse(UNKNOWN);
     }
 }
