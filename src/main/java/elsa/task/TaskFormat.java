@@ -57,6 +57,25 @@ public class TaskFormat {
     /** The type letter that begins an event's line. */
     public static final String EVENT = "E";
 
+    /**
+     * Where the type letter sits in a line once it is split.
+     * The counts below say how many fields a kind of task needs; these say which
+     * field is which, so the suffix tells the two apart at a glance.
+     */
+    private static final int TYPE_INDEX = 0;
+
+    /** Where the done marker sits. */
+    private static final int DONE_INDEX = 1;
+
+    /** Where the description sits. */
+    private static final int DESCRIPTION_INDEX = 2;
+
+    /** Where a deadline's due date sits, and an event's start date. */
+    private static final int FIRST_DATE_INDEX = 3;
+
+    /** Where an event's end date sits. */
+    private static final int SECOND_DATE_INDEX = 4;
+
     /** Every task line has at least a type letter, a done marker and a description. */
     private static final int SHORTEST_LINE = 3;
 
@@ -99,40 +118,74 @@ public class TaskFormat {
                     + " field(s), and every task needs at least " + SHORTEST_LINE);
         }
 
-        String description = fields[2];
-        if (description.isBlank()) {
-            throw new ElsaException("its description is blank");
-        }
+        Task task = buildTask(fields);
+        applyDoneMarker(task, fields[DONE_INDEX]);
+        return task;
+    }
 
-        Task task;
+    /**
+     * Builds the kind of task the type letter names, filled in from the fields
+     * that kind of task carries.
+     *
+     * @param fields the fields the line was split into
+     * @return the task those fields describe, before its done marker is read
+     * @throws ElsaException if the type letter is unknown, a field is missing,
+     *                       or a date cannot be read
+     */
+    private static Task buildTask(String[] fields) throws ElsaException {
+        String description = requireDescription(fields);
         // Each kind of task needs a different number of fields, so each branch
         // checks it has them before reading the ones beyond the description.
-        switch (fields[0]) {
-            case TODO -> task = new Todo(description);
+        return switch (fields[TYPE_INDEX]) {
+            case TODO -> new Todo(description);
             case DEADLINE -> {
                 requireFields(fields, DEADLINE_FIELDS);
-                task = new Deadline(description, Dates.parse(fields[3]));
+                yield new Deadline(description, Dates.parse(fields[FIRST_DATE_INDEX]));
             }
             case EVENT -> {
                 requireFields(fields, EVENT_FIELDS);
-                task = new Event(description, Dates.parse(fields[3]),
-                        Dates.parse(fields[4]));
+                yield new Event(description, Dates.parse(fields[FIRST_DATE_INDEX]),
+                        Dates.parse(fields[SECOND_DATE_INDEX]));
             }
-            default -> throw new ElsaException("\"" + fields[0]
+            default -> throw new ElsaException("\"" + fields[TYPE_INDEX]
                     + "\" is not a task type; it should be " + TODO + ", " + DEADLINE
                     + " or " + EVENT);
-        }
+        };
+    }
 
-        // The second field records whether the task was done when it was saved.
+    /**
+     * Returns the description a line carries, refusing a blank one.
+     * A task with nothing written in it could not be told apart from another,
+     * so a line offering one is treated as damaged rather than stored.
+     *
+     * @param fields the fields the line was split into
+     * @return the description
+     * @throws ElsaException if the description is blank
+     */
+    private static String requireDescription(String[] fields) throws ElsaException {
+        String description = fields[DESCRIPTION_INDEX];
+        if (description.isBlank()) {
+            throw new ElsaException("its description is blank");
+        }
+        return description;
+    }
+
+    /**
+     * Records on a task whether it had been done when it was saved.
+     *
+     * @param task   the task to mark
+     * @param marker the done marker read from the line
+     * @throws ElsaException if the marker is neither of the two that are written
+     */
+    private static void applyDoneMarker(Task task, String marker) throws ElsaException {
         // Anything other than the two markers means the line cannot be trusted,
         // so it is reported rather than quietly assumed to be not done.
-        switch (fields[1]) {
+        switch (marker) {
             case DONE -> task.markAsDone();
             case NOT_DONE -> task.markAsNotDone();
-            default -> throw new ElsaException("\"" + fields[1]
+            default -> throw new ElsaException("\"" + marker
                     + "\" is not a done marker; it should be " + DONE + " or " + NOT_DONE);
         }
-        return task;
     }
 
     /**
@@ -144,7 +197,7 @@ public class TaskFormat {
      */
     private static void requireFields(String[] fields, int expected) throws ElsaException {
         if (fields.length < expected) {
-            throw new ElsaException("a " + fields[0] + " task needs " + expected
+            throw new ElsaException("a " + fields[TYPE_INDEX] + " task needs " + expected
                     + " fields, but this line has " + fields.length);
         }
     }
