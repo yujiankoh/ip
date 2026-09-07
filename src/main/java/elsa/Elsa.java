@@ -90,11 +90,15 @@ public class Elsa {
     /**
      * Returns what the chatbot says in reply to a line the user typed.
      *
-     * <p>This is what the window calls for each line sent, and it does the same
-     * work as one turn of the loop in {@link #run()}: read the line, carry out
-     * what it asks, and say what happened. A line the chatbot cannot carry out
-     * is answered with the complaint rather than thrown, because the window has
-     * nowhere to throw it to and the user is owed an answer either way.
+     * <p>This is one turn of a session: read the line, carry out what it asks,
+     * and say what happened. Both faces of the chatbot turn a line into a reply
+     * through here, the window for each line sent and {@link #run()} for each
+     * line typed, so that neither can be given behaviour the other lacks.
+     *
+     * <p>A line the chatbot cannot carry out is answered with the complaint
+     * rather than thrown, because the window has nowhere to throw it to and the
+     * user is owed an answer either way. The terminal shows that complaint the
+     * same way it shows any other reply.
      *
      * @param input the line the user typed.
      * @return what the chatbot says back.
@@ -120,8 +124,12 @@ public class Elsa {
     }
 
     /**
-     * Runs one session: greets the user, reads the saved tasks, then carries out
-     * commands until the user says "bye" or the input ends.
+     * Runs one session in the terminal: greets the user, reads the saved tasks,
+     * then carries out commands until the user says "bye" or the input ends.
+     *
+     * <p>What is left here is the terminal's own share of a session, which is
+     * the opening and the reading of lines. Turning one line into a reply is
+     * {@link #getResponse}, which the window uses too.
      */
     public void run() {
         ui.show(ui.getWelcomeMessage());
@@ -137,14 +145,7 @@ public class Elsa {
         // need to know which one means goodbye. hasNextCommand() guards against
         // input ending without a "bye".
         while (!isExiting && ui.hasNextCommand()) {
-            try {
-                Command command = Parser.parse(ui.readCommand());
-                ui.show(command.execute(tasks, ui, storage));
-                isExiting = command.isExit();
-            } catch (ElsaException e) {
-                // One place to report anything the chatbot could not carry out.
-                ui.show(ui.getErrorMessage(e.getMessage()));
-            }
+            ui.show(getResponse(ui.readCommand()));
         }
     }
 

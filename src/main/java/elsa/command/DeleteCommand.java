@@ -19,7 +19,6 @@ public class DeleteCommand extends TaskNumberCommand {
 
     @Override
     public String execute(TaskList tasks, Ui ui, Storage storage) throws ElsaException {
-        // delete() returns the task it took out, so it can be shown to the user.
         Task removed = tasks.delete(indexIn(tasks));
         storage.save(tasks);
         return ui.getRemovedMessage(removed, tasks.size());

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.function.Predicate;
 
 import elsa.Dates;
 import elsa.task.Task;
@@ -199,72 +200,75 @@ public class Ui {
      * @return the numbered list, or a stand-in line if there is nothing in it.
      */
     public String getTasksMessage(TaskList tasks) {
-        if (tasks.isEmpty()) {
-            return EMPTY_LIST;
-        }
-        StringBuilder list = new StringBuilder("Here are the tasks in your list:");
-        for (int i = 0; i < tasks.size(); i++) {
-            appendNumbered(list, i, tasks.get(i));
-        }
-        return list.toString();
+        // Every task belongs in this list, so the test accepts all of them and
+        // "nothing was wanted" and "the list is empty" come to the same thing.
+        return listTasks(tasks, task -> true,
+                "Here are the tasks in your list:", EMPTY_LIST);
     }
 
     /**
      * Returns the tasks falling on one date.
-     *
-     * <p>Each task keeps the number it has in the full list rather than being
-     * renumbered from 1, so that a number read here can be given straight to
-     * "mark" or "delete". Renumbering would make those commands act on the wrong
-     * task, because they count positions in the whole list.
      *
      * @param tasks the stored tasks, in the order they were added
      * @param date  the date being asked about
      * @return the matching tasks, or a line saying there are none.
      */
     public String getTasksOnMessage(TaskList tasks, LocalDate date) {
-        StringBuilder list = new StringBuilder("Here are the tasks on "
-                + Dates.format(date) + ":");
-        boolean isFound = false;
-        for (int i = 0; i < tasks.size(); i++) {
-            // Each task decides for itself whether it falls on the date; see
-            // Task.occursOn(), which deadlines and events answer differently.
-            if (tasks.get(i).occursOn(date)) {
-                isFound = true;
-                appendNumbered(list, i, tasks.get(i));
-            }
-        }
-        if (!isFound) {
-            return "Nothing on " + Dates.format(date) + ".";
-        }
-        return list.toString();
+        // What falling on a date means differs by kind of task; see
+        // Task.occursOn(), which deadlines and events answer differently.
+        return listTasks(tasks, task -> task.occursOn(date),
+                "Here are the tasks on " + Dates.format(date) + ":",
+                "Nothing on " + Dates.format(date) + ".");
     }
 
     /**
      * Returns the tasks whose description contains a keyword.
-     *
-     * <p>As in {@link #getTasksOnMessage}, each task keeps the number it has in the
-     * full list rather than being renumbered from 1, so that a number read here
-     * can be given straight to "mark" or "delete".
      *
      * @param tasks    the stored tasks, in the order they were added
      * @param keywords the texts being searched for, one or more
      * @return the matching tasks, or a line saying there are none.
      */
     public String getMatchingTasksMessage(TaskList tasks, String... keywords) {
-        StringBuilder list = new StringBuilder("Here are the matching tasks in your list:");
+        // Only the description is searched, not the dates or the type marker;
+        // see Task.matches().
+        return listTasks(tasks, task -> task.matches(keywords),
+                "Here are the matching tasks in your list:",
+                "Nothing matching " + quoteAll(keywords) + ".");
+    }
+
+    /**
+     * Returns the tasks a test accepts, numbered and under a heading, or a
+     * stand-in line when it accepts none.
+     *
+     * <p>The three methods above ask for different tasks, call the list
+     * different things and say something different when it comes out empty.
+     * Beyond that they want the same list built the same way, so it is built
+     * here and each of them supplies only the three parts that are its own.
+     *
+     * <p>Each task keeps the number it has in the full list rather than being
+     * renumbered from 1, so that a number read off any of these lists can be
+     * given straight to "mark" or "delete". Renumbering would make those
+     * commands act on the wrong task, because they count positions in the whole
+     * list.
+     *
+     * @param tasks    the stored tasks, in the order they were added
+     * @param isWanted decides whether a task belongs in this list.
+     * @param heading  the line introducing the list.
+     * @param ifNone   what to say instead when no task is wanted.
+     * @return the heading followed by the numbered tasks, or ifNone.
+     */
+    private static String listTasks(TaskList tasks, Predicate<Task> isWanted,
+            String heading, String ifNone) {
+        StringBuilder list = new StringBuilder(heading);
         boolean isFound = false;
         for (int i = 0; i < tasks.size(); i++) {
-            // Each task decides for itself whether it matches; see Task.matches(),
-            // which searches the description only.
-            if (tasks.get(i).matches(keywords)) {
+            Task task = tasks.get(i);
+            if (isWanted.test(task)) {
                 isFound = true;
-                appendNumbered(list, i, tasks.get(i));
+                appendNumbered(list, i, task);
             }
         }
-        if (!isFound) {
-            return "Nothing matching " + quoteAll(keywords) + ".";
-        }
-        return list.toString();
+        return isFound ? list.toString() : ifNone;
     }
 
     /**
@@ -318,7 +322,6 @@ public class Ui {
      */
     private static void appendNumbered(StringBuilder list, int index, Task task) {
         // List indices start at 0, but the display numbering starts at 1.
-        // Appending the Task calls its toString() to render "[D][X] return book".
         list.append("\n").append(index + 1).append(".").append(task);
     }
 

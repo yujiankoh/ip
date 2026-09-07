@@ -10,7 +10,6 @@ public class Todo extends Task {
      * @param description the text describing what is to be done
      */
     public Todo(String description) {
-        // super(...) calls the Task constructor, which stores the description.
         super(description);
     }
 
