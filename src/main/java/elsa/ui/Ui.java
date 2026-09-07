@@ -4,6 +4,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import elsa.Dates;
 import elsa.task.Task;
@@ -123,12 +126,11 @@ public class Ui {
      * @return the help text.
      */
     public String getHelpMessage(List<String> usages) {
-        StringBuilder message = new StringBuilder("Here is what you can ask me:");
-        for (String usage : usages) {
-            message.append("\n  ").append(usage);
-        }
-        message.append("\n\nWrite a date as ").append(Dates.ACCEPTED_FORMS).append(".");
-        return message.toString();
+        String commands = usages.stream()
+                .map(usage -> "\n  " + usage)
+                .collect(Collectors.joining());
+        return "Here is what you can ask me:" + commands
+                + "\n\nWrite a date as " + Dates.ACCEPTED_FORMS + ".";
     }
 
     /**
@@ -202,11 +204,7 @@ public class Ui {
         if (tasks.isEmpty()) {
             return EMPTY_LIST;
         }
-        StringBuilder list = new StringBuilder("Here are the tasks in your list:");
-        for (int i = 0; i < tasks.size(); i++) {
-            appendNumbered(list, i, tasks.get(i));
-        }
-        return list.toString();
+        return "Here are the tasks in your list:\n" + numberedLines(tasks, task -> true);
     }
 
     /**
@@ -222,21 +220,13 @@ public class Ui {
      * @return the matching tasks, or a line saying there are none.
      */
     public String getTasksOnMessage(TaskList tasks, LocalDate date) {
-        StringBuilder list = new StringBuilder("Here are the tasks on "
-                + Dates.format(date) + ":");
-        boolean isFound = false;
-        for (int i = 0; i < tasks.size(); i++) {
-            // Each task decides for itself whether it falls on the date; see
-            // Task.occursOn(), which deadlines and events answer differently.
-            if (tasks.get(i).occursOn(date)) {
-                isFound = true;
-                appendNumbered(list, i, tasks.get(i));
-            }
-        }
-        if (!isFound) {
+        // Each task decides for itself whether it falls on the date; see
+        // Task.occursOn(), which deadlines and events answer differently.
+        String list = numberedLines(tasks, task -> task.occursOn(date));
+        if (list.isEmpty()) {
             return "Nothing on " + Dates.format(date) + ".";
         }
-        return list.toString();
+        return "Here are the tasks on " + Dates.format(date) + ":\n" + list;
     }
 
     /**
@@ -251,20 +241,38 @@ public class Ui {
      * @return the matching tasks, or a line saying there are none.
      */
     public String getMatchingTasksMessage(TaskList tasks, String... keywords) {
-        StringBuilder list = new StringBuilder("Here are the matching tasks in your list:");
-        boolean isFound = false;
-        for (int i = 0; i < tasks.size(); i++) {
-            // Each task decides for itself whether it matches; see Task.matches(),
-            // which searches the description only.
-            if (tasks.get(i).matches(keywords)) {
-                isFound = true;
-                appendNumbered(list, i, tasks.get(i));
-            }
-        }
-        if (!isFound) {
+        // Each task decides for itself whether it matches; see Task.matches(),
+        // which searches the description only.
+        String list = numberedLines(tasks, task -> task.matches(keywords));
+        if (list.isEmpty()) {
             return "Nothing matching " + quoteAll(keywords) + ".";
         }
-        return list.toString();
+        return "Here are the matching tasks in your list:\n" + list;
+    }
+
+    /**
+     * Returns the tasks a test accepts as numbered lines, one to a line, or the
+     * empty string when it accepts none.
+     *
+     * <p>Each task keeps the number it has in the full list rather than being
+     * renumbered from 1, so that a number read off a listing can be given
+     * straight to "mark" or "delete". That is why the stream runs over the
+     * positions rather than over the tasks: the position is what has to survive
+     * the filtering.
+     *
+     * <p>Returning the empty string for "nothing was accepted" saves the flag a
+     * caller would otherwise keep and set inside a loop, because a numbered line
+     * is never itself empty.
+     *
+     * @param tasks    the stored tasks, in the order they were added
+     * @param isWanted decides whether a task belongs in the listing.
+     * @return the numbered lines joined by newlines, or the empty string
+     */
+    private static String numberedLines(TaskList tasks, Predicate<Task> isWanted) {
+        return IntStream.range(0, tasks.size())
+                .filter(i -> isWanted.test(tasks.get(i)))
+                .mapToObj(i -> numbered(i, tasks.get(i)))
+                .collect(Collectors.joining("\n"));
     }
 
     /**
@@ -296,30 +304,31 @@ public class Ui {
     public String getSkippedLinesMessage(ArrayList<String> problems, String fileName) {
         String plural = (problems.size() == 1) ? "line" : "lines";
         String them = (problems.size() == 1) ? "it" : "them";
-        StringBuilder message = new StringBuilder("I could not understand "
-                + problems.size() + " " + plural + " of " + fileName
-                + ", so I have left " + them + " out:");
-        for (String problem : problems) {
-            message.append("\n  ").append(problem);
-        }
+        String listed = problems.stream()
+                .map(problem -> "\n  " + problem)
+                .collect(Collectors.joining());
         // Said plainly, because the next change to the list rewrites the file.
-        message.append("\nYour other tasks loaded normally. Saving will rewrite the"
-                + " file without the " + plural + " above, so edit the file now if you"
-                + " want to keep " + them + ".");
-        return getErrorMessage(message.toString());
+        String message = "I could not understand " + problems.size() + " " + plural
+                + " of " + fileName + ", so I have left " + them + " out:" + listed
+                + "\nYour other tasks loaded normally. Saving will rewrite the file"
+                + " without the " + plural + " above, so edit the file now if you"
+                + " want to keep " + them + ".";
+        return getErrorMessage(message);
     }
 
     /**
-     * Adds one numbered line to a list being built.
+     * Returns one numbered line of a task listing.
+     * Written as a function from a task to its line, rather than as something
+     * that adds to a list being built, so that a listing can map over the tasks
+     * it wants and let a collector join what comes back.
      *
-     * @param list  the list being built
      * @param index the task's position in the full list, counted from 0
-     * @param task  the task to add
+     * @param task  the task to show
+     * @return the display number, a full stop, and the task
      */
-    private static void appendNumbered(StringBuilder list, int index, Task task) {
+    private static String numbered(int index, Task task) {
         // List indices start at 0, but the display numbering starts at 1.
-        // Appending the Task calls its toString() to render "[D][X] return book".
-        list.append("\n").append(index + 1).append(".").append(task);
+        return (index + 1) + "." + task;
     }
 
     /**

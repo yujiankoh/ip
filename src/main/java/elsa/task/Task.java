@@ -1,6 +1,7 @@
 package elsa.task;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 
 /**
  * A single task in the user's list, holding its description and whether it is done.
@@ -84,14 +85,11 @@ public class Task {
      */
     public boolean matches(String... keywords) {
         String searchable = description.toLowerCase();
-        for (String keyword : keywords) {
-            if (searchable.contains(keyword.toLowerCase())) {
-                return true;
-            }
-        }
-        // No keyword matched. With none given there is nothing to match, so the
-        // same answer serves: a task cannot contain a keyword nobody named.
-        return false;
+        // anyMatch stops at the first keyword that fits, and answers false for a
+        // stream with nothing in it, which is the right answer here too: a task
+        // cannot contain a keyword nobody named.
+        return Arrays.stream(keywords)
+                .anyMatch(keyword -> searchable.contains(keyword.toLowerCase()));
     }
 
     /**

@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import elsa.ElsaException;
 import elsa.task.Task;
@@ -88,10 +89,9 @@ public class Storage {
      */
     public void save(TaskList tasks) throws ElsaException {
         // Each task knows how to write itself as a line; see Task.toSaveFormat().
-        ArrayList<String> lines = new ArrayList<>();
-        for (int i = 0; i < tasks.size(); i++) {
-            lines.add(tasks.get(i).toSaveFormat());
-        }
+        List<String> lines = IntStream.range(0, tasks.size())
+                .mapToObj(i -> tasks.get(i).toSaveFormat())
+                .toList();
 
         try {
             // The data folder is not part of the repository, so create it on the
