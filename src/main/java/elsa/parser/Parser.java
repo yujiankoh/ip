@@ -111,6 +111,7 @@ public class Parser {
         // space does. Splitting here means "todo" with nothing after it is recognised
         // as a todo missing its description, rather than as an unknown command.
         String[] words = line.split("\\s+", 2);
+        assert words.length >= 1 : "split yields a word even for an empty line";
         String arguments = (words.length > 1) ? words[1].trim() : "";
         return new ParsedLine(CommandType.fromKeyword(words[0]), arguments);
     }

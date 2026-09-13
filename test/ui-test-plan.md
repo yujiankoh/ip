@@ -22,7 +22,7 @@ and then starts it once per test case with this command, both from the
 repository root:
 
 ```run
-java -cp build/libs/elsa.jar elsa.Elsa
+java -ea -cp build/libs/elsa.jar elsa.Elsa
 ```
 
 The tests therefore run the same artifact the project ships. The jar's manifest
@@ -32,6 +32,12 @@ the console. `-cp` puts the same jar on the classpath and then names the class
 to start, which reaches the text interface inside the shipped artifact. Testing
 the jar rather than the compiled classes still catches a jar that was built
 without a class or a resource it needs at runtime.
+
+`-ea` switches on the `assert` statements, which Java otherwise ignores. These
+cases are the only ones that run the whole program rather than one method, so
+they are where an assumption broken between two classes would show up. The
+shipped jar is started without the flag, because an assertion checks this
+code's own reasoning and is not a failure a user should be handed.
 
 The build runs once, before the first case, so no case can test a stale jar.
 The runner picks `gradlew.bat` on Windows and `./gradlew` elsewhere, so the

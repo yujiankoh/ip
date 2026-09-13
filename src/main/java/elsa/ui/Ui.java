@@ -276,6 +276,7 @@ public class Ui {
      * @return the keywords quoted and joined
      */
     private static String quoteAll(String... keywords) {
+        assert keywords.length > 0 : "the complaint has to name a keyword";
         StringBuilder quoted = new StringBuilder();
         for (int i = 0; i < keywords.length; i++) {
             if (i > 0) {
@@ -294,6 +295,7 @@ public class Ui {
      * @return the warning, worded as a complaint.
      */
     public String getSkippedLinesMessage(ArrayList<String> problems, String fileName) {
+        assert !problems.isEmpty() : "nothing was skipped, so there is nothing to warn about";
         String plural = (problems.size() == 1) ? "line" : "lines";
         String them = (problems.size() == 1) ? "it" : "them";
         StringBuilder message = new StringBuilder("I could not understand "

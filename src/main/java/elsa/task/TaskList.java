@@ -55,6 +55,7 @@ public class TaskList {
      * @return the task at that position
      */
     public Task get(int index) {
+        assert isValidIndex(index) : index + " is not a position in " + size() + " task(s)";
         return tasks.get(index);
     }
 
@@ -75,6 +76,7 @@ public class TaskList {
      * @return the task that was removed
      */
     public Task delete(int index) {
+        assert isValidIndex(index) : index + " is not a position in " + size() + " task(s)";
         return tasks.remove(index);
     }
 
@@ -85,6 +87,7 @@ public class TaskList {
      * @return the task that was marked, so the caller can show it
      */
     public Task mark(int index) {
+        assert isValidIndex(index) : index + " is not a position in " + size() + " task(s)";
         Task task = tasks.get(index);
         task.markAsDone();
         return task;
@@ -97,8 +100,23 @@ public class TaskList {
      * @return the task that was unmarked, so the caller can show it
      */
     public Task unmark(int index) {
+        assert isValidIndex(index) : index + " is not a position in " + size() + " task(s)";
         Task task = tasks.get(index);
         task.markAsNotDone();
         return task;
+    }
+
+    /**
+     * Returns whether a position names a task that is actually in the list.
+     *
+     * <p>Written as a method so that the four methods above can assert the same
+     * thing without repeating it. The call sits inside the assert, so it is not
+     * made at all when assertions are switched off.
+     *
+     * @param index the position to check, counting from 0
+     * @return true if a task sits at that position
+     */
+    private boolean isValidIndex(int index) {
+        return index >= 0 && index < tasks.size();
     }
 }
