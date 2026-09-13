@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import elsa.Dates;
 import elsa.task.Task;
@@ -124,12 +126,11 @@ public class Ui {
      * @return the help text.
      */
     public String getHelpMessage(List<String> usages) {
-        StringBuilder message = new StringBuilder("Here is what you can ask me:");
-        for (String usage : usages) {
-            message.append("\n  ").append(usage);
-        }
-        message.append("\n\nWrite a date as ").append(Dates.ACCEPTED_FORMS).append(".");
-        return message.toString();
+        String commands = usages.stream()
+                .map(usage -> "\n  " + usage)
+                .collect(Collectors.joining());
+        return "Here is what you can ask me:" + commands
+                + "\n\nWrite a date as " + Dates.ACCEPTED_FORMS + ".";
     }
 
     /**
@@ -259,16 +260,13 @@ public class Ui {
      */
     private static String listTasks(TaskList tasks, Predicate<Task> isWanted,
             String heading, String ifNone) {
-        StringBuilder list = new StringBuilder(heading);
-        boolean isFound = false;
-        for (int i = 0; i < tasks.size(); i++) {
-            Task task = tasks.get(i);
-            if (isWanted.test(task)) {
-                isFound = true;
-                appendNumbered(list, i, task);
-            }
-        }
-        return isFound ? list.toString() : ifNone;
+        // Streamed over positions rather than tasks, because the position is what
+        // has to survive the filtering to become the number shown.
+        String lines = IntStream.range(0, tasks.size())
+                .filter(i -> isWanted.test(tasks.get(i)))
+                .mapToObj(i -> numbered(i, tasks.get(i)))
+                .collect(Collectors.joining("\n"));
+        return lines.isEmpty() ? ifNone : heading + "\n" + lines;
     }
 
     /**
@@ -302,29 +300,28 @@ public class Ui {
         assert !problems.isEmpty() : "nothing was skipped, so there is nothing to warn about";
         String plural = (problems.size() == 1) ? "line" : "lines";
         String them = (problems.size() == 1) ? "it" : "them";
-        StringBuilder message = new StringBuilder("I could not understand "
-                + problems.size() + " " + plural + " of " + fileName
-                + ", so I have left " + them + " out:");
-        for (String problem : problems) {
-            message.append("\n  ").append(problem);
-        }
+        String listed = problems.stream()
+                .map(problem -> "\n  " + problem)
+                .collect(Collectors.joining());
         // Said plainly, because the next change to the list rewrites the file.
-        message.append("\nYour other tasks loaded normally. Saving will rewrite the"
-                + " file without the " + plural + " above, so edit the file now if you"
-                + " want to keep " + them + ".");
-        return getErrorMessage(message.toString());
+        String message = "I could not understand " + problems.size() + " " + plural
+                + " of " + fileName + ", so I have left " + them + " out:" + listed
+                + "\nYour other tasks loaded normally. Saving will rewrite the file"
+                + " without the " + plural + " above, so edit the file now if you"
+                + " want to keep " + them + ".";
+        return getErrorMessage(message);
     }
 
     /**
-     * Adds one numbered line to a list being built.
+     * Returns one numbered line of a task listing.
      *
-     * @param list  the list being built
      * @param index the task's position in the full list, counted from 0
-     * @param task  the task to add
+     * @param task  the task to show
+     * @return the display number, a full stop, and the task
      */
-    private static void appendNumbered(StringBuilder list, int index, Task task) {
+    private static String numbered(int index, Task task) {
         // List indices start at 0, but the display numbering starts at 1.
-        list.append("\n").append(index + 1).append(".").append(task);
+        return (index + 1) + "." + task;
     }
 
     /**
