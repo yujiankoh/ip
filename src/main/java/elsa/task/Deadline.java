@@ -27,6 +27,15 @@ public class Deadline extends Task {
     }
 
     /**
+     * Returns the date the task is due.
+     *
+     * @return the due date
+     */
+    public LocalDate getBy() {
+        return by;
+    }
+
+    /**
      * Returns whether this deadline falls on the given date, which it does on
      * the one day it is due.
      *

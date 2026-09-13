@@ -1,8 +1,12 @@
 package elsa;
 
+import java.util.List;
+
 import elsa.command.Command;
+import elsa.command.RemindCommand;
 import elsa.parser.Parser;
 import elsa.storage.Storage;
+import elsa.task.Reminder;
 import elsa.task.TaskList;
 import elsa.ui.Ui;
 
@@ -10,8 +14,8 @@ import elsa.ui.Ui;
  * Entry point of the Elsa chatbot.
  * Greets the user, stores todos, deadlines and events, lists them back on request,
  * marks them as done or not done, deletes them, lists those falling on a given
- * date, reports what it cannot understand,
- * and exits when the user types "bye".
+ * date, reminds the user of deadlines that are overdue or due soon, reports what
+ * it cannot understand, and exits when the user types "bye".
  * The task list is saved to the hard disk every time it changes and is read back
  * at startup; see {@link Storage}.
  *
@@ -75,16 +79,23 @@ public class Elsa {
      * read the tasks saved by an earlier run.
      *
      * <p>This is the window's counterpart to the opening of {@link #run()}. The
-     * terminal shows the greeting and any complaint about the saved file as two
-     * separate blocks; the window has one dialog box to put them in, so they are
-     * joined here with a blank line between them.
+     * terminal shows the greeting, any complaint about the saved file and any
+     * reminders as separate blocks; the window has one dialog box to put them in,
+     * so they are joined here with a blank line between each.
      *
      * @return the chatbot's opening message.
      */
     public String startSession() {
         String loadReport = loadTasks();
-        String greeting = ui.getGreetingMessage();
-        return loadReport.isEmpty() ? greeting : greeting + "\n\n" + loadReport;
+        String reminders = getStartupReminders();
+        String message = ui.getGreetingMessage();
+        if (!loadReport.isEmpty()) {
+            message += "\n\n" + loadReport;
+        }
+        if (!reminders.isEmpty()) {
+            message += "\n\n" + reminders;
+        }
+        return message;
     }
 
     /**
@@ -142,6 +153,13 @@ public class Elsa {
             ui.show(loadReport);
         }
 
+        // After the complaint, so that the user hears about any damaged lines
+        // before being reminded of tasks read from the same file.
+        String reminders = getStartupReminders();
+        if (!reminders.isEmpty()) {
+            ui.show(reminders);
+        }
+
         // Each command says whether the session should end, so the loop does not
         // need to know which one means goodbye. hasNextCommand() guards against
         // input ending without a "bye".
@@ -174,6 +192,25 @@ public class Elsa {
             tasks = new TaskList();
             return ui.getErrorMessage(e.getMessage());
         }
+    }
+
+    /**
+     * Returns the reminders to show when a session starts, or the empty string
+     * when nothing needs the user's attention.
+     *
+     * <p>Both faces of the chatbot open with this, so they cannot disagree about
+     * what to remind the user of. Unlike the "remind" command it says nothing at
+     * all when there is nothing to say, so that a start with no pressing deadline
+     * looks the same as it did before reminders existed.
+     *
+     * @return the reminders, or the empty string
+     */
+    private String getStartupReminders() {
+        List<Reminder> reminders = tasks.getReminders(Dates.today(), RemindCommand.DAYS_AHEAD);
+        if (reminders.isEmpty()) {
+            return "";
+        }
+        return ui.getRemindersMessage(reminders, RemindCommand.DAYS_AHEAD);
     }
 
     /**

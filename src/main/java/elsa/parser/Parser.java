@@ -14,6 +14,7 @@ import elsa.command.HelpCommand;
 import elsa.command.ListCommand;
 import elsa.command.MarkCommand;
 import elsa.command.OnCommand;
+import elsa.command.RemindCommand;
 import elsa.command.TaskNumberCommand;
 import elsa.command.UnmarkCommand;
 import elsa.task.Deadline;
@@ -85,6 +86,7 @@ public class Parser {
             case LIST -> new ListCommand();
             case HELP -> new HelpCommand();
             case ON -> new OnCommand(parseDate(arguments, type));
+            case REMIND -> new RemindCommand();
             case FIND -> new FindCommand(parseKeywords(arguments, type));
             case MARK -> new MarkCommand(parseTaskNumber(arguments, type));
             case UNMARK -> new UnmarkCommand(parseTaskNumber(arguments, type));

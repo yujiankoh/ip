@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import elsa.Dates;
+import elsa.task.Reminder;
 import elsa.task.Task;
 import elsa.task.TaskList;
 
@@ -235,6 +236,50 @@ public class Ui {
         return listTasks(tasks, task -> task.matches(keywords),
                 "Here are the matching tasks in your list:",
                 "Nothing matching " + quoteAll(keywords) + ".");
+    }
+
+    /**
+     * Returns the unfinished deadlines that need the user's attention, soonest
+     * first, or a line saying there are none.
+     *
+     * <p>Each deadline keeps the number it has in the full list, as in the other
+     * listings, so that it can be given straight to "mark" or "delete".
+     *
+     * @param reminders the deadlines to show, already in the order to show them
+     * @param daysAhead how far ahead they were gathered, named when there are none
+     * @return the reminders, or a line saying nothing needs attention.
+     */
+    public String getRemindersMessage(List<Reminder> reminders, int daysAhead) {
+        if (reminders.isEmpty()) {
+            return "Nothing is overdue, and nothing is due in the next " + daysAhead + " days.";
+        }
+        String lines = reminders.stream()
+                .map(reminder -> "  " + numbered(reminder.index(), reminder.deadline())
+                        + dueNote(reminder.daysUntilDue()))
+                .collect(Collectors.joining("\n"));
+        return "Here is what needs your attention:\n" + lines;
+    }
+
+    /**
+     * Returns the note saying how soon a reminded deadline is due.
+     *
+     * <p>An overdue deadline gets no note here, because its own text already ends
+     * with " -- overdue", and saying it twice would read as two separate facts.
+     *
+     * @param daysUntilDue how many days until the deadline is due; negative when overdue
+     * @return the note, beginning with its separator, or the empty string
+     */
+    private static String dueNote(long daysUntilDue) {
+        if (daysUntilDue < 0) {
+            return "";
+        }
+        if (daysUntilDue == 0) {
+            return " -- due today";
+        }
+        if (daysUntilDue == 1) {
+            return " -- due tomorrow";
+        }
+        return " -- due in " + daysUntilDue + " days";
     }
 
     /**

@@ -6,7 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -21,6 +23,16 @@ import org.junit.jupiter.api.Test;
  * already in it.
  */
 public class TaskListTest {
+
+    /**
+     * The date the reminder tests count from. Fixed rather than read from the
+     * clock, which getReminders allows by taking the date as a parameter, so every
+     * boundary gives the same answer whatever day the tests are run.
+     */
+    private static final LocalDate TODAY = LocalDate.of(2026, 9, 13);
+
+    /** How many days ahead the chatbot looks when reminding. */
+    private static final int WEEK = 7;
 
     /** A list holding three todos, named so that positions can be told apart. */
     private static TaskList threeTasks() {
@@ -148,5 +160,96 @@ public class TaskListTest {
         Task unmarked = tasks.unmark(0);
         assertEquals(" ", unmarked.getStatusIcon());
         assertEquals(" ", tasks.get(0).getStatusIcon());
+    }
+
+    // ------------------------------------------------------------------
+    // Reminders
+    // ------------------------------------------------------------------
+
+    /** Returns an unfinished deadline due a number of days after TODAY; negative for a past one. */
+    private static Deadline dueIn(String description, int days) {
+        return new Deadline(description, TODAY.plusDays(days));
+    }
+
+    /** Returns the deadlines the reminders are about, in the order given. */
+    private static List<Deadline> deadlinesOf(List<Reminder> reminders) {
+        return reminders.stream().map(Reminder::deadline).toList();
+    }
+
+    @Test
+    public void getReminders_deadlinesAroundTheWindow_keepsOverdueTodayAndLastDayOnly() {
+        Deadline overdue = dueIn("overdue", -3);
+        Deadline today = dueIn("today", 0);
+        Deadline lastDay = dueIn("last day", WEEK);
+        Deadline dayAfter = dueIn("the day after", WEEK + 1);
+        TaskList tasks = new TaskList();
+        tasks.add(overdue);
+        tasks.add(today);
+        tasks.add(lastDay);
+        tasks.add(dayAfter);
+
+        List<Reminder> reminders = tasks.getReminders(TODAY, WEEK);
+
+        assertEquals(List.of(overdue, today, lastDay), deadlinesOf(reminders));
+        assertEquals(List.of(-3L, 0L, 7L), reminders.stream().map(Reminder::daysUntilDue).toList());
+    }
+
+    @Test
+    public void getReminders_doneDeadlines_areLeftOut() {
+        Deadline donePast = dueIn("done and past", -2);
+        donePast.markAsDone();
+        Deadline doneToday = dueIn("done and due today", 0);
+        doneToday.markAsDone();
+        Deadline owed = dueIn("still owed", 1);
+        TaskList tasks = new TaskList();
+        tasks.add(donePast);
+        tasks.add(doneToday);
+        tasks.add(owed);
+
+        assertEquals(List.of(owed), deadlinesOf(tasks.getReminders(TODAY, WEEK)));
+    }
+
+    @Test
+    public void getReminders_todosAndEvents_areLeftOut() {
+        TaskList tasks = new TaskList();
+        tasks.add(new Todo("read book"));
+        tasks.add(new Event("running now", TODAY.minusDays(1), TODAY.plusDays(1)));
+        tasks.add(new Event("starting soon", TODAY.plusDays(2), TODAY.plusDays(3)));
+
+        assertTrue(tasks.getReminders(TODAY, WEEK).isEmpty());
+    }
+
+    @Test
+    public void getReminders_outOfOrder_sortsSoonestFirstAndKeepsListOrderForTies() {
+        Deadline later = dueIn("later", 5);
+        Deadline overdue = dueIn("overdue", -1);
+        Deadline sameDayAsLater = dueIn("same day as later", 5);
+        TaskList tasks = new TaskList();
+        tasks.add(later);
+        tasks.add(overdue);
+        tasks.add(sameDayAsLater);
+
+        assertEquals(List.of(overdue, later, sameDayAsLater),
+                deadlinesOf(tasks.getReminders(TODAY, WEEK)));
+    }
+
+    /**
+     * A reminder is shown with the task's number in the full list, which is what
+     * "mark" and "delete" count. The deadline sits behind two todos here, so a
+     * position counted among the reminders alone would wrongly be 0.
+     */
+    @Test
+    public void getReminders_tasksBeforeTheDeadline_indexIsItsPositionInTheFullList() {
+        TaskList tasks = new TaskList();
+        tasks.add(new Todo("first"));
+        tasks.add(new Todo("second"));
+        tasks.add(dueIn("third", 1));
+
+        assertEquals(2, tasks.getReminders(TODAY, WEEK).get(0).index());
+    }
+
+    @Test
+    public void getReminders_emptyList_returnsNoReminders() {
+        assertTrue(new TaskList().getReminders(TODAY, WEEK).isEmpty());
     }
 }

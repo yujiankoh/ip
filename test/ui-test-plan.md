@@ -971,7 +971,7 @@ bye
 
 ### TC-17 - Start with tasks saved by an earlier run
 
-**Aim:** Level-7 requires the tasks to be read back from the hard disk at startup. This case starts with a data file holding one of each kind of task, so `list` must show all three with the descriptions, dates and done markers they were saved with, rather than the empty-list message. The `delete 2` and `unmark 1` afterwards check that loaded tasks are ordinary members of the list: they can be numbered, changed and removed exactly like tasks typed in this session.
+**Aim:** Level-7 requires the tasks to be read back from the hard disk at startup. This case starts with a data file holding one of each kind of task, so `list` must show all three with the descriptions, dates and done markers they were saved with, rather than the empty-list message. The `delete 2` and `unmark 1` afterwards check that loaded tasks are ordinary members of the list: they can be numbered, changed and removed exactly like tasks typed in this session. The saved deadline is from 2019 and not done, so it is overdue, and the chatbot reminds the user of it straight after the greeting; TC-31 checks that reminder more closely.
 
 ```data
 T | 1 | read book
@@ -996,6 +996,11 @@ bye
      |_____|_|___/\__,_|
      Hello! I'm Elsa.
      Do you want to build a snowman?
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Here is what needs your attention:
+       2.[D][ ] return book (by: Jun 06 2019) -- overdue
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -1633,6 +1638,7 @@ bye
        event <description> /from <date> /to <date>
        list
        on <date>
+       remind
        find <keyword>...
        mark <task number>
        unmark <task number>
@@ -1716,6 +1722,153 @@ bye
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Nothing matching "zebra", "unicorn" or "dragon".
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     The cold never bother me anyways!
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+```
+
+---
+
+### TC-30 - Remind about unfinished overdue deadlines and nothing else
+
+**Aim:** B-Reminders asks for a way to be reminded about deadlines. `remind` shows the unfinished deadlines that are overdue or due within the next 7 days, and nothing else. The first `remind`, on an empty list, checks that having nothing to show is said in words rather than as an empty heading. The list then holds one task of every kind that must be left out: a todo, a 2019 deadline that is marked done, a 2019 event, and a deadline in 2999, which is never within a week. Only the two unfinished 2019 deadlines remain, and they are shown by due date rather than list order, so task 6 comes before task 2, each under its number in the full list so that it can be given straight to `mark` or `delete`. The last `remind 3` checks that text after the keyword is ignored, as it is after `list`. Deadlines due today, tomorrow or later this week cannot be tested here, because this plan has no fixed today; ElsaTest and TaskListTest cover those.
+
+```input
+remind
+todo read book
+deadline return book /by 2019-06-06
+deadline pay fees /by 2019-06-01
+mark 3
+event camp /from 2019-06-01 /to 2019-06-03
+deadline renew pass /by 2999-01-01
+deadline old form /by 2019-05-30
+remind
+remind 3
+bye
+```
+
+```expected
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+      _____ _
+     |  ___| |___  __ _
+     | |__ | / __|/ _` |
+     |  __|| \__ \ (_| |
+     |_____|_|___/\__,_|
+     Hello! I'm Elsa.
+     Do you want to build a snowman?
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Nothing is overdue, and nothing is due in the next 7 days.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [T][ ] read book
+     Now you have 1 task in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [D][ ] return book (by: Jun 06 2019) -- overdue
+     Now you have 2 tasks in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [D][ ] pay fees (by: Jun 01 2019) -- overdue
+     Now you have 3 tasks in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Nice! I've marked this task as done:
+       [D][X] pay fees (by: Jun 01 2019)
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [E][ ] camp (from: Jun 01 2019 to: Jun 03 2019)
+     Now you have 4 tasks in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [D][ ] renew pass (by: Jan 01 2999)
+     Now you have 5 tasks in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [D][ ] old form (by: May 30 2019) -- overdue
+     Now you have 6 tasks in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Here is what needs your attention:
+       6.[D][ ] old form (by: May 30 2019) -- overdue
+       2.[D][ ] return book (by: Jun 06 2019) -- overdue
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Here is what needs your attention:
+       6.[D][ ] old form (by: May 30 2019) -- overdue
+       2.[D][ ] return book (by: Jun 06 2019) -- overdue
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     The cold never bother me anyways!
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+```
+
+---
+
+### TC-31 - Remind at startup, after the saved-file warning
+
+**Aim:** A reminder the user has to ask for is easy to forget, so the chatbot also reminds them as the session starts, without being asked. The saved file here holds an unfinished 2019 deadline, which must be reminded about; a finished 2019 deadline, a todo and a 2999 deadline, which must not; and one unreadable line. The order of the opening blocks is the point: greeting, then the warning about the unreadable line, then the reminder, so the user hears that the file was damaged before being reminded of tasks read from it. The reminder shows task 2 under its number in the full list, because the unreadable line is skipped before the list is numbered. `list` afterwards confirms the numbering and that the reminder changed nothing.
+
+```data
+T | 0 | read book
+D | 0 | return book | 2019-06-06
+D | 1 | pay fees | 2019-06-01
+X | 0 | mystery
+D | 0 | renew pass | 2999-01-01
+```
+
+```input
+list
+bye
+```
+
+```expected
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+      _____ _
+     |  ___| |___  __ _
+     | |__ | / __|/ _` |
+     |  __|| \__ \ (_| |
+     |_____|_|___/\__,_|
+     Hello! I'm Elsa.
+     Do you want to build a snowman?
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OLAF!!! I could not understand 1 line of data/elsa.txt, so I have left it out:
+       Line 4: "X" is not a task type; it should be T, D or E
+     Your other tasks loaded normally. Saving will rewrite the file without the line above, so edit the file now if you want to keep it.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Here is what needs your attention:
+       2.[D][ ] return book (by: Jun 06 2019) -- overdue
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Here are the tasks in your list:
+     1.[T][ ] read book
+     2.[D][ ] return book (by: Jun 06 2019) -- overdue
+     3.[D][X] pay fees (by: Jun 01 2019)
+     4.[D][ ] renew pass (by: Jan 01 2999)
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
