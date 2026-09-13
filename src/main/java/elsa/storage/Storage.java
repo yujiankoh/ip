@@ -66,6 +66,8 @@ public class Storage {
     public Storage(String filePath) {
         this.name = filePath;
         this.filePath = Path.of(filePath);
+        assert this.filePath.getParent() != null
+                : "the data file needs a folder for save() to create: " + filePath;
     }
 
     /**
