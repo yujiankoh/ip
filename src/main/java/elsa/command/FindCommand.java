@@ -18,6 +18,7 @@ public class FindCommand extends Command {
      * @param keywords the texts the user is looking for, one or more
      */
     public FindCommand(String... keywords) {
+        assert keywords.length > 0 : "find needs a keyword to look for";
         this.keywords = keywords;
     }
 

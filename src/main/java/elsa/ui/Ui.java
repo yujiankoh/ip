@@ -201,78 +201,72 @@ public class Ui {
      * @return the numbered list, or a stand-in line if there is nothing in it.
      */
     public String getTasksMessage(TaskList tasks) {
-        if (tasks.isEmpty()) {
-            return EMPTY_LIST;
-        }
-        return "Here are the tasks in your list:\n" + numberedLines(tasks, task -> true);
+        // Every task belongs in this list, so the test accepts all of them and
+        // "nothing was wanted" and "the list is empty" come to the same thing.
+        return listTasks(tasks, task -> true,
+                "Here are the tasks in your list:", EMPTY_LIST);
     }
 
     /**
      * Returns the tasks falling on one date.
-     *
-     * <p>Each task keeps the number it has in the full list rather than being
-     * renumbered from 1, so that a number read here can be given straight to
-     * "mark" or "delete". Renumbering would make those commands act on the wrong
-     * task, because they count positions in the whole list.
      *
      * @param tasks the stored tasks, in the order they were added
      * @param date  the date being asked about
      * @return the matching tasks, or a line saying there are none.
      */
     public String getTasksOnMessage(TaskList tasks, LocalDate date) {
-        // Each task decides for itself whether it falls on the date; see
+        // What falling on a date means differs by kind of task; see
         // Task.occursOn(), which deadlines and events answer differently.
-        String list = numberedLines(tasks, task -> task.occursOn(date));
-        if (list.isEmpty()) {
-            return "Nothing on " + Dates.format(date) + ".";
-        }
-        return "Here are the tasks on " + Dates.format(date) + ":\n" + list;
+        return listTasks(tasks, task -> task.occursOn(date),
+                "Here are the tasks on " + Dates.format(date) + ":",
+                "Nothing on " + Dates.format(date) + ".");
     }
 
     /**
      * Returns the tasks whose description contains a keyword.
-     *
-     * <p>As in {@link #getTasksOnMessage}, each task keeps the number it has in the
-     * full list rather than being renumbered from 1, so that a number read here
-     * can be given straight to "mark" or "delete".
      *
      * @param tasks    the stored tasks, in the order they were added
      * @param keywords the texts being searched for, one or more
      * @return the matching tasks, or a line saying there are none.
      */
     public String getMatchingTasksMessage(TaskList tasks, String... keywords) {
-        // Each task decides for itself whether it matches; see Task.matches(),
-        // which searches the description only.
-        String list = numberedLines(tasks, task -> task.matches(keywords));
-        if (list.isEmpty()) {
-            return "Nothing matching " + quoteAll(keywords) + ".";
-        }
-        return "Here are the matching tasks in your list:\n" + list;
+        // Only the description is searched, not the dates or the type marker;
+        // see Task.matches().
+        return listTasks(tasks, task -> task.matches(keywords),
+                "Here are the matching tasks in your list:",
+                "Nothing matching " + quoteAll(keywords) + ".");
     }
 
     /**
-     * Returns the tasks a test accepts as numbered lines, one to a line, or the
-     * empty string when it accepts none.
+     * Returns the tasks a test accepts, numbered and under a heading, or a
+     * stand-in line when it accepts none.
+     *
+     * <p>The three methods above ask for different tasks, call the list
+     * different things and say something different when it comes out empty.
+     * Beyond that they want the same list built the same way, so it is built
+     * here and each of them supplies only the three parts that are its own.
      *
      * <p>Each task keeps the number it has in the full list rather than being
-     * renumbered from 1, so that a number read off a listing can be given
-     * straight to "mark" or "delete". That is why the stream runs over the
-     * positions rather than over the tasks: the position is what has to survive
-     * the filtering.
-     *
-     * <p>Returning the empty string for "nothing was accepted" saves the flag a
-     * caller would otherwise keep and set inside a loop, because a numbered line
-     * is never itself empty.
+     * renumbered from 1, so that a number read off any of these lists can be
+     * given straight to "mark" or "delete". Renumbering would make those
+     * commands act on the wrong task, because they count positions in the whole
+     * list.
      *
      * @param tasks    the stored tasks, in the order they were added
-     * @param isWanted decides whether a task belongs in the listing.
-     * @return the numbered lines joined by newlines, or the empty string
+     * @param isWanted decides whether a task belongs in this list.
+     * @param heading  the line introducing the list.
+     * @param ifNone   what to say instead when no task is wanted.
+     * @return the heading followed by the numbered tasks, or ifNone.
      */
-    private static String numberedLines(TaskList tasks, Predicate<Task> isWanted) {
-        return IntStream.range(0, tasks.size())
+    private static String listTasks(TaskList tasks, Predicate<Task> isWanted,
+            String heading, String ifNone) {
+        // Streamed over positions rather than tasks, because the position is what
+        // has to survive the filtering to become the number shown.
+        String lines = IntStream.range(0, tasks.size())
                 .filter(i -> isWanted.test(tasks.get(i)))
                 .mapToObj(i -> numbered(i, tasks.get(i)))
                 .collect(Collectors.joining("\n"));
+        return lines.isEmpty() ? ifNone : heading + "\n" + lines;
     }
 
     /**
@@ -284,6 +278,7 @@ public class Ui {
      * @return the keywords quoted and joined
      */
     private static String quoteAll(String... keywords) {
+        assert keywords.length > 0 : "the complaint has to name a keyword";
         StringBuilder quoted = new StringBuilder();
         for (int i = 0; i < keywords.length; i++) {
             if (i > 0) {
@@ -302,6 +297,7 @@ public class Ui {
      * @return the warning, worded as a complaint.
      */
     public String getSkippedLinesMessage(ArrayList<String> problems, String fileName) {
+        assert !problems.isEmpty() : "nothing was skipped, so there is nothing to warn about";
         String plural = (problems.size() == 1) ? "line" : "lines";
         String them = (problems.size() == 1) ? "it" : "them";
         String listed = problems.stream()
@@ -318,9 +314,6 @@ public class Ui {
 
     /**
      * Returns one numbered line of a task listing.
-     * Written as a function from a task to its line, rather than as something
-     * that adds to a list being built, so that a listing can map over the tasks
-     * it wants and let a collector join what comes back.
      *
      * @param index the task's position in the full list, counted from 0
      * @param task  the task to show
