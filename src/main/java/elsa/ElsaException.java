@@ -12,7 +12,6 @@ public class ElsaException extends Exception {
      * @param message what went wrong, written for the user rather than the programmer
      */
     public ElsaException(String message) {
-        // Hands the message to Exception, which stores it for getMessage().
         super(message);
     }
 }

@@ -129,7 +129,6 @@ public enum CommandType {
      * @return the matching command, or UNKNOWN if no command uses that keyword
      */
     public static CommandType fromKeyword(String keyword) {
-        // values() returns every constant declared above, in declaration order.
         for (CommandType command : values()) {
             if (keyword.equals(command.keyword)) {
                 return command;
