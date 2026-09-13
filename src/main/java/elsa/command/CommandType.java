@@ -34,6 +34,9 @@ public enum CommandType {
     /** Shows the tasks falling on one date. */
     ON("on", "on <date>"),
 
+    /** Shows the unfinished deadlines that are overdue or due within a week. */
+    REMIND("remind", "remind"),
+
     /**
      * Shows the tasks whose description contains a keyword. The trailing "..."
      * is the usual way of writing that the argument before it may be repeated.

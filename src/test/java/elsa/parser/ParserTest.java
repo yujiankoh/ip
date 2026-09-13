@@ -17,6 +17,7 @@ import elsa.command.HelpCommand;
 import elsa.command.ListCommand;
 import elsa.command.MarkCommand;
 import elsa.command.OnCommand;
+import elsa.command.RemindCommand;
 import elsa.command.UnmarkCommand;
 import elsa.task.TaskFormat;
 
@@ -90,6 +91,20 @@ public class ParserTest {
     @Test
     public void parse_on_returnsOnCommand() throws ElsaException {
         assertInstanceOf(OnCommand.class, Parser.parse("on 2019-10-15"));
+    }
+
+    @Test
+    public void parse_remind_returnsRemindCommand() throws ElsaException {
+        assertInstanceOf(RemindCommand.class, Parser.parse("remind"));
+    }
+
+    /**
+     * "remind" takes nothing after it, and like "list" it does not read what
+     * follows rather than refusing it, so a number after it changes nothing.
+     */
+    @Test
+    public void parse_remindWithTextAfterIt_stillReturnsRemindCommand() throws ElsaException {
+        assertInstanceOf(RemindCommand.class, Parser.parse("remind 3"));
     }
 
     @Test

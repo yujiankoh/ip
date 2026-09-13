@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -44,6 +45,12 @@ public class ElsaTest {
 
     /** The prefix put in front of anything the chatbot could not do. */
     private static final String ERROR_PREFIX = "OLAF!!! ";
+
+    /** The whole opening message when there is no warning and no reminder. */
+    private static final String OPENING = GREETING + "\n\nType \"help\" to see what I can do.";
+
+    /** The line that introduces the reminders. */
+    private static final String REMINDERS_HEADING = "Here is what needs your attention:";
 
     /** Builds a chatbot whose tasks live in a file inside the folder given. */
     private static Elsa elsaIn(Path folder) {
@@ -344,5 +351,115 @@ public class ElsaTest {
 
         assertEquals("Here are the tasks in your list:\n1.[T][X] read book",
                 second.getResponse("list"));
+    }
+
+    // ------------------------------------------------------------------
+    // Reminding
+    // ------------------------------------------------------------------
+    //
+    // Reminders are about how far a deadline is from today, and today is the one
+    // date no test can write down in advance. So these tests build their dates
+    // from the clock, as DeadlineTest already does, and every boundary is
+    // checked again with a fixed date in TaskListTest.
+
+    /** Returns a date a number of days from today, written as the data file stores it. */
+    private static String savedDate(int daysFromToday) {
+        return Dates.toSaveFormat(LocalDate.now().plusDays(daysFromToday));
+    }
+
+    /** Returns a date a number of days from today, written as the chatbot shows it. */
+    private static String shownDate(int daysFromToday) {
+        return Dates.format(LocalDate.now().plusDays(daysFromToday));
+    }
+
+    @Test
+    public void getResponse_remindWithNothingDue_saysThereIsNothing(@TempDir Path folder) throws IOException {
+        Elsa elsa = elsaIn(folder, "T | 0 | read book", "D | 0 | far off | " + savedDate(8),
+                "D | 1 | finished | " + savedDate(-1));
+        elsa.startSession();
+
+        assertEquals("Nothing is overdue, and nothing is due in the next 7 days.",
+                elsa.getResponse("remind"));
+    }
+
+    /**
+     * One saved list covering every case at once: overdue, due today, tomorrow,
+     * in a few days and on the last day of the week, all of which appear soonest
+     * first under their full-list numbers; and a todo, an event, a finished
+     * deadline and one a day too far off, none of which do.
+     */
+    @Test
+    public void getResponse_remind_listsWhatNeedsAttentionSoonestFirst(@TempDir Path folder) throws IOException {
+        Elsa elsa = elsaIn(folder,
+                "D | 0 | in a week | " + savedDate(7),
+                "T | 0 | read book",
+                "D | 0 | tomorrow | " + savedDate(1),
+                "D | 0 | late | " + savedDate(-2),
+                "D | 0 | too far | " + savedDate(8),
+                "D | 1 | done already | " + savedDate(-1),
+                "D | 0 | today | " + savedDate(0),
+                "E | 0 | trip | " + savedDate(0) + " | " + savedDate(1),
+                "D | 0 | soon | " + savedDate(3));
+        elsa.startSession();
+
+        assertEquals(REMINDERS_HEADING + "\n"
+                + "  4.[D][ ] late (by: " + shownDate(-2) + ") -- overdue\n"
+                + "  7.[D][ ] today (by: " + shownDate(0) + ") -- due today\n"
+                + "  3.[D][ ] tomorrow (by: " + shownDate(1) + ") -- due tomorrow\n"
+                + "  9.[D][ ] soon (by: " + shownDate(3) + ") -- due in 3 days\n"
+                + "  1.[D][ ] in a week (by: " + shownDate(7) + ") -- due in 7 days",
+                elsa.getResponse("remind"));
+    }
+
+    @Test
+    public void getResponse_remindWithTextAfterIt_answersAsPlainRemindDoes(@TempDir Path folder)
+            throws IOException {
+        Elsa elsa = elsaIn(folder, "D | 0 | late | " + savedDate(-1));
+        elsa.startSession();
+
+        assertEquals(elsa.getResponse("remind"), elsa.getResponse("remind 3"));
+    }
+
+    @Test
+    public void getResponse_remind_leavesTheSavedFileAlone(@TempDir Path folder) throws IOException {
+        Elsa elsa = elsaIn(folder, "D | 0 | late | " + savedDate(-1), "T | 1 | read book");
+        elsa.startSession();
+        List<String> before = Files.readAllLines(folder.resolve("tasks.txt"));
+
+        elsa.getResponse("remind");
+
+        assertEquals(before, Files.readAllLines(folder.resolve("tasks.txt")));
+    }
+
+    @Test
+    public void startSession_overdueSavedDeadline_remindsAfterTheGreeting(@TempDir Path folder)
+            throws IOException {
+        Elsa elsa = elsaIn(folder, "T | 0 | read book", "D | 0 | late | " + savedDate(-1));
+
+        assertEquals(OPENING + "\n\n" + REMINDERS_HEADING + "\n"
+                + "  2.[D][ ] late (by: " + shownDate(-1) + ") -- overdue",
+                elsa.startSession());
+    }
+
+    /**
+     * A start with nothing pressing must look exactly as it did before reminders
+     * existed, which is why the opening says nothing rather than "nothing is due".
+     */
+    @Test
+    public void startSession_nothingDue_addsNothingToTheGreeting(@TempDir Path folder) throws IOException {
+        Elsa elsa = elsaIn(folder, "D | 0 | far off | " + savedDate(8));
+
+        assertEquals(OPENING, elsa.startSession());
+    }
+
+    @Test
+    public void startSession_damagedLineAndOverdueDeadline_warnsBeforeReminding(@TempDir Path folder)
+            throws IOException {
+        Elsa elsa = elsaIn(folder, "nonsense", "D | 0 | late | " + savedDate(-1));
+        String opening = elsa.startSession();
+
+        assertTrue(opening.startsWith(OPENING + "\n\n" + ERROR_PREFIX), "the warning follows the greeting");
+        assertTrue(opening.endsWith("\n\n" + REMINDERS_HEADING + "\n"
+                + "  1.[D][ ] late (by: " + shownDate(-1) + ") -- overdue"), "the reminder comes last");
     }
 }
