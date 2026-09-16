@@ -67,15 +67,26 @@ The project has two test suites, which cover opposite ends of the program and do
 
 ### JUnit coverage target
 
-**Aim to have JUnit tests for roughly the top 50% highest-value methods**, judged by how much logic a method holds multiplied by how badly a silent failure in it would hurt. Complex, core, or critical business logic comes first.
+**Aim to have JUnit tests for nearly all code that can be tested automatically.** Where effort has to be spent first, spend it by how much logic a method holds multiplied by how badly a silent failure in it would hurt: complex, core or critical business logic comes before anything else.
 
-Currently in the covered half: `Dates`, `Parser.parse`, `TaskFormat.decode`, `Storage.save`/`load`, `Task` and its three subclasses, the mutating methods of `TaskList` and `TaskList.getReminders`, `CommandType.fromKeyword`, and `Elsa.startSession`/`getResponse`/`isExiting`.
+Every package under `src/main/java` is covered, `elsa.gui` aside. Each class is tested at its mirrored path, including `Ui`, whose wording is what the user actually reads, and every `Command` subclass, each assembled with its own task list, user interface and store rather than reached only through `Elsa.getResponse`.
 
-Currently, and deliberately, outside it: `Ui`, whose `get...Message` methods are pure string building reached in every `ElsaTest` assertion and checked end to end by the UI suite, and whose `show` only prints; `elsa.gui.Main`, `elsa.gui.Launcher` and `elsa.gui.DialogBox`, which only build and show a window and would need a running JavaFX toolkit to exercise; the `Command` subclasses' `execute`, each of which is run through `Elsa.getResponse` by `ElsaTest` rather than assembled with its own task list, user interface and store; and plain getters or methods that pass straight through to a field or a collection.
+Deliberately outside it:
+
+* `elsa.gui.Main`, `elsa.gui.Launcher`, `elsa.gui.DialogBox` and `elsa.gui.MainWindow`, which build and show a window and would need a running JavaFX toolkit. The course says to test the GUI by hand instead, so changes there are checked by running the program and looking.
+* `Elsa.main` and `Launcher.main`, which only hand off to something else.
+* `Elsa.run`, the terminal session loop, which all of the text UI cases drive from end to end. That suite is a better test of it than anything written with redirected streams.
+* Plain getters and methods that pass straight through to a field or a collection, where a test could only restate the field.
+
+**The language the computer is set to is checked by hand, not by JUnit.** `Dates` builds its formatters once, when the class is first loaded, so a test that changes the default locale afterwards is testing a formatter that was already built and passes whether or not `Locale.ENGLISH` is named. To check it for real, run the jar in another language and confirm a date still reads `Oct 15 2019`:
+
+```
+java -Duser.language=fr -Duser.country=FR -jar elsa.jar
+```
 
 **The JUnit tests must be updated after each code change so that this target continues to hold.** Concretely, in the same commit as the change:
 
-* a new method that falls in the high-value half needs tests before the commit, not after;
+* a new method that can be tested automatically needs tests before the commit, not after;
 * a changed method needs its existing tests updated to match the new behaviour, derived from the requirements rather than from what the code now returns;
 * a method that moves or is renamed takes its test class with it, so the mirrored path and the `ClassNameTest` name stay correct;
 * a deleted method has its tests deleted with it.
