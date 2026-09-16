@@ -119,9 +119,15 @@ public class MainWindow {
             return;
         }
 
+        // Asked after the reply is in hand, the way isExiting is below: the
+        // reply is text, and text alone does not say whether the command worked.
+        String reply = elsa.getResponse(userText);
+        DialogBox answer = elsa.wasLastReplyAnError()
+                ? DialogBox.getElsaErrorDialog(reply, elsaImage)
+                : DialogBox.getElsaDialog(reply, elsaImage);
+
         dialogContainer.getChildren().addAll(
-                DialogBox.getUserDialog(userText, userImage),
-                DialogBox.getElsaDialog(elsa.getResponse(userText), elsaImage));
+                DialogBox.getUserDialog(userText, userImage), answer);
         userInput.clear();
 
         if (elsa.isExiting()) {

@@ -41,14 +41,28 @@ import javafx.scene.shape.Circle;
  * FXML only say which style class an entry belongs to.
  */
 public class DialogBox extends HBox {
-    /** How wide and tall the picture is drawn, in pixels. Matches the FXML. */
-    private static final double PICTURE_SIZE = 100.0;
+    /**
+     * How wide and tall the picture is drawn, in pixels. Matches the FXML.
+     *
+     * <p>Smaller than a portrait meant to be studied, because the conversation
+     * has exactly two participants and never gains a third: past the first
+     * exchange, the picture is answering "who said this?" for a reader who has
+     * stopped asking, and the width spent on that answer is width the words
+     * themselves could have used. Large enough, though, that each speaker is
+     * still recognisable at a glance while scrolling.
+     */
+    private static final double PICTURE_SIZE = 64.0;
 
     /**
      * How much of the width available a bubble may take up.
      * Without a limit a long message stretches the whole way across a widened
      * window, giving lines too long to read comfortably and losing the sense
      * that the two speakers are on opposite sides.
+     *
+     * <p>The share also has to leave room for the picture beside it. At the
+     * narrowest the window may be dragged to, this share plus the picture and
+     * the spacing between them still fits across the row, so the limit stays
+     * the thing deciding a bubble's width rather than the row running out.
      */
     private static final double MAX_BUBBLE_SHARE = 0.72;
 
@@ -130,8 +144,39 @@ public class DialogBox extends HBox {
      * @return the entry to add to the conversation.
      */
     public static DialogBox getElsaDialog(String message, Image picture) {
+        return elsaDialogStyled(message, picture, "elsa-bubble");
+    }
+
+    /**
+     * Returns a dialog box for something Elsa could not do, picture on the left.
+     *
+     * <p>A complaint is placed and turned exactly as any other thing Elsa says,
+     * because Elsa is still the one saying it. Only the colouring differs, and
+     * it differs by more than colour alone: the bar down its edge marks the
+     * entry for a reader who does not tell the two shades apart.
+     *
+     * @param message the complaint to show.
+     * @param picture the picture shown beside it.
+     * @return the entry to add to the conversation.
+     */
+    public static DialogBox getElsaErrorDialog(String message, Image picture) {
+        return elsaDialogStyled(message, picture, "error-bubble");
+    }
+
+    /**
+     * Returns a dialog box for something Elsa said, coloured by the style class
+     * given. Shared by the two methods above so that an entry cannot come out
+     * facing one way when it is a confirmation and the other way when it is a
+     * complaint.
+     *
+     * @param message    the words Elsa replied with.
+     * @param picture    the picture shown beside them.
+     * @param styleClass the class in the stylesheet that colours the bubble.
+     * @return the entry to add to the conversation.
+     */
+    private static DialogBox elsaDialogStyled(String message, Image picture, String styleClass) {
         DialogBox dialogBox = new DialogBox(message, picture);
-        dialogBox.dialog.getStyleClass().add("elsa-bubble");
+        dialogBox.dialog.getStyleClass().add(styleClass);
         dialogBox.flip();
         dialogBox.alignBeside(Pos.TOP_LEFT, Pos.CENTER_LEFT);
         return dialogBox;

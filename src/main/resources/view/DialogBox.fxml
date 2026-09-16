@@ -28,6 +28,6 @@
         <Label fx:id="dialog" styleClass="dialog-label"
                wrapText="true" minHeight="-Infinity" />
         <ImageView fx:id="displayPicture" styleClass="avatar"
-                   fitWidth="100.0" fitHeight="100.0" />
+                   fitWidth="64.0" fitHeight="64.0" />
     </children>
 </fx:root>

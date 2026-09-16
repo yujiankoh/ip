@@ -21,6 +21,10 @@
     -ice-faded:     #8FB6CA;   /* the prompt in the empty text field */
     -ice-track:     #E4F2F8;   /* the channel the scrollbar thumb runs in */
     -ice-thumb:     #9FCFE3;   /* the scrollbar thumb itself */
+    -ice-alarm:     #FDF1F2;   /* a bubble holding something Elsa could not do */
+    -ice-alarm-edge: #F0C2C8;  /* the outline round it */
+    -ice-alarm-bar: #C2445A;   /* the bar down its leading edge */
+    -ice-alarm-text: #7A2436;  /* the words inside it */
 
     -fx-background-color: linear-gradient(to bottom, -ice-pale 0%, -ice-white 70%);
     -fx-font-family: "Segoe UI", "Helvetica Neue", "Arial", sans-serif;
@@ -72,6 +76,22 @@
 .user-bubble {
     -fx-background-color: -ice-blue;
     -fx-text-fill: -ice-white;
+}
+
+/*
+ * A bubble holding something Elsa could not do. Warm where the rest of the
+ * window is cold, so it is picked out while scrolling past.
+ *
+ * It is marked twice over, by colour and by the bar down its leading edge,
+ * because a reader who does not tell the two shades apart would be left with no
+ * difference at all. The bar is the border's left side widened; the other three
+ * sides stay at a hairline, which is why the widths are written out in full.
+ */
+.error-bubble {
+    -fx-background-color: -ice-alarm;
+    -fx-text-fill: -ice-alarm-text;
+    -fx-border-color: -ice-alarm-edge -ice-alarm-edge -ice-alarm-edge -ice-alarm-bar;
+    -fx-border-width: 1px 1px 1px 4px;
 }
 
 .avatar {

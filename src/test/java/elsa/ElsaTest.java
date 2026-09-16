@@ -353,6 +353,59 @@ public class ElsaTest {
     }
 
     // ------------------------------------------------------------------
+    // Telling a complaint from a confirmation
+    // ------------------------------------------------------------------
+
+    /**
+     * The window is handed the reply as text, which says nothing about whether
+     * the command worked, so it asks this instead before deciding how to colour
+     * the entry. Nothing else in the program can answer for it: by the time the
+     * reply exists, the exception that caused it has been caught and turned into
+     * a sentence like any other.
+     */
+    @Test
+    public void wasLastReplyAnError_afterACommandThatFailed_returnsTrue(@TempDir Path folder) {
+        Elsa elsa = elsaIn(folder);
+        elsa.startSession();
+        elsa.getResponse("fly");
+
+        assertTrue(elsa.wasLastReplyAnError(), "a command that could not run is a complaint");
+    }
+
+    @Test
+    public void wasLastReplyAnError_afterACommandThatWorked_returnsFalse(@TempDir Path folder) {
+        Elsa elsa = elsaIn(folder);
+        elsa.startSession();
+        elsa.getResponse("todo read book");
+
+        assertFalse(elsa.wasLastReplyAnError(), "adding a task is a confirmation");
+    }
+
+    /**
+     * The answer describes the last reply and no earlier one. Forgetting to
+     * clear it is the easy mistake here, and it would leave every entry after a
+     * user's first slip marked as a complaint for the rest of the session.
+     */
+    @Test
+    public void wasLastReplyAnError_commandThatWorksAfterOneThatFailed_returnsFalse(
+            @TempDir Path folder) {
+        Elsa elsa = elsaIn(folder);
+        elsa.startSession();
+        elsa.getResponse("fly");
+        elsa.getResponse("todo read book");
+
+        assertFalse(elsa.wasLastReplyAnError(), "the earlier complaint is not still being reported");
+    }
+
+    @Test
+    public void wasLastReplyAnError_beforeAnythingIsTyped_returnsFalse(@TempDir Path folder) {
+        Elsa elsa = elsaIn(folder);
+        elsa.startSession();
+
+        assertFalse(elsa.wasLastReplyAnError(), "nothing has been asked of the chatbot yet");
+    }
+
+    // ------------------------------------------------------------------
     // Keeping the tasks between sessions
     // ------------------------------------------------------------------
 
