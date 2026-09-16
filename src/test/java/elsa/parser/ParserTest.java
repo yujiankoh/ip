@@ -180,7 +180,7 @@ public class ParserTest {
     @Test
     public void parse_emptyLine_throwsExceptionSayingNothingWasTyped() {
         ElsaException thrown = assertThrows(ElsaException.class, () -> Parser.parse(""));
-        assertTrue(thrown.getMessage().contains("did not type anything"));
+        assertTrue(thrown.getMessage().contains("didn't type anything"));
     }
 
     // ------------------------------------------------------------------

@@ -3,6 +3,7 @@ package elsa.ui;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -123,14 +124,21 @@ public class Ui {
      * from {@link Dates}, which is also what refuses a date it cannot read, so
      * the two cannot come to disagree about what is accepted.
      *
-     * @param usages how each command is written, one per line
+     * <p>The commands are shown in groups rather than as one list of twelve.
+     * A list that long is read by scanning it for the one line that matters, and
+     * a heading every few lines is what makes that scan short: a user who wants
+     * to put something in has three lines to read instead of twelve.
+     *
+     * @param usagesByGroup how each command is written, under its heading
      * @return the help text.
      */
-    public String getHelpMessage(List<String> usages) {
-        String commands = usages.stream()
-                .map(usage -> "\n  " + usage)
-                .collect(Collectors.joining());
-        return "Here is what you can ask me:" + commands
+    public String getHelpMessage(Map<String, List<String>> usagesByGroup) {
+        String groups = usagesByGroup.entrySet().stream()
+                .map(group -> group.getKey() + group.getValue().stream()
+                        .map(usage -> "\n  " + usage)
+                        .collect(Collectors.joining()))
+                .collect(Collectors.joining("\n\n"));
+        return "Here is what you can ask me:\n\n" + groups
                 + "\n\nWrite a date as " + Dates.ACCEPTED_FORMS + ".";
     }
 
@@ -161,7 +169,7 @@ public class Ui {
      * @return the confirmation text.
      */
     public String getAddedMessage(Task task, int taskCount) {
-        return taskCountMessage("Got it. I've added this task:", task, taskCount);
+        return taskCountMessage("Frozen in place. I've added this task:", task, taskCount);
     }
 
     /**
@@ -172,7 +180,7 @@ public class Ui {
      * @return the confirmation text.
      */
     public String getRemovedMessage(Task task, int taskCount) {
-        return taskCountMessage("Noted. I've removed this task:", task, taskCount);
+        return taskCountMessage("Melted away. I've removed this task:", task, taskCount);
     }
 
     /**
@@ -182,7 +190,7 @@ public class Ui {
      * @return the confirmation text.
      */
     public String getMarkedMessage(Task task) {
-        return "Nice! I've marked this task as done:\n  " + task;
+        return "Let it go! I've marked this task as done:\n  " + task;
     }
 
     /**
@@ -192,7 +200,7 @@ public class Ui {
      * @return the confirmation text.
      */
     public String getUnmarkedMessage(Task task) {
-        return "OK, I've marked this task as not done yet:\n  " + task;
+        return "Back into the cold. I've marked this task as not done yet:\n  " + task;
     }
 
     /**

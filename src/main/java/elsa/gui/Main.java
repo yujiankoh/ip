@@ -8,6 +8,7 @@ import elsa.Elsa;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
@@ -67,6 +68,13 @@ public class Main extends Application {
 
         stage.setScene(scene);
         stage.setTitle("Elsa");
+
+        // The title bar and the taskbar show a default placeholder until the
+        // window is given an icon of its own, which leaves the program looking
+        // like any other unfinished JavaFX application wherever it is not in
+        // front. Elsa's own portrait is already in the build for the
+        // conversation, so it is what the window is known by too.
+        stage.getIcons().add(new Image(resource("/images/ElsaPortrait.png").toExternalForm()));
         stage.setMinWidth(MIN_WIDTH);
         stage.setMinHeight(MIN_HEIGHT);
 

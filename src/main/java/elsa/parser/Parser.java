@@ -94,10 +94,11 @@ public class Parser {
             case TODO -> new AddCommand(parseTodo(arguments));
             case DEADLINE -> new AddCommand(parseDeadline(arguments));
             case EVENT -> new AddCommand(parseEvent(arguments));
-            case NOTHING -> throw new ElsaException("You did not type anything. Try \""
+            case NOTHING -> throw new ElsaException("You didn't type anything. Try \""
                     + CommandType.TODO.getUsage() + "\", or \"list\" to see what you have.");
-            case UNKNOWN -> throw new ElsaException(
-                    "I'm sorry, but I don't know what that means :-(");
+            case UNKNOWN -> throw new ElsaException("That one's lost in the blizzard."
+                    + " Type \"" + CommandType.HELP.getKeyword()
+                    + "\" and I'll show you what I can do.");
         };
     }
 
@@ -285,8 +286,8 @@ public class Parser {
                     + command.getUsage());
         }
         if (parts.length > 2) {
-            throw new ElsaException("You gave \"" + separator + "\" more than once, and I do"
-                    + " not know which one you meant. Use it just once. Use: "
+            throw new ElsaException("You gave \"" + separator + "\" more than once, and I"
+                    + " don't know which one you meant. Use it just once. Use: "
                     + command.getUsage());
         }
         return parts;

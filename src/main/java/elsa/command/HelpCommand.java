@@ -24,6 +24,6 @@ public class HelpCommand extends Command {
     @Override
     public String execute(TaskList tasks, Ui ui, Storage storage) {
         // Nothing changes, so the list is not saved.
-        return ui.getHelpMessage(CommandType.getUsages());
+        return ui.getHelpMessage(CommandType.getUsagesByGroup());
     }
 }

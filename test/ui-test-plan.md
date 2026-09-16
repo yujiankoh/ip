@@ -159,7 +159,7 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [T][ ] borrow book
      Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -169,7 +169,7 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OLAF!!! I'm sorry, but I don't know what that means :-(
+     OLAF!!! That one's lost in the blizzard. Type "help" and I'll show you what I can do.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -208,19 +208,19 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [T][ ] read book
      Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [T][ ] return book
      Now you have 2 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Nice! I've marked this task as done:
+     Let it go! I've marked this task as done:
        [T][X] return book
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
@@ -261,18 +261,18 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [T][ ] read book
      Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Nice! I've marked this task as done:
+     Let it go! I've marked this task as done:
        [T][X] read book
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OK, I've marked this task as not done yet:
+     Back into the cold. I've marked this task as not done yet:
        [T][ ] read book
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
@@ -312,19 +312,19 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [T][ ] borrow book
      Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [T][ ] read book
      Now you have 2 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Nice! I've marked this task as done:
+     Let it go! I've marked this task as done:
        [T][X] read book
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
@@ -365,13 +365,13 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [T][ ] borrow book
      Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [D][ ] return book (by: Oct 20 2019) -- overdue
      Now you have 2 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -418,25 +418,25 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [T][ ] borrow book
      Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [D][ ] return book (by: Oct 20 2019) -- overdue
      Now you have 2 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [E][ ] project meeting (from: Oct 21 2019 to: Oct 22 2019)
      Now you have 3 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Nice! I've marked this task as done:
+     Let it go! I've marked this task as done:
        [E][X] project meeting (from: Oct 21 2019 to: Oct 22 2019)
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
@@ -483,7 +483,7 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [D][ ] return book (by: Oct 20 2019) -- overdue
      Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -493,7 +493,7 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [E][ ] project meeting (from: Oct 21 2019 to: Oct 22 2019)
      Now you have 2 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -535,17 +535,17 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OLAF!!! You did not type anything. Try "todo <description>", or "list" to see what you have.
+     OLAF!!! You didn't type anything. Try "todo <description>", or "list" to see what you have.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [T][ ] read book
      Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OLAF!!! I'm sorry, but I don't know what that means :-(
+     OLAF!!! That one's lost in the blizzard. Type "help" and I'll show you what I can do.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -592,7 +592,7 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [T][ ] read book
      Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -614,7 +614,7 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Nice! I've marked this task as done:
+     Let it go! I've marked this task as done:
        [T][X] read book
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
@@ -669,7 +669,7 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [D][ ] submit report (by: Oct 20 2019) -- overdue
      Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -679,7 +679,7 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [E][ ] project meeting (from: Oct 21 2019 to: Oct 22 2019)
      Now you have 2 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -739,7 +739,7 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [E][ ] standup (from: Oct 21 2019 to: Oct 22 2019)
      Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -783,37 +783,37 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [T][ ] read book
      Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [D][ ] return book (by: Jun 06 2019) -- overdue
      Now you have 2 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [E][ ] project meeting (from: Aug 06 2019 to: Aug 07 2019)
      Now you have 3 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [T][ ] join sports club
      Now you have 4 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Noted. I've removed this task:
+     Melted away. I've removed this task:
        [E][ ] project meeting (from: Aug 06 2019 to: Aug 07 2019)
      Now you have 3 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Nice! I've marked this task as done:
+     Let it go! I've marked this task as done:
        [T][X] join sports club
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
@@ -862,7 +862,7 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [T][ ] read book
      Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -880,7 +880,7 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Noted. I've removed this task:
+     Melted away. I've removed this task:
        [T][ ] read book
      Now you have 0 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -923,35 +923,35 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [T][ ] read book
      Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [D][ ] return book (by: Jun 06 2019) -- overdue
      Now you have 2 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [E][ ] project meeting (from: Aug 06 2019 to: Aug 07 2019)
      Now you have 3 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Nice! I've marked this task as done:
+     Let it go! I've marked this task as done:
        [T][X] read book
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OK, I've marked this task as not done yet:
+     Back into the cold. I've marked this task as not done yet:
        [T][ ] read book
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Noted. I've removed this task:
+     Melted away. I've removed this task:
        [D][ ] return book (by: Jun 06 2019) -- overdue
      Now you have 2 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -1011,13 +1011,13 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Noted. I've removed this task:
+     Melted away. I've removed this task:
        [D][ ] return book (by: Jun 06 2019) -- overdue
      Now you have 2 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OK, I've marked this task as not done yet:
+     Back into the cold. I've marked this task as not done yet:
        [T][ ] read book
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
@@ -1079,7 +1079,7 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [T][ ] water plants
      Now you have 3 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -1133,7 +1133,7 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [T][ ] read book
      Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -1173,13 +1173,13 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [T][ ] read book
      Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Nice! I've marked this task as done:
+     Let it go! I've marked this task as done:
        [T][X] read book
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
@@ -1268,25 +1268,25 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [D][ ] year first (by: Oct 15 2019) -- overdue
      Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [D][ ] slashes (by: Oct 15 2019) -- overdue
      Now you have 2 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [D][ ] month name (by: Oct 15 2019) -- overdue
      Now you have 3 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [D][ ] day before month (by: Dec 02 2019) -- overdue
      Now you have 4 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -1339,19 +1339,19 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [T][ ] borrow book
      Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [D][ ] return book (by: Oct 15 2019) -- overdue
      Now you have 2 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [E][ ] conference (from: Oct 14 2019 to: Oct 16 2019)
      Now you have 3 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -1417,30 +1417,30 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [D][ ] past deadline (by: Oct 15 2019) -- overdue
      Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [D][ ] future deadline (by: Jan 01 2999)
      Now you have 2 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [D][ ] finished deadline (by: Oct 15 2019) -- overdue
      Now you have 3 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Nice! I've marked this task as done:
+     Let it go! I've marked this task as done:
        [D][X] finished deadline (by: Oct 15 2019)
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [E][ ] past event (from: Oct 14 2019 to: Oct 16 2019)
      Now you have 4 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -1485,25 +1485,25 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [T][ ] read book
      Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [D][ ] return book (by: Jun 06 2999)
      Now you have 2 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [T][ ] buy milk
      Now you have 3 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Nice! I've marked this task as done:
+     Let it go! I've marked this task as done:
        [T][X] read book
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
@@ -1543,13 +1543,13 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [T][ ] read book
      Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [T][ ] buy MILK
      Now you have 2 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -1589,7 +1589,7 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [T][ ] read book
      Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -1633,16 +1633,24 @@ bye
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      Here is what you can ask me:
+
+     Adding a task
        todo <description>
        deadline <description> /by <date>
        event <description> /from <date> /to <date>
+
+     Seeing what you have
        list
        on <date>
        remind
        find <keyword>...
+
+     Changing a task
        mark <task number>
        unmark <task number>
        delete <task number>
+
+     Anything else
        help
        bye
 
@@ -1650,7 +1658,7 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [T][ ] read book
      Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -1693,19 +1701,19 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [T][ ] read book
      Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [T][ ] walk the dog
      Now you have 2 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [T][ ] buy milk
      Now you have 3 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -1765,42 +1773,42 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [T][ ] read book
      Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [D][ ] return book (by: Jun 06 2019) -- overdue
      Now you have 2 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [D][ ] pay fees (by: Jun 01 2019) -- overdue
      Now you have 3 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Nice! I've marked this task as done:
+     Let it go! I've marked this task as done:
        [D][X] pay fees (by: Jun 01 2019)
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [E][ ] camp (from: Jun 01 2019 to: Jun 03 2019)
      Now you have 4 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [D][ ] renew pass (by: Jan 01 2999)
      Now you have 5 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [D][ ] old form (by: May 30 2019) -- overdue
      Now you have 6 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -1905,7 +1913,7 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [E][ ] trip (from: Oct 15 2019 to: Oct 15 2019)
      Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -1947,19 +1955,19 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OLAF!!! You gave "/by" more than once, and I do not know which one you meant. Use it just once. Use: deadline <description> /by <date>
+     OLAF!!! You gave "/by" more than once, and I don't know which one you meant. Use it just once. Use: deadline <description> /by <date>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OLAF!!! You gave "/from" more than once, and I do not know which one you meant. Use it just once. Use: event <description> /from <date> /to <date>
+     OLAF!!! You gave "/from" more than once, and I don't know which one you meant. Use it just once. Use: event <description> /from <date> /to <date>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OLAF!!! You gave "/to" more than once, and I do not know which one you meant. Use it just once. Use: event <description> /from <date> /to <date>
+     OLAF!!! You gave "/to" more than once, and I don't know which one you meant. Use it just once. Use: event <description> /from <date> /to <date>
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [D][ ] report (by: Jan 01 2999)
      Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -2003,34 +2011,34 @@ bye
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [T][ ] read book
      Now you have 1 task in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OLAF!!! You already have that one, so I did not add it twice. Use "list" to see it.
+     OLAF!!! You already have that one, so I didn't add it twice. Use "list" to see it.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [D][ ] report (by: Jan 01 2999)
      Now you have 2 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Got it. I've added this task:
+     Frozen in place. I've added this task:
        [D][ ] report (by: Jan 02 2999)
      Now you have 3 tasks in the list.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     Nice! I've marked this task as done:
+     Let it go! I've marked this task as done:
        [T][X] read book
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     OLAF!!! You already have that one, so I did not add it twice. Use "list" to see it.
+     OLAF!!! You already have that one, so I didn't add it twice. Use "list" to see it.
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
