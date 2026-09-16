@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
@@ -61,6 +62,47 @@ public class CommandTypeTest {
                 "exactly the two commands nobody types should be left out");
         assertFalse(usages.contains(""), "NOTHING has no usage and must not be listed");
         assertFalse(usages.contains(null), "UNKNOWN has no usage and must not be listed");
+    }
+
+    /**
+     * Help is read by scanning it for the one line that matters, so a command
+     * filed under the wrong heading is worse than an unfiled one: the user reads
+     * the group they want and concludes the chatbot cannot do it.
+     */
+    @Test
+    public void getUsagesByGroup_everyCommandAUserCanType_isUnderExactlyOneHeading() {
+        Map<String, List<String>> groups = CommandType.getUsagesByGroup();
+
+        for (String usage : CommandType.getUsages()) {
+            long headings = groups.values().stream()
+                    .filter(usages -> usages.contains(usage))
+                    .count();
+            assertEquals(1, headings, usage + " is not under exactly one heading");
+        }
+    }
+
+    /**
+     * The headings have to come out in the order a new user should meet them,
+     * which is the order the constants are declared in. A plain HashMap would
+     * hand them back in whatever order suited it, putting leaving before adding
+     * as readily as not, and nothing else would notice.
+     */
+    @Test
+    public void getUsagesByGroup_theHeadings_runFromAddingToLeaving() {
+        List<String> headings = List.copyOf(CommandType.getUsagesByGroup().keySet());
+
+        assertEquals(4, headings.size(), "there should be four headings");
+        assertTrue(headings.get(0).contains("Adding"), "adding comes first");
+        assertTrue(headings.get(headings.size() - 1).contains("Anything else"),
+                "the commands about the chatbot itself come last");
+    }
+
+    /** No heading should be shown with nothing under it. */
+    @Test
+    public void getUsagesByGroup_everyHeading_hasACommandUnderIt() {
+        for (Map.Entry<String, List<String>> group : CommandType.getUsagesByGroup().entrySet()) {
+            assertFalse(group.getValue().isEmpty(), group.getKey() + " has nothing under it");
+        }
     }
 
     /** A user should meet the commands that put a task in before the one that leaves. */

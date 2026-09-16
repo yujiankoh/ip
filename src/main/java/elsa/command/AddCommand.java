@@ -33,7 +33,7 @@ public class AddCommand extends Command {
         // since; writing out the one just typed would claim a status it does not
         // have. The user can see what they typed directly above, either way.
         if (tasks.hasTask(task)) {
-            throw new ElsaException("You already have that one, so I did not add it twice."
+            throw new ElsaException("You already have that one, so I didn't add it twice."
                     + " Use \"list\" to see it.");
         }
 

@@ -164,9 +164,9 @@ public class ElsaTest {
         Elsa elsa = elsaIn(folder);
         elsa.startSession();
 
-        assertEquals("Got it. I've added this task:\n  [T][ ] read book\n"
+        assertEquals("Frozen in place. I've added this task:\n  [T][ ] read book\n"
                 + "Now you have 1 task in the list.", elsa.getResponse("todo read book"));
-        assertEquals("Got it. I've added this task:\n  [T][ ] buy milk\n"
+        assertEquals("Frozen in place. I've added this task:\n  [T][ ] buy milk\n"
                 + "Now you have 2 tasks in the list.", elsa.getResponse("todo buy milk"));
     }
 
@@ -203,9 +203,9 @@ public class ElsaTest {
         elsa.startSession();
         elsa.getResponse("todo read book");
 
-        assertEquals("Nice! I've marked this task as done:\n  [T][X] read book",
+        assertEquals("Let it go! I've marked this task as done:\n  [T][X] read book",
                 elsa.getResponse("mark 1"));
-        assertEquals("OK, I've marked this task as not done yet:\n  [T][ ] read book",
+        assertEquals("Back into the cold. I've marked this task as not done yet:\n  [T][ ] read book",
                 elsa.getResponse("unmark 1"));
     }
 
@@ -215,7 +215,7 @@ public class ElsaTest {
         elsa.startSession();
         elsa.getResponse("todo read book");
 
-        assertEquals("Noted. I've removed this task:\n  [T][ ] read book\n"
+        assertEquals("Melted away. I've removed this task:\n  [T][ ] read book\n"
                 + "Now you have 0 tasks in the list.", elsa.getResponse("delete 1"));
     }
 
@@ -273,7 +273,7 @@ public class ElsaTest {
         Elsa elsa = elsaIn(folder);
         elsa.startSession();
 
-        assertEquals("Got it. I've added this task:\n  [T][ ] read book\n"
+        assertEquals("Frozen in place. I've added this task:\n  [T][ ] read book\n"
                 + "Now you have 1 task in the list.", elsa.getResponse("   todo read book   "));
     }
 
@@ -286,8 +286,8 @@ public class ElsaTest {
         Elsa elsa = elsaIn(folder);
         elsa.startSession();
 
-        assertEquals(ERROR_PREFIX + "I'm sorry, but I don't know what that means :-(",
-                elsa.getResponse("fly"));
+        assertEquals(ERROR_PREFIX + "That one's lost in the blizzard. Type \"help\""
+                + " and I'll show you what I can do.", elsa.getResponse("fly"));
     }
 
     @Test
