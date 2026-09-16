@@ -60,6 +60,24 @@ public class TaskListTest {
         assertSame(todo, tasks.get(0));
     }
 
+    @Test
+    public void hasTask_listHoldingTheSameTask_returnsTrue() {
+        TaskList tasks = new TaskList();
+        tasks.add(new Todo("read book"));
+
+        assertTrue(tasks.hasTask(new Todo("read book")));
+    }
+
+    @Test
+    public void hasTask_listWithoutIt_returnsFalse() {
+        assertFalse(threeTasks().hasTask(new Todo("fourth")));
+    }
+
+    @Test
+    public void hasTask_emptyList_returnsFalse() {
+        assertFalse(new TaskList().hasTask(new Todo("read book")));
+    }
+
     /** Tasks are added to the end, so the list stays in the order they were typed. */
     @Test
     public void add_severalTasks_keepsThemInTheOrderAdded() {

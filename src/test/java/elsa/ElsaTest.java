@@ -170,6 +170,25 @@ public class ElsaTest {
                 + "Now you have 2 tasks in the list.", elsa.getResponse("todo buy milk"));
     }
 
+    /**
+     * The same task twice is a slip rather than a request, and the list is the
+     * only place it can be caught: the parser reads one line at a time and never
+     * sees what is already there. The second copy must be refused and the first
+     * left exactly as it was.
+     */
+    @Test
+    public void getResponse_todoAlreadyInTheList_refusesAndKeepsOneCopy(@TempDir Path folder) {
+        Elsa elsa = elsaIn(folder);
+        elsa.startSession();
+        elsa.getResponse("todo read book");
+
+        String response = elsa.getResponse("todo read book");
+
+        assertTrue(response.startsWith(ERROR_PREFIX), "a complaint, not a confirmation");
+        assertEquals("Here are the tasks in your list:\n1.[T][ ] read book",
+                elsa.getResponse("list"), "the task is in the list once");
+    }
+
     @Test
     public void getResponse_listWithNothingInIt_saysSoRatherThanShowingAnEmptyList(@TempDir Path folder) {
         Elsa elsa = elsaIn(folder);

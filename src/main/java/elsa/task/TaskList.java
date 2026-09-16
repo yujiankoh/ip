@@ -64,6 +64,16 @@ public class TaskList {
     }
 
     /**
+     * Returns whether the list already holds a task describing the same thing.
+     *
+     * @param task the task to look for
+     * @return true if a task the same as this one is already in the list
+     */
+    public boolean hasTask(Task task) {
+        return tasks.stream().anyMatch(task::isSameTask);
+    }
+
+    /**
      * Adds a task to the end of the list.
      *
      * @param task the task to add

@@ -142,7 +142,6 @@ public class Parser {
     private static Deadline parseDeadline(String arguments) throws ElsaException {
         CommandType command = CommandType.DEADLINE;
         requireDescription(arguments, command);
-        // Limit of 2 keeps any later "/by" as part of the due date itself.
         String[] parts = requireSeparator(arguments, BY_SEPARATOR, command);
         String description = requireNonEmpty(parts[0], "description of a deadline", command);
         LocalDate by = requireDate(requireNonEmpty(parts[1],
@@ -155,7 +154,8 @@ public class Parser {
      *
      * @param arguments everything the user typed after the keyword
      * @return the event the user described
-     * @throws ElsaException if a part is missing, empty, unstorable or not a date
+     * @throws ElsaException if a part is missing, empty, unstorable, not a date,
+     *                       or the end date falls before the start date
      */
     private static Event parseEvent(String arguments) throws ElsaException {
         CommandType command = CommandType.EVENT;
@@ -167,6 +167,7 @@ public class Parser {
                 "start date after " + FROM_SEPARATOR, command), command);
         LocalDate to = requireDate(requireNonEmpty(dates[1],
                 "end date after " + TO_SEPARATOR, command), command);
+        requireOrderedDates(from, to, command);
         return new Event(description, from, to);
     }
 
@@ -269,15 +270,23 @@ public class Parser {
      * @param text      the text to split
      * @param separator the separator the command cannot do without, such as "/by"
      * @param command   the command being run, which supplies the usage to show
-     * @return the two pieces on either side of the first occurrence of the separator
-     * @throws ElsaException if the separator does not appear in the text
+     * @return the two pieces on either side of the separator
+     * @throws ElsaException if the separator is absent, or appears more than once
      */
     private static String[] requireSeparator(String text, String separator, CommandType command)
             throws ElsaException {
-        // Limit of 2 keeps any later occurrence as part of the second piece.
-        String[] parts = text.split(separator, 2);
+        // A limit of -1 splits at every occurrence, and keeps a trailing empty
+        // piece rather than dropping it. That second part matters: without it,
+        // "report /by" would come back as one piece and be reported as a line
+        // missing its "/by", when what is actually missing is the date.
+        String[] parts = text.split(separator, -1);
         if (parts.length < 2) {
             throw new ElsaException("I could not find \"" + separator + "\" in that. Use: "
+                    + command.getUsage());
+        }
+        if (parts.length > 2) {
+            throw new ElsaException("You gave \"" + separator + "\" more than once, and I do"
+                    + " not know which one you meant. Use it just once. Use: "
                     + command.getUsage());
         }
         return parts;
@@ -299,6 +308,25 @@ public class Parser {
             return Dates.parse(value);
         } catch (ElsaException e) {
             throw new ElsaException(e.getMessage() + ". Use: " + command.getUsage());
+        }
+    }
+
+    /**
+     * Checks that the two dates of a date range are in the order a range needs.
+     *
+     * @param from    the date the range starts
+     * @param to      the date the range ends
+     * @param command the command being run, which supplies the usage to show
+     * @throws ElsaException if the end date falls before the start date
+     */
+    private static void requireOrderedDates(LocalDate from, LocalDate to, CommandType command)
+            throws ElsaException {
+        // Equal dates are deliberately allowed: an event that starts and ends on
+        // the same day lasts one day, which is ordinary rather than a mistake.
+        if (to.isBefore(from)) {
+            throw new ElsaException("An event cannot end before it starts, but you gave "
+                    + Dates.format(from) + " to " + Dates.format(to) + ". Use: "
+                    + command.getUsage());
         }
     }
 

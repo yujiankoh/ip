@@ -1875,3 +1875,172 @@ bye
      The cold never bother me anyways!
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 ```
+
+---
+
+### TC-32 - Reject an event that ends before it starts
+
+**Aim:** Check that an event whose end date falls before its start date is refused, and that the complaint is about the pair of dates rather than about either date on its own, which would send the user looking for a misspelling that is not there. The one-day event that follows checks the boundary: equal dates describe an event lasting a single day, which is ordinary and must still be accepted.
+
+```input
+event trip /from 2019-10-16 /to 2019-10-14
+event trip /from 2019-10-15 /to 2019-10-15
+list
+bye
+```
+
+```expected
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+      _____ _
+     |  ___| |___  __ _
+     | |__ | / __|/ _` |
+     |  __|| \__ \ (_| |
+     |_____|_|___/\__,_|
+     Hello! I'm Elsa.
+     Do you want to build a snowman?
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OLAF!!! An event cannot end before it starts, but you gave Oct 16 2019 to Oct 14 2019. Use: event <description> /from <date> /to <date>
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [E][ ] trip (from: Oct 15 2019 to: Oct 15 2019)
+     Now you have 1 task in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Here are the tasks in your list:
+     1.[E][ ] trip (from: Oct 15 2019 to: Oct 15 2019)
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     The cold never bother me anyways!
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+```
+
+---
+
+### TC-33 - Reject a parameter given more than once
+
+**Aim:** Check that repeating `/by`, `/from` or `/to` is named as the mistake it is. Without this check the second copy is swallowed into the piece after it, which is then read as a date and fails, so the user is told their date is wrong when the date is fine. The valid deadline at the end confirms the three rejections stored nothing. Its due date is far in the future so that the overdue note does not appear and the case stays about the repeated parameter.
+
+```input
+deadline report /by Monday /by 2999-01-01
+event meeting /from 2019-10-14 /from 2019-10-15 /to 2019-10-16
+event meeting /from 2019-10-14 /to 2019-10-15 /to 2019-10-16
+deadline report /by 2999-01-01
+list
+bye
+```
+
+```expected
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+      _____ _
+     |  ___| |___  __ _
+     | |__ | / __|/ _` |
+     |  __|| \__ \ (_| |
+     |_____|_|___/\__,_|
+     Hello! I'm Elsa.
+     Do you want to build a snowman?
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OLAF!!! You gave "/by" more than once, and I do not know which one you meant. Use it just once. Use: deadline <description> /by <date>
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OLAF!!! You gave "/from" more than once, and I do not know which one you meant. Use it just once. Use: event <description> /from <date> /to <date>
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OLAF!!! You gave "/to" more than once, and I do not know which one you meant. Use it just once. Use: event <description> /from <date> /to <date>
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [D][ ] report (by: Jan 01 2999)
+     Now you have 1 task in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Here are the tasks in your list:
+     1.[D][ ] report (by: Jan 01 2999)
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     The cold never bother me anyways!
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+```
+
+---
+
+### TC-34 - Refuse to add a task that is already in the list
+
+**Aim:** Check that the same task typed twice is refused rather than stored twice, and that the check weighs the right things. A deadline with the same wording but a different date is a different task and must be accepted. A task already marked done is still a duplicate, since repeating something already ticked off is as much a slip as repeating an unfinished one, and the refusal must leave the done marker alone. The two deadlines are due far in the future so that the overdue note does not appear.
+
+```input
+todo read book
+todo read book
+deadline report /by 2999-01-01
+deadline report /by 2999-01-02
+mark 1
+todo read book
+list
+bye
+```
+
+```expected
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+      _____ _
+     |  ___| |___  __ _
+     | |__ | / __|/ _` |
+     |  __|| \__ \ (_| |
+     |_____|_|___/\__,_|
+     Hello! I'm Elsa.
+     Do you want to build a snowman?
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [T][ ] read book
+     Now you have 1 task in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OLAF!!! You already have that one, so I did not add it twice. Use "list" to see it.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [D][ ] report (by: Jan 01 2999)
+     Now you have 2 tasks in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Got it. I've added this task:
+       [D][ ] report (by: Jan 02 2999)
+     Now you have 3 tasks in the list.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Nice! I've marked this task as done:
+       [T][X] read book
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     OLAF!!! You already have that one, so I did not add it twice. Use "list" to see it.
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     Here are the tasks in your list:
+     1.[T][X] read book
+     2.[D][ ] report (by: Jan 01 2999)
+     3.[D][ ] report (by: Jan 02 2999)
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     The cold never bother me anyways!
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+```
