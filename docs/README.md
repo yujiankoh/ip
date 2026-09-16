@@ -76,8 +76,8 @@ Frozen in place. I've added this task:
 Now you have 2 tasks in the list.
 ```
 
-A deadline that has passed and is not done yet carries ` -- overdue` wherever
-it appears, so the same task would be shown as
+A deadline that has passed and is not done yet has `-- overdue` added after it,
+wherever it appears, so the same task would be shown as
 `[D][ ] return book (by: Jan 20 2027) -- overdue` once that day is behind you.
 Marking it done takes the note away.
 
