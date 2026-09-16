@@ -4,8 +4,8 @@ Elsa is a desktop chatbot for keeping track of the things you have to do. You
 talk to her by typing, the way you would message a friend, and she answers in a
 window.
 
-She keeps three kinds of task — things with no date, things due by a date, and
-things that run between two dates — and reminds you, without being asked, about
+She keeps three kinds of task, things with no date, things due by a date, and
+things that run between two dates. She reminds you, without being asked, about
 anything overdue or due within the week.
 
 ![Elsa in use](Ui.png)
@@ -245,7 +245,7 @@ Format: `help`
 
 ### Leaving: `bye`
 
-Saves nothing extra — your tasks are already saved — and closes the window a
+Saves nothing extra (your tasks are already saved) and closes the window a
 moment later, so you can read the farewell.
 
 Format: `bye`
@@ -290,7 +290,7 @@ not done.
 
 You can edit it by hand, but take a copy first. If Elsa cannot understand a
 line she tells you which one, starts with the tasks she could read, and leaves
-the rest out — and the next change you make rewrites the file **without** them.
+the rest out and the next change you make rewrites the file **without** them.
 
 ## Command summary
 
