@@ -49,6 +49,15 @@ public class Elsa {
     private boolean isExiting = false;
 
     /**
+     * Whether the last reply was a complaint rather than a confirmation.
+     * Recorded for the same reason as {@link #isExiting}: the window is handed
+     * the reply as text, which says nothing about whether the command worked,
+     * and it needs to know so that it can mark a complaint as one. Asked
+     * afterwards through {@link #wasLastReplyAnError()}.
+     */
+    private boolean isLastReplyAnError = false;
+
+    /**
      * Creates a chatbot that keeps its tasks in the named file, with nothing in
      * its list yet.
      * Reading the saved tasks is left to {@link #run()} rather than done here, so
@@ -120,10 +129,26 @@ public class Elsa {
             String response = command.execute(tasks, ui, storage);
             assert response != null : "every command owes the user a reply";
             isExiting = command.isExit();
+            isLastReplyAnError = false;
             return response;
         } catch (ElsaException e) {
+            isLastReplyAnError = true;
             return ui.getErrorMessage(e.getMessage());
         }
+    }
+
+    /**
+     * Returns whether the last reply was a complaint rather than a confirmation.
+     *
+     * <p>This answers for {@link #getResponse} alone. The opening message from
+     * {@link #startSession()} may carry a complaint about the saved file among
+     * the greeting and the reminders, and a single answer could not describe a
+     * message that is partly one thing and partly another.
+     *
+     * @return true if the last line could not be carried out.
+     */
+    public boolean wasLastReplyAnError() {
+        return isLastReplyAnError;
     }
 
     /**
