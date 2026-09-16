@@ -56,6 +56,48 @@ public class TaskTest {
         assertEquals(" ", task.getStatusIcon());
     }
 
+    // ------------------------------------------------------------------
+    // Telling one task from another
+    // ------------------------------------------------------------------
+
+    @Test
+    public void isSameTask_sameDescription_returnsTrue() {
+        assertTrue(new Task("read book").isSameTask(new Task("read book")));
+    }
+
+    @Test
+    public void isSameTask_differentDescription_returnsFalse() {
+        assertFalse(new Task("read book").isSameTask(new Task("return book")));
+    }
+
+    /**
+     * Whether a task is done is left out of the comparison on purpose. Adding
+     * again something already ticked off is as much a slip as adding an
+     * unfinished task twice, and the user is worth telling either way.
+     */
+    @Test
+    public void isSameTask_onlyOneOfThemDone_stillReturnsTrue() {
+        Task done = new Task("read book");
+        done.markAsDone();
+
+        assertTrue(done.isSameTask(new Task("read book")));
+        assertTrue(new Task("read book").isSameTask(done));
+    }
+
+    /**
+     * A todo and a deadline that read the same are still different tasks, since
+     * one is owed by a date and the other is not. The comparison has to weigh the
+     * kind of task as well as its wording, both ways round.
+     */
+    @Test
+    public void isSameTask_differentKindsOfTask_returnsFalse() {
+        Task todo = new Todo("read book");
+        Task deadline = new Deadline("read book", LocalDate.of(2019, 10, 15));
+
+        assertFalse(todo.isSameTask(deadline));
+        assertFalse(deadline.isSameTask(todo));
+    }
+
     /**
      * A plain task carries no date, so it falls on no date. Deadlines and events
      * override this; that they do is checked in their own test classes.

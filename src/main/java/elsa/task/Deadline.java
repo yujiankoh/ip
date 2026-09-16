@@ -47,6 +47,12 @@ public class Deadline extends Task {
         return by.equals(date);
     }
 
+    @Override
+    public boolean isSameTask(Task other) {
+        // The cast is safe: the inherited check has already confirmed the kinds match.
+        return super.isSameTask(other) && by.equals(((Deadline) other).by);
+    }
+
     /**
      * Returns whether this deadline has passed without being done.
      * A deadline that is already done is not overdue however old it is, which is

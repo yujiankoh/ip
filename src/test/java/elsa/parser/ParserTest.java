@@ -262,6 +262,86 @@ public class ParserTest {
     }
 
     // ------------------------------------------------------------------
+    // Adding a task: dates in the wrong order
+    // ------------------------------------------------------------------
+
+    @Test
+    public void parse_eventEndingBeforeItStarts_throwsException() {
+        String command = "event meeting /from 2019-10-16 /to 2019-10-14";
+        assertThrows(ElsaException.class, () -> Parser.parse(command));
+    }
+
+    /**
+     * An event that starts and ends on the same day lasts one day, which is
+     * ordinary rather than a mistake. The check therefore has to let the two
+     * dates be equal while still refusing an end date that comes first.
+     */
+    @Test
+    public void parse_eventStartingAndEndingOnTheSameDay_isAccepted() throws ElsaException {
+        assertInstanceOf(AddCommand.class,
+                Parser.parse("event meeting /from 2019-10-15 /to 2019-10-15"));
+    }
+
+    /**
+     * Both dates can be read perfectly well on their own, so the complaint has to
+     * be about the pair of them. A complaint about a date would send the user
+     * hunting for a misspelling that is not there.
+     */
+    @Test
+    public void parse_eventEndingBeforeItStarts_messageSaysTheDatesAreOutOfOrder() {
+        String command = "event meeting /from 2019-10-16 /to 2019-10-14";
+        ElsaException thrown = assertThrows(ElsaException.class, () -> Parser.parse(command));
+        assertTrue(thrown.getMessage().contains("cannot end before it starts"));
+    }
+
+    // ------------------------------------------------------------------
+    // Adding a task: a parameter given more than once
+    // ------------------------------------------------------------------
+
+    /**
+     * Each of these is refused whether the repetition is looked for or not: the
+     * extra parameter is otherwise swallowed into the piece after it, which is
+     * then read as a date and fails. What the user is told is therefore the whole
+     * point, and the only thing worth asserting. A test that asked merely for a
+     * refusal would pass just as happily while the user was sent to look at a
+     * date that was never wrong.
+     */
+    private static void assertRepeatedParameterIsNamed(String command) {
+        ElsaException thrown = assertThrows(ElsaException.class, () -> Parser.parse(command));
+        assertTrue(thrown.getMessage().contains("more than once"),
+                "the message does not say a parameter was repeated: " + thrown.getMessage());
+    }
+
+    @Test
+    public void parse_deadlineWithTwoByParameters_saysTheParameterWasRepeated() {
+        assertRepeatedParameterIsNamed("deadline return book /by Monday /by 2019-10-15");
+    }
+
+    @Test
+    public void parse_eventWithTwoFromParameters_saysTheParameterWasRepeated() {
+        assertRepeatedParameterIsNamed("event meeting /from 2019-10-14 /from 2019-10-15 /to 2019-10-16");
+    }
+
+    @Test
+    public void parse_eventWithTwoToParameters_saysTheParameterWasRepeated() {
+        assertRepeatedParameterIsNamed("event meeting /from 2019-10-14 /to 2019-10-15 /to 2019-10-16");
+    }
+
+    /**
+     * Looking for the separator everywhere it appears must not lose the empty
+     * piece left by a line that ends at it. If it did, a missing date would be
+     * reported as a missing "/by", sending the user to add a parameter they had
+     * already given.
+     */
+    @Test
+    public void parse_deadlineEndingAtBy_saysTheDateIsMissingNotTheSeparator() {
+        String command = "deadline return book /by";
+        ElsaException thrown = assertThrows(ElsaException.class, () -> Parser.parse(command));
+        assertTrue(thrown.getMessage().contains("due date"));
+        assertFalse(thrown.getMessage().contains("could not find"));
+    }
+
+    // ------------------------------------------------------------------
     // Task numbers
     // ------------------------------------------------------------------
 

@@ -28,6 +28,29 @@ public class EventTest {
     }
 
     // ------------------------------------------------------------------
+    // Telling one event from another
+    // ------------------------------------------------------------------
+
+    @Test
+    public void isSameTask_sameDescriptionAndDates_returnsTrue() {
+        assertTrue(threeDayEvent().isSameTask(threeDayEvent()));
+    }
+
+    /**
+     * An event carries two dates, and either one of them differing makes it a
+     * different event. Both are checked, because a comparison that weighed only
+     * the start date would pass the first of these and fail nothing.
+     */
+    @Test
+    public void isSameTask_sameDescriptionDifferentDates_returnsFalse() {
+        Event laterEnd = new Event("project meeting", FROM, TO.plusDays(1));
+        Event laterStart = new Event("project meeting", FROM.plusDays(1), TO);
+
+        assertFalse(threeDayEvent().isSameTask(laterEnd));
+        assertFalse(threeDayEvent().isSameTask(laterStart));
+    }
+
+    // ------------------------------------------------------------------
     // Which days are part of the event
     // ------------------------------------------------------------------
 

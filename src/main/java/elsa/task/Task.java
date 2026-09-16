@@ -51,6 +51,27 @@ public class Task {
     }
 
     /**
+     * Returns whether this task describes the same thing as another task.
+     *
+     * <p>Two tasks are the same when they are of the same kind and describe the
+     * same thing, whether or not either has been marked as done: adding again a
+     * task that is already ticked off is a slip just as adding an unfinished one
+     * twice is.
+     *
+     * <p>This is deliberately not equals. Java expects equals to agree with
+     * hashCode and to weigh every field, and this comparison ignores one on
+     * purpose, so giving it a name of its own leaves that expectation intact.
+     * The kinds of task that carry extra fields widen the comparison to cover
+     * them.
+     *
+     * @param other the task to compare against
+     * @return true if both are of the same kind and describe the same thing
+     */
+    public boolean isSameTask(Task other) {
+        return getClass() == other.getClass() && description.equals(other.description);
+    }
+
+    /**
      * Returns whether this task falls on the given date.
      * A plain task carries no date, so the answer is always no. The kinds of task
      * that do carry dates override this and answer for themselves, in the same way

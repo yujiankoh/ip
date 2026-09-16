@@ -28,6 +28,15 @@ public class AddCommand extends Command {
 
     @Override
     public String execute(TaskList tasks, Ui ui, Storage storage) throws ElsaException {
+        // The task is not written out again here. The only copy worth showing
+        // would be the one already in the list, which may have been marked done
+        // since; writing out the one just typed would claim a status it does not
+        // have. The user can see what they typed directly above, either way.
+        if (tasks.hasTask(task)) {
+            throw new ElsaException("You already have that one, so I did not add it twice."
+                    + " Use \"list\" to see it.");
+        }
+
         tasks.add(task);
         // Saved before the confirmation is worded, so the chatbot never claims to
         // have stored a task that did not reach the disk.

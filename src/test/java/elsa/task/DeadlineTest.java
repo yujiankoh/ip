@@ -23,6 +23,25 @@ public class DeadlineTest {
     private static final LocalDate FUTURE = LocalDate.of(2999, 1, 1);
 
     // ------------------------------------------------------------------
+    // Telling one deadline from another
+    // ------------------------------------------------------------------
+
+    @Test
+    public void isSameTask_sameDescriptionAndDueDate_returnsTrue() {
+        assertTrue(new Deadline("return book", PAST).isSameTask(new Deadline("return book", PAST)));
+    }
+
+    /**
+     * The same thing owed on two different days is two deadlines, not one, so the
+     * due date has to be part of the comparison the plain task cannot make.
+     */
+    @Test
+    public void isSameTask_sameDescriptionDifferentDueDate_returnsFalse() {
+        assertFalse(new Deadline("return book", PAST)
+                .isSameTask(new Deadline("return book", FUTURE)));
+    }
+
+    // ------------------------------------------------------------------
     // Overdue
     // ------------------------------------------------------------------
 

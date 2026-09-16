@@ -43,6 +43,16 @@ public class Event extends Task {
         return !date.isBefore(from) && !date.isAfter(to);
     }
 
+    @Override
+    public boolean isSameTask(Task other) {
+        if (!super.isSameTask(other)) {
+            return false;
+        }
+        // The cast is safe: the inherited check has already confirmed the kinds match.
+        Event otherEvent = (Event) other;
+        return from.equals(otherEvent.from) && to.equals(otherEvent.to);
+    }
+
     /**
      * Returns the event as it should appear to the user,
      * for example "[E][ ] project meeting (from: Oct 15 2019 to: Oct 16 2019)".
